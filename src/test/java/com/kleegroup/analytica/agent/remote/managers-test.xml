@@ -1,0 +1,22 @@
+<?xml version =	'1.0' encoding = 'ISO-8859-1'?>
+<modules>
+	<module name="anlaytica">
+		<manager name="AgentManager" class="com.kleegroup.analyticaimpl.agent.AgentManagerImpl">
+			<plugin name="AgentPlugin" class="com.kleegroup.analyticaimpl.agent.plugins.AgentPluginImpl" />
+			<plugin name="NetPlugin" class="com.kleegroup.analyticaimpl.agent.plugins.net.remote.RemoteNetPlugin">
+				<param name="serverUrl" value="http://localhost:9998/process" />
+				<param name="sendPaquetSize" value="10" />
+				<param name="sendPaquetFrequencySeconds" value="1" />
+			</plugin>
+		</manager>
+
+		<manager name="ServerManager" class="com.kleegroup.analyticaimpl.server.ServerManagerImpl">
+			<plugin name="ProcessStorePlugin" class="com.kleegroup.analyticaimpl.server.plugins.processstore.memory.MemoryProcessStorePlugin">
+			</plugin>
+			<plugin name="ProcessEncoderPlugin" class="com.kleegroup.analyticaimpl.server.plugins.processencoder.standard.StandardProcessEncoderPlugin">
+			</plugin>
+			<plugin name="CubeStorePlugin" class="com.kleegroup.analyticaimpl.server.plugins.cubestore.memory.MemoryCubeStorePlugin">
+			</plugin>
+		</manager>
+	</module>
+</modules>
