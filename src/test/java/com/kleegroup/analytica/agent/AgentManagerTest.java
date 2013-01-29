@@ -174,7 +174,7 @@ public final class AgentManagerTest extends AbstractTestCaseJU4 {
 		final DataKey[] metrics = new DataKey[] { new DataKey("TEST_MEAN_VALUE", DataType.mean) };
 		final List<Data> datas = getCubeToday("TEST_MEAN1", metrics);
 		final double valueMean = getMean(datas, "TEST_MEAN_VALUE");
-		Assert.assertEquals("Le cube ne contient pas la moyenne attendue\n" + datas, 75.0, valueMean);
+		Assert.assertEquals("Le cube ne contient pas la moyenne attendue\n" + datas, 75.0, valueMean, 0);
 	}
 
 	@Test
@@ -189,7 +189,7 @@ public final class AgentManagerTest extends AbstractTestCaseJU4 {
 		final DataKey[] metrics = new DataKey[] { new DataKey("TEST_MEAN_VALUE", DataType.mean) };
 		final List<Data> datas = getCubeToday("TEST_MEAN2", metrics);
 		final double valueMean = getMean(datas, "TEST_MEAN_VALUE");
-		Assert.assertEquals("Le cube ne contient pas la moyenne attendue\n" + datas, 45.0, valueMean);
+		Assert.assertEquals("Le cube ne contient pas la moyenne attendue\n" + datas, 45.0, valueMean, 0);
 	}
 
 	private double getMean(final List<Data> datas, final String measureName) {

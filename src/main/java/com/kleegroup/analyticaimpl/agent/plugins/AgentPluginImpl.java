@@ -23,8 +23,6 @@ import kasper.kernel.util.Assertion;
 
 import com.kleegroup.analytica.core.KProcess;
 import com.kleegroup.analytica.core.KProcessBuilder;
-import com.kleegroup.analytica.core.Measure;
-import com.kleegroup.analytica.core.MetaData;
 import com.kleegroup.analyticaimpl.agent.AgentPlugin;
 
 /**
@@ -70,8 +68,7 @@ public final class AgentPluginImpl implements AgentPlugin {
 			THREAD_LOCAL_PROCESS.set(stack);
 		}
 		//---------------------------------------------------------------------
-		Assertion.invariant(stack.size() < 100, "La pile des KProcess atteind une profondeur de 100, il est probable qu'une fermeture de KProcess ait été oubliée.\nStack:{0}",
-				stack);
+		Assertion.invariant(stack.size() < 100, "La pile des KProcess atteind une profondeur de 100, il est probable qu'une fermeture de KProcess ait été oubliée.\nStack:{0}", stack);
 		//---------------------------------------------------------------------
 		stack.push(processBuilder);
 	}
@@ -84,17 +81,17 @@ public final class AgentPluginImpl implements AgentPlugin {
 
 	/** {@inheritDoc} */
 	public void incMeasure(final String measureType, final double value) {
-		peek().incMeasure(new Measure(value, measureType));
+		peek().incMeasure(measureType, value);
 	}
 
 	/** {@inheritDoc} */
 	public void setMeasure(final String measureType, final double value) {
-		peek().setMeasure(new Measure(value, measureType));
+		peek().setMeasure(measureType, value);
 	}
 
 	/** {@inheritDoc} */
 	public void addMetaData(final String metaDataName, final String value) {
-		peek().addMetaData(new MetaData(metaDataName, value));
+		peek().setMetaData(metaDataName, value);
 	}
 
 	/** {@inheritDoc} */
