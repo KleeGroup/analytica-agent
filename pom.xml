@@ -98,6 +98,16 @@
 	      	<version>1.15</version>
 	      	<scope>test</scope>
     	</dependency>
+    	<dependency>
+	      	<groupId>javax.servlet</groupId>  <!-- pour HttpRequestSpyFilter -->
+			<artifactId>servlet-api</artifactId>
+			<version>2.5</version>
+    	</dependency>
+    	<dependency>
+			<groupId>aopalliance</groupId>  <!-- pour FacadeSpyInterceptor -->
+			<artifactId>aopalliance</artifactId>
+			<version>1.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>
