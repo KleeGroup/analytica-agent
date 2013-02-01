@@ -1,6 +1,8 @@
 package com.kleegroup.analyticaimpl.spies.httprequest;
 
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadMXBean;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -29,8 +31,9 @@ public final class HttpRequestSpyFilter implements Filter {
 
 	private static final String PT_REQUEST = "REQUEST";
 	private static final String ME_RESPONSE_LENGTH = "RESPONSE_LENGTH";
-	private static final String ME_USER_EXCEPTION_PCT = "USER_EXCEPTION_COUNT";
-	private static final String ME_OTHER_EXCEPTION_PCT = "OTHER_EXCEPTION_COUNT";
+	private static final String ME_USER_EXCEPTION_PCT = "USER_EXCEPTION_PCT";
+	private static final String ME_OTHER_EXCEPTION_PCT = "OTHER_EXCEPTION_PCT";
+	private static final String ME_CPU_TIME = "CPU_TIME";
 
 	/**
 	 * Mécanisme de log racine
@@ -78,6 +81,9 @@ public final class HttpRequestSpyFilter implements Filter {
 		final long begin = System.currentTimeMillis();
 		boolean ok = false;
 		//Démarrage de la requête.
+		final ThreadMXBean threadBean = ManagementFactory.getThreadMXBean();
+		final long startCpuTime = threadBean.getThreadCpuTime(Thread.currentThread().getId());
+
 		final String processName = getProcessName(httpRequest);
 		agentManager.startProcess(PT_REQUEST, processName);
 		logRequestStart(httpRequest);
@@ -96,6 +102,11 @@ public final class HttpRequestSpyFilter implements Filter {
 			logRequestException(servletException);
 			throw servletException;
 		} finally {
+			final long endCpuTime = threadBean.getThreadCpuTime(Thread.currentThread().getId());
+			if (startCpuTime != -1 && endCpuTime != -1) {
+				agentManager.setMeasure(ME_CPU_TIME, endCpuTime / 1000000 - startCpuTime / 1000000);
+			}
+
 			agentManager.stopProcess();
 			logRequestFinish(httpRequest, System.currentTimeMillis() - begin, ok);
 		}
