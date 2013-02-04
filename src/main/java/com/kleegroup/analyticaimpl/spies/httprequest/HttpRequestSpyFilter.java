@@ -31,8 +31,8 @@ public final class HttpRequestSpyFilter implements Filter {
 
 	private static final String PT_REQUEST = "REQUEST";
 	private static final String ME_RESPONSE_LENGTH = "RESPONSE_LENGTH";
-	private static final String ME_USER_EXCEPTION_PCT = "USER_EXCEPTION_PCT";
-	private static final String ME_OTHER_EXCEPTION_PCT = "OTHER_EXCEPTION_PCT";
+	private static final String ME_USER_ERROR_PCT = "USER_ERROR_PCT";
+	private static final String ME_OTHER_ERROR_PCT = "OTHER_ERROR_PCT";
 	private static final String ME_CPU_TIME = "CPU_TIME";
 
 	/**
@@ -95,15 +95,16 @@ public final class HttpRequestSpyFilter implements Filter {
 		} catch (final ServletException servletException) {
 			//Permet de compter les erreurs par type.
 			if (isUserException(servletException)) {
-				agentManager.setMeasure(ME_USER_EXCEPTION_PCT, 100);
+				agentManager.setMeasure(ME_USER_ERROR_PCT, 100);
 			} else {
-				agentManager.setMeasure(ME_OTHER_EXCEPTION_PCT, 100);
+				agentManager.setMeasure(ME_OTHER_ERROR_PCT, 100);
 			}
 			logRequestException(servletException);
 			throw servletException;
 		} finally {
 			final long endCpuTime = threadBean.getThreadCpuTime(Thread.currentThread().getId());
 			if (startCpuTime != -1 && endCpuTime != -1) {
+				//On compte le temps CPU de ce thread
 				agentManager.setMeasure(ME_CPU_TIME, endCpuTime / 1000000 - startCpuTime / 1000000);
 			}
 
@@ -141,15 +142,15 @@ public final class HttpRequestSpyFilter implements Filter {
 	 * @return Nom du dossier dans lequel sont classés les résultats
 	 */
 	private String getProcessName(final HttpServletRequest request) {
-		final StringBuilder requestName = new StringBuilder(request.getMethod());
-		requestName.append(" ");
+		final StringBuilder requestName = new StringBuilder();
 		final String pathInfo = request.getPathInfo();
 		if (pathInfo != null) {
 			requestName.append(pathInfo);
 		} else {
 			final String servletPath = request.getServletPath();
-			requestName.append(servletPath.substring(0, servletPath.indexOf('/', 1))).append("/*");
+			requestName.append(servletPath);
 		}
+		requestName.append(" (").append(request.getMethod()).append(")");
 		return requestName.toString();
 	}
 
