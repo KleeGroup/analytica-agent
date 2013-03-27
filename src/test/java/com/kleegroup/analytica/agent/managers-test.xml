@@ -9,7 +9,6 @@
 			</plugin>
 		</manager>
 		<manager name="AgentManager" class="com.kleegroup.analyticaimpl.agent.AgentManagerImpl">
-			<plugin name="AgentPlugin" class="com.kleegroup.analyticaimpl.agent.plugins.AgentPluginImpl" />
 			<plugin name="NetPlugin" class="com.kleegroup.analyticaimpl.agent.plugins.net.direct.DirectNetPlugin" />
 		</manager>
 	</module>

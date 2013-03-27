@@ -17,12 +17,15 @@
  */
 package com.kleegroup.analyticaimpl.agent;
 
+import java.util.Stack;
+
 import javax.inject.Inject;
 
 import kasper.kernel.util.Assertion;
 
 import com.kleegroup.analytica.agent.AgentManager;
 import com.kleegroup.analytica.core.KProcess;
+import com.kleegroup.analytica.core.KProcessBuilder;
 import com.kleegroup.analyticaimpl.agent.plugins.net.NetPlugin;
 
 /**
@@ -33,47 +36,102 @@ import com.kleegroup.analyticaimpl.agent.plugins.net.NetPlugin;
  * @version $Id: AgentManagerImpl.java,v 1.7 2012/03/29 08:48:19 npiedeloup Exp $
  */
 public final class AgentManagerImpl implements AgentManager {
-	private final AgentPlugin agentPlugin;
 	private final NetPlugin netPlugin;
+	/**
+	 * Processus bindé sur le thread courant. Le processus , recoit les notifications des sondes placées dans le code de
+	 * l'application pendant le traitement d'une requête (thread).
+	 */
+	private static final ThreadLocal<Stack<KProcessBuilder>> THREAD_LOCAL_PROCESS = new ThreadLocal<Stack<KProcessBuilder>>();
+
+	/**
+	 * Retourne le premier élément de la pile (sans le retirer).
+	 * @return Premier élément de la pile
+	 */
+	private static KProcessBuilder peek() {
+		return getStack().peek();
+	}
+
+	/**
+	 * Retire le premier élément de la pile.
+	 * @return Premier élément de la pile
+	 */
+	private static KProcessBuilder pop() {
+		return getStack().pop();
+	}
+
+	private static Stack<KProcessBuilder> getStack() {
+		final Stack<KProcessBuilder> stack = THREAD_LOCAL_PROCESS.get();
+		if (stack == null) {
+			throw new IllegalArgumentException("Pile non initialisée : startProcess()");
+		}
+		return stack;
+	}
+
+	private static void push(final KProcessBuilder processBuilder) {
+		Stack<KProcessBuilder> stack = THREAD_LOCAL_PROCESS.get();
+		if (stack == null) {
+			stack = new Stack<KProcessBuilder>();
+			THREAD_LOCAL_PROCESS.set(stack);
+		}
+		//---------------------------------------------------------------------
+		Assertion.invariant(stack.size() < 100, "La pile des KProcess atteind une profondeur de 100, il est probable qu'une fermeture de KProcess ait été oubliée.\nStack:{0}", stack);
+		//---------------------------------------------------------------------
+		stack.push(processBuilder);
+	}
 
 	/**
 	 * Constructeur.
-	 * @param agentPlugin Plugin de collecte
 	 * @param netPlugin Plugin de communication
 	 */
 	@Inject
-	public AgentManagerImpl(final AgentPlugin agentPlugin, final NetPlugin netPlugin) {
+	public AgentManagerImpl(final NetPlugin netPlugin) {
 		super();
-		Assertion.notNull(agentPlugin);
 		Assertion.notNull(netPlugin);
 		//-----------------------------------------------------------------
-		this.agentPlugin = agentPlugin;
 		this.netPlugin = netPlugin;
 	}
 
 	/** {@inheritDoc} */
 	public void startProcess(final String type, final String name) {
-		agentPlugin.startProcess(type, name);
+		final KProcessBuilder processBuilder = new KProcessBuilder(type, name);
+		push(processBuilder);
 	}
 
 	/** {@inheritDoc} */
 	public void incMeasure(final String measureType, final double value) {
-		agentPlugin.incMeasure(measureType, value);
+		peek().incMeasure(measureType, value);
 	}
 
 	/** {@inheritDoc} */
 	public void setMeasure(final String measureType, final double value) {
-		agentPlugin.setMeasure(measureType, value);
+		peek().setMeasure(measureType, value);
 	}
 
 	/** {@inheritDoc} */
 	public void addMetaData(final String metaDataName, final String value) {
-		agentPlugin.addMetaData(metaDataName, value);
+		peek().setMetaData(metaDataName, value);
+	}
+
+	/**
+	* Termine le process courant.
+	* Le processus courant devient alors le processus parent le cas échéant.
+	* @return Processus uniquement dans le cas ou c'e'st le processus parent.
+	*/
+	private KProcess doStopProcess() {
+		final KProcess process = pop().build();
+		if (getStack().isEmpty()) {
+			//On est au processus racine on le collecte
+			THREAD_LOCAL_PROCESS.remove(); //Et on le retire du ThreadLocal
+			return process;
+		}
+		peek().addSubProcess(process);
+		//On n'est pas dans le cas de la racine/selon le contrat on renvoie null
+		return null;
 	}
 
 	/** {@inheritDoc} */
 	public void stopProcess() {
-		final KProcess process = agentPlugin.stopProcess();
+		final KProcess process = doStopProcess();
 		if (process != null) {
 			netPlugin.add(process);
 		}
