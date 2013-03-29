@@ -37,6 +37,19 @@ import com.kleegroup.analyticaimpl.agent.plugins.net.NetPlugin;
  */
 public final class AgentManagerImpl implements AgentManager {
 	private final NetPlugin netPlugin;
+
+	/**
+	 * Constructeur.
+	 * @param netPlugin Plugin de communication
+	 */
+	@Inject
+	public AgentManagerImpl(final NetPlugin netPlugin) {
+		super();
+		Assertion.notNull(netPlugin);
+		//-----------------------------------------------------------------
+		this.netPlugin = netPlugin;
+	}
+
 	/**
 	 * Processus bindé sur le thread courant. Le processus , recoit les notifications des sondes placées dans le code de
 	 * l'application pendant le traitement d'une requête (thread).
@@ -77,18 +90,6 @@ public final class AgentManagerImpl implements AgentManager {
 		Assertion.invariant(stack.size() < 100, "La pile des KProcess atteind une profondeur de 100, il est probable qu'une fermeture de KProcess ait été oubliée.\nStack:{0}", stack);
 		//---------------------------------------------------------------------
 		stack.push(processBuilder);
-	}
-
-	/**
-	 * Constructeur.
-	 * @param netPlugin Plugin de communication
-	 */
-	@Inject
-	public AgentManagerImpl(final NetPlugin netPlugin) {
-		super();
-		Assertion.notNull(netPlugin);
-		//-----------------------------------------------------------------
-		this.netPlugin = netPlugin;
 	}
 
 	/** {@inheritDoc} */
