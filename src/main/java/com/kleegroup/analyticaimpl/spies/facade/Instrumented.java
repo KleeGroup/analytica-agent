@@ -5,8 +5,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import kasper.kernel.lang.Intercept;
-
 /**
  * Annotation à poser sur les méthodes des implémentations des services.
  * L'utilisation de cette annotation est optionnelle. 
@@ -18,7 +16,6 @@ import kasper.kernel.lang.Intercept;
  */
 @Target({ ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
-@Intercept
 public @interface Instrumented {
 	// vide
 }
