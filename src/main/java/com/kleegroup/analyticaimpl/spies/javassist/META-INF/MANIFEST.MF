@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Ant-Version: Apache Ant 1.7.1
+Created-By: 14.3-b01 (Sun Microsystems Inc.)
+Built-By: NPi2Loup
+Premain-Class: com.kleegroup.analyticaimpl.spies.asm.AnalyticaSpyAgent
+Agent-Class: com.kleegroup.analyticaimpl.spies.asm.AnalyticaSpyAgent
+
+Name: AnalyticaSpyAgent
+Implementation-Title: AnalyticaSpyAgent
+Implementation-Vendor: KleeGroup
+Implementation-Version: 2013-02-20
+
