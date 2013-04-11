@@ -15,10 +15,8 @@
  * You should have received a copy of the GNU General Public License along with this program;
  * if not, see <http://www.gnu.org/licenses>
  */
-package com.kleegroup.analytica.agent.remote;
+package com.kleegroup.analytica.agent;
 
-import java.io.IOException;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -30,17 +28,14 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
-import javax.ws.rs.core.UriBuilder;
 
 import kasper.AbstractTestCaseJU4;
 import kasper.kernel.util.Assertion;
 
 import org.apache.log4j.Logger;
-import org.glassfish.grizzly.http.server.HttpServer;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.kleegroup.analytica.agent.AgentManager;
 import com.kleegroup.analytica.hcube.cube.DataKey;
 import com.kleegroup.analytica.hcube.cube.DataType;
 import com.kleegroup.analytica.hcube.cube.MetricKey;
@@ -50,18 +45,14 @@ import com.kleegroup.analytica.hcube.query.Query;
 import com.kleegroup.analytica.hcube.query.QueryBuilder;
 import com.kleegroup.analytica.server.ServerManager;
 import com.kleegroup.analytica.server.data.Data;
-import com.sun.jersey.api.container.grizzly2.GrizzlyServerFactory;
-import com.sun.jersey.api.core.PackagesResourceConfig;
-import com.sun.jersey.api.core.ResourceConfig;
 
 /**
  * Cas de Test JUNIT de l'API Analytics.
- * Dans le cas ou le serveur n'est pas toujours joignable.
  * 
  * @author pchretien, npiedeloup
- * @version $Id: AgentManagerOutOfSyncTest.java,v 1.2 2012/06/14 13:52:26 npiedeloup Exp $
+ * @version $Id: AgentManagerTest.java,v 1.3 2012/03/29 08:48:19 npiedeloup Exp $
  */
-public final class AgentManagerOutOfSyncTest extends AbstractTestCaseJU4 {
+public abstract class AbstractAgentManagerTest extends AbstractTestCaseJU4 {
 
 	/** Base de données gérant les articles envoyés dans une commande. */
 	private static final String PROCESS1_TYPE = "ARTICLE";
@@ -74,38 +65,6 @@ public final class AgentManagerOutOfSyncTest extends AbstractTestCaseJU4 {
 	private AgentManager agentManager;
 	@Inject
 	private ServerManager serverManager;
-
-	private static URI getBaseURI() {
-		return UriBuilder.fromUri("http://localhost/").port(9998).build();
-	}
-
-	public static final URI BASE_URI = getBaseURI();
-
-	protected static HttpServer startServer() throws IOException {
-		System.out.println("Starting grizzly...");
-		final ResourceConfig rc = new PackagesResourceConfig("com.kleegroup.analyticaimpl.server.plugins.api.rest");
-		rc.getProperties().put(ResourceConfig.PROPERTY_CONTAINER_REQUEST_FILTERS, com.sun.jersey.api.container.filter.GZIPContentEncodingFilter.class.getName());
-		rc.getProperties().put(ResourceConfig.PROPERTY_CONTAINER_RESPONSE_FILTERS, com.sun.jersey.api.container.filter.GZIPContentEncodingFilter.class.getName());
-		return GrizzlyServerFactory.createHttpServer(BASE_URI, rc);
-	}
-
-	/**
-	 * Initialisation du test pour implé spécifique.
-	 * @throws Exception Erreur
-	 */
-	@Override
-	protected void doSetUp() throws Exception {
-
-	}
-
-	/**
-	 * Finalisation du test pour implé spécifique.
-	 * @throws Exception Erreur
-	 */
-	@Override
-	protected void doTearDown() throws Exception {
-
-	}
 
 	//-------------------------------------------------------------------------
 
@@ -165,10 +124,9 @@ public final class AgentManagerOutOfSyncTest extends AbstractTestCaseJU4 {
 	 * Chaque article coute 10€. 
 	 * Les frais d'envoi sont de 5€.
 	 * @throws InterruptedException Interruption
-	 * @throws IOException 
 	 */
 	@Test
-	public void testMultiThread() throws InterruptedException, IOException {
+	public void testMultiThread() throws InterruptedException {
 		final long start = System.currentTimeMillis();
 		final ExecutorService workersPool = Executors.newFixedThreadPool(20);
 
@@ -180,19 +138,12 @@ public final class AgentManagerOutOfSyncTest extends AbstractTestCaseJU4 {
 		Assertion.invariant(workersPool.isTerminated(), "Les threads ne sont pas tous stoppés");
 
 		log.trace("elapsed = " + (System.currentTimeMillis() - start));
-
-		final HttpServer httpServer = startServer();
-		try {
-			Thread.sleep(2000);
-			printDatas("MONTANT");
-		} finally {
-			httpServer.stop();
-		}
+		printDatas("MONTANT");
 		//System.out.println(analyticaUIManager.toString(serverManager.getProcesses()));
 	}
 
 	//	@Test
-	//	public void testMetaData() throws IOException, InterruptedException {
+	//	public void testMetaData() {
 	//		agentManager.startProcess("TEST_META_DATA", "Process1");
 	//		agentManager.addMetaData("TEST_META_DATA_1", "MD1");
 	//		agentManager.stopProcess();
@@ -201,25 +152,19 @@ public final class AgentManagerOutOfSyncTest extends AbstractTestCaseJU4 {
 	//		agentManager.addMetaData("TEST_META_DATA_2", "MD3");
 	//		agentManager.stopProcess();
 	//		//---------------------------------------------------------------------
-	//		Thread.sleep(2000);
-	//		final HttpServer httpServer = startServer();
-	//		try {
-	//			final DataKey[] metrics = new DataKey[] { new DataKey("TEST_META_DATA_1", DataType.metaData), new DataKey("TEST_META_DATA_2", DataType.metaData) };
+	//		final DataKey[] metrics = new DataKey[] { new DataKey("TEST_META_DATA_1", DataType.metaData), new DataKey("TEST_META_DATA_2", DataType.metaData) };
 	//
-	//			final List<Data> datas = getCubeToday("TEST_META_DATA", metrics);
-	//			Set<String> value = getMetaData(datas, "TEST_META_DATA_1");
-	//			Assert.assertTrue("Le cube ne contient pas la metaData attendue : MD1\n" + datas, value.contains("MD1"));
-	//			Assert.assertTrue("Le cube ne contient pas la metaData attendue : MD2\n" + datas, value.contains("MD2"));
-	//			//---------------------------------------------------------------------
-	//			value = getMetaData(datas, "TEST_META_DATA_2");
-	//			Assert.assertTrue("Le cube ne contient pas la metaData attendue\n" + datas, value.contains("MD3"));
-	//		} finally {
-	//			httpServer.stop();
-	//		}
+	//		final List<Data> datas = getCubeToday("TEST_META_DATA", metrics);
+	//		Set<String> value = getMetaData(datas, "TEST_META_DATA_1");
+	//		Assert.assertTrue("Le cube ne contient pas la metaData attendue : MD1\n" + datas, value.contains("MD1"));
+	//		Assert.assertTrue("Le cube ne contient pas la metaData attendue : MD2\n" + datas, value.contains("MD2"));
+	//		//---------------------------------------------------------------------
+	//		value = getMetaData(datas, "TEST_META_DATA_2");
+	//		Assert.assertTrue("Le cube ne contient pas la metaData attendue\n" + datas, value.contains("MD3"));
 	//	}
 
 	@Test
-	public void testMean() throws IOException, InterruptedException {
+	public void testMean() {
 		agentManager.startProcess("TEST_MEAN1", "Process1");
 		agentManager.incMeasure("TEST_MEAN_VALUE", 100);
 		agentManager.stopProcess();
@@ -227,20 +172,14 @@ public final class AgentManagerOutOfSyncTest extends AbstractTestCaseJU4 {
 		agentManager.incMeasure("TEST_MEAN_VALUE", 50);
 		agentManager.stopProcess();
 		//---------------------------------------------------------------------
-		Thread.sleep(2000);
-		final HttpServer httpServer = startServer();
-		try {
-			final DataKey[] metrics = new DataKey[] { new DataKey(new MetricKey("TEST_MEAN_VALUE"), DataType.mean) };
-			final List<Data> datas = getCubeToday("TEST_MEAN1", metrics);
-			final double valueMean = getMean(datas, "TEST_MEAN_VALUE");
-			Assert.assertEquals("Le cube ne contient pas la moyenne attendue\n" + datas, 75.0, valueMean, 0);
-		} finally {
-			httpServer.stop();
-		}
+		final DataKey[] metrics = new DataKey[] { new DataKey(new MetricKey("TEST_MEAN_VALUE"), DataType.mean) };
+		final List<Data> datas = getCubeToday("TEST_MEAN1", metrics);
+		final double valueMean = getMean(datas, "TEST_MEAN_VALUE");
+		Assert.assertEquals("Le cube ne contient pas la moyenne attendue\n" + datas, 75.0, valueMean, 0);
 	}
 
 	@Test
-	public void testMeanZero() throws InterruptedException, IOException {
+	public void testMeanZero() {
 		agentManager.startProcess("TEST_MEAN2", "Process1");
 		agentManager.incMeasure("TEST_MEAN_VALUE", 90);
 		agentManager.stopProcess();
@@ -248,22 +187,15 @@ public final class AgentManagerOutOfSyncTest extends AbstractTestCaseJU4 {
 		//TEST_MEAN_VALUE = 0 implicite
 		agentManager.stopProcess();
 		//---------------------------------------------------------------------
-
-		Thread.sleep(2000);
-		final HttpServer httpServer = startServer();
-		try {
-			final DataKey[] metrics = new DataKey[] { new DataKey(new MetricKey("TEST_MEAN_VALUE"), DataType.mean) };
-			final List<Data> datas = getCubeToday("TEST_MEAN2", metrics);
-			final double valueMean = getMean(datas, "TEST_MEAN_VALUE");
-			Assert.assertEquals("Le cube ne contient pas la moyenne attendue\n" + datas, 45.0, valueMean, 0);
-		} finally {
-			httpServer.stop();
-		}
+		final DataKey[] metrics = new DataKey[] { new DataKey(new MetricKey("TEST_MEAN_VALUE"), DataType.mean) };
+		final List<Data> datas = getCubeToday("TEST_MEAN2", metrics);
+		final double valueMean = getMean(datas, "TEST_MEAN_VALUE");
+		Assert.assertEquals("Le cube ne contient pas la moyenne attendue\n" + datas, 45.0, valueMean, 0);
 	}
 
 	private double getMean(final List<Data> datas, final String measureName) {
 		for (final Data data : datas) {
-			if (data.getKey().getType() == DataType.mean && measureName.equals(data.getKey().getMetricKey().id())) {
+			if (data.getKey().getType() == DataType.mean && ("metric:" + measureName).equals(data.getKey().getMetricKey().id())) {
 				return data.getValue();
 			}
 		}

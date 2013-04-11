@@ -8,7 +8,7 @@ import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 
 import com.kleegroup.analytica.agent.AgentManager;
-import com.kleegroup.analytica.server.data.WhatDimension;
+import com.kleegroup.analytica.hcube.dimension.WhatDimension;
 
 /**
  * Intercepteur pour la gestion des Process au niveau de la couche service.

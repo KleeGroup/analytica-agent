@@ -11,7 +11,7 @@ import kasper.kernel.util.Assertion;
 import kasper.kernel.util.ClassUtil;
 
 import com.kleegroup.analytica.agent.AgentManager;
-import com.kleegroup.analytica.server.data.WhatDimension;
+import com.kleegroup.analytica.hcube.dimension.WhatDimension;
 
 /**
  * Monitoring de facade par Proxy automatique sur les interfaces.

@@ -21,7 +21,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
-import com.kleegroup.analytica.agent.AgentManagerTest;
+import com.kleegroup.analytica.agent.local.LocalAgentManagerTest;
 
 /**
  * Test de l'implémentation standard.
@@ -30,7 +30,7 @@ import com.kleegroup.analytica.agent.AgentManagerTest;
  * @version $Id: TestSuite.java,v 1.4 2012/03/22 18:14:29 pchretien Exp $
  */
 @RunWith(Suite.class)
-@SuiteClasses({ AgentManagerTest.class //
+@SuiteClasses({ LocalAgentManagerTest.class //
 })
 public final class TestSuite extends junit.framework.TestSuite {
 	//
