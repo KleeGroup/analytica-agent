@@ -20,7 +20,6 @@ import javassist.CtField;
 import javassist.NotFoundException;
 import kasper.kernel.exception.KRuntimeException;
 
-import com.kleegroup.analytica.hcube.dimension.WhatDimension;
 import com.kleegroup.analyticaimpl.spies.javassist.matcher.CompositeMatcher;
 import com.kleegroup.analyticaimpl.spies.javassist.matcher.Matcher;
 
@@ -149,7 +148,7 @@ final class AnalyticaSpyTransformer implements ClassFileTransformer {
 
 	private void instrumentMethod(final CtBehavior method, final CtClass clThrowable) throws NotFoundException, CannotCompileException {
 		final StringBuilder sbBefore = new StringBuilder();
-		sbBefore.append("agentManager.startProcess(\"JAVASSIST\", \"" + method.getDeclaringClass().getName() + WhatDimension.SEPARATOR + method.getName() + "\");");
+		sbBefore.append("agentManager.startProcess(\"JAVASSIST\", \"" + method.getDeclaringClass().getName() + ", \"" + method.getName() + "\");");
 		//sbBefore.append("try {");
 		final StringBuilder sbCatch = new StringBuilder();
 		//sbCatch.append("} catch (final Throwable th) {");

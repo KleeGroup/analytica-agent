@@ -93,8 +93,8 @@ public final class AgentManagerImpl implements AgentManager {
 	}
 
 	/** {@inheritDoc} */
-	public void startProcess(final String type, final String name) {
-		final KProcessBuilder processBuilder = new KProcessBuilder(type, name);
+	public void startProcess(final String type, final String... names) {
+		final KProcessBuilder processBuilder = new KProcessBuilder(type, names);
 		push(processBuilder);
 	}
 

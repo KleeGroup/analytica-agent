@@ -11,7 +11,6 @@ import kasper.kernel.util.Assertion;
 import kasper.kernel.util.ClassUtil;
 
 import com.kleegroup.analytica.agent.AgentManager;
-import com.kleegroup.analytica.hcube.dimension.WhatDimension;
 
 /**
  * Monitoring de facade par Proxy automatique sur les interfaces.
@@ -48,7 +47,7 @@ public final class FacadeSpyProxy implements InvocationHandler {
 
 	/** {@inheritDoc} */
 	public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
-		agentManager.startProcess(facadeType, facadeName + WhatDimension.SEPARATOR + method.getName());
+		agentManager.startProcess(facadeType, facadeName, method.getName());
 		try {
 			return ClassUtil.invoke(object, method, args);
 		} catch (final Throwable th) {

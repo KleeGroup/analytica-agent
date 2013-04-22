@@ -31,9 +31,9 @@ public interface AgentManager extends Manager {
 	 * Enregistre dans le thread courant le démarrage d'un process.
 	 * Doit respecter les règles sur le nom d'un process.
 	 * @param type Type de process
-	 * @param name Nom du process
+	 * @param names Nom du process
 	 */
-	void startProcess(final String type, final String name);
+	void startProcess(final String type, final String... names);
 
 	/**
 	 * Incrémentation d'une mesure du process courant (set si pas présente).

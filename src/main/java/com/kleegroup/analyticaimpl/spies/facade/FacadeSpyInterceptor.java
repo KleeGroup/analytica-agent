@@ -8,7 +8,6 @@ import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 
 import com.kleegroup.analytica.agent.AgentManager;
-import com.kleegroup.analytica.hcube.dimension.WhatDimension;
 
 /**
  * Intercepteur pour la gestion des Process au niveau de la couche service.
@@ -35,7 +34,7 @@ public class FacadeSpyInterceptor implements MethodInterceptor {
 
 	/** {@inheritDoc} */
 	public Object invoke(final MethodInvocation invocation) throws Throwable {
-		agentManager.startProcess(PT_FACADE, invocation.getThis().getClass().getSimpleName() + WhatDimension.SEPARATOR + invocation.getMethod().getName());
+		agentManager.startProcess(PT_FACADE, invocation.getThis().getClass().getSimpleName(), invocation.getMethod().getName());
 		try {
 			return invocation.proceed();
 		} catch (final Throwable th) {
