@@ -3,7 +3,6 @@ package com.kleegroup.analyticaimpl.spies.javassist;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -12,18 +11,17 @@ import javax.inject.Inject;
 import kasper.AbstractTestCaseJU4;
 import kasper.kernel.exception.KRuntimeException;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.kleegroup.analytica.agent.AgentManager;
-import com.kleegroup.analytica.hcube.cube.DataKey;
-import com.kleegroup.analytica.hcube.cube.DataType;
-import com.kleegroup.analytica.hcube.cube.MetricKey;
-import com.kleegroup.analytica.hcube.dimension.TimeDimension;
-import com.kleegroup.analytica.hcube.dimension.WhatDimension;
-import com.kleegroup.analytica.hcube.query.Query;
-import com.kleegroup.analytica.hcube.query.QueryBuilder;
+import com.kleegroup.analytica.hcube.cube.HCube;
+import com.kleegroup.analytica.hcube.cube.HMetric;
+import com.kleegroup.analytica.hcube.cube.HMetricKey;
+import com.kleegroup.analytica.hcube.dimension.HCategory;
+import com.kleegroup.analytica.hcube.dimension.HTimeDimension;
+import com.kleegroup.analytica.hcube.query.HQuery;
 import com.kleegroup.analytica.server.ServerManager;
-import com.kleegroup.analytica.server.data.Data;
 import com.kleegroup.analyticaimpl.spies.javassist.agentloader.VirtualMachineAgentLoader;
 
 /**
@@ -90,31 +88,50 @@ public final class AnalyticaSpyAgentTest extends AbstractTestCaseJU4 {
 	@Test
 	public void testJavassistWork1s() {
 		new TestAnalyse().work1s();
-		printDatas("DURATION");
+		flushAgentToServer();
+		checkMetricCount("duration", 1, "JAVASSIST", "com.kleegroup.analyticaimpl.spies.javassist.TestAnalyse", "work1s");
 	}
 
 	@Test
 	public void testJavassistWorkError() {
-		new TestAnalyse().workError();
-		printDatas("DURATION");
+		try {
+			new TestAnalyse().workError();
+			Assert.fail("workError n'a pas lancée d'exception");
+		} catch (final Exception e) {
+			//on veut vérifier que le process est renseigné après l'exception
+		}
+		flushAgentToServer();
+		checkMetricCount("duration", 1, "JAVASSIST", "com.kleegroup.analyticaimpl.spies.javassist.TestAnalyse", "workError");
 	}
 
-	void printDatas(final String... metrics) {
-		final List<DataKey> keys = new ArrayList<DataKey>(metrics.length * 2);
-		for (final String metric : metrics) {
-			keys.add(new DataKey(new MetricKey(metric), DataType.count));
-			keys.add(new DataKey(new MetricKey(metric), DataType.mean));
-		}
-		final Query query = new QueryBuilder(keys) //
-				.on(TimeDimension.Day).from(new Date()).to(new Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000)) //
-				.on(WhatDimension.SimpleName).with("/") //
+	protected void flushAgentToServer() {
+		//rien en local pas d'attente
+	}
+
+	private HMetric getMetricInTodayCube(final String metricName, final String type, final String... subTypes) {
+		final HQuery query = serverManager.createQueryBuilder() //
+				.on(HTimeDimension.Day).from(new Date()).to(new Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000)) //
+				.with(type, subTypes) //
 				.build();
-
-		//Accès au serveur pour valider les résultats injectés
-		final List<Data> datas = serverManager.getData(query);
-		for (final Data data : datas) {
-			System.out.println(data);
-		}
+		final HCategory category = new HCategory(type, subTypes);
+		final List<HCube> cubes = serverManager.execute(query).getSerie(category).getCubes();
+		Assert.assertFalse("Le cube [" + category + "] n'apparait pas dans les cubes", cubes.isEmpty());
+		final HCube firstCube = cubes.get(0);
+		final HMetricKey metricKey = new HMetricKey(metricName, false);
+		Assert.assertTrue("Le cube [" + firstCube + "] ne contient pas la metric: " + metricName, firstCube.getMetric(metricKey) != null);
+		return firstCube.getMetric(metricKey);
 	}
+
+	private void checkMetricCount(final String metricName, final long countExpected, final String type, final String... subTypes) {
+		final HCategory category = new HCategory(type, subTypes);
+		final HMetric metric = getMetricInTodayCube(metricName, type, subTypes);
+		Assert.assertEquals("Le cube [" + category + "] n'est pas peuplé correctement", countExpected, metric.getCount(), 0);
+	}
+
+	//	private void checkMetricMean(final String metricName, final double meanExpected, final String type, final String... subTypes) {
+	//		final HCategory category = new HCategory(type, subTypes);
+	//		final HMetric metric = getMetricInTodayCube(metricName, type, subTypes);
+	//		Assert.assertEquals("Le cube [" + category + "] n'est pas peuplé correctement", meanExpected, metric.getMean(), 0);
+	//	}
 
 }

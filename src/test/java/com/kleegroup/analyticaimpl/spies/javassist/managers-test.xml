@@ -1,16 +1,20 @@
 <?xml version =	'1.0' encoding = 'ISO-8859-1'?>
 <modules>
 	<module name="anlaytica">
-		<manager name="ServerManager" class="com.kleegroup.analyticaimpl.server.ServerManagerImpl">
-			<plugin name="ProcessStorePlugin" class="com.kleegroup.analyticaimpl.server.plugins.processstore.memory.MemoryProcessStorePlugin" />
-			<plugin name="ProcessEncoderPlugin" class="com.kleegroup.analyticaimpl.server.plugins.processencoder.standard.StandardProcessEncoderPlugin">
-			</plugin>
-			<plugin name="CubeStorePlugin" class="com.kleegroup.analyticaimpl.server.plugins.cubestore.memory.MemoryCubeStorePlugin">
-			</plugin>
-		</manager>
 		<manager name="AgentManager" class="com.kleegroup.analyticaimpl.agent.AgentManagerImpl">
-			<plugin name="AgentPlugin" class="com.kleegroup.analyticaimpl.agent.plugins.AgentPluginImpl" />
 			<plugin name="NetPlugin" class="com.kleegroup.analyticaimpl.agent.plugins.net.direct.DirectNetPlugin" />
+		</manager>
+		
+		<manager name="ServerManager" class="com.kleegroup.analyticaimpl.server.ServerManagerImpl" >
+	       <plugin name="ProcessStorePlugin" class="com.kleegroup.analyticaimpl.server.plugins.processstore.berkeley.BerkeleyProcessStorePlugin">
+	        	<param name="dbPath" value="d:/analytica/db-test" />
+	        </plugin>
+	         <!-- <plugin name="ProcessEncoderPlugin" class="com.kleegroup.analyticaimpl.server.plugins.processencoder.standard.StandardProcessEncoderPlugin">
+	        </plugin>  -->       
+	     </manager>
+	     <manager name="HCubeManager" class="com.kleegroup.analyticaimpl.hcube.HCubeManagerImpl">
+				<plugin name="CubeStorePlugin" class="com.kleegroup.analyticaimpl.hcube.plugins.store.memory.MemoryCubeStorePlugin">
+				</plugin>
 		</manager>
 	</module>
 </modules>

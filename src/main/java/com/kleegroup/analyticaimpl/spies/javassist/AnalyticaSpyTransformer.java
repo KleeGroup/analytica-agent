@@ -98,8 +98,11 @@ final class AnalyticaSpyTransformer implements ClassFileTransformer {
 			// @see ClassFileTransformer : Returning null means that no transformation was done.
 			return null;
 		}
+		final byte[] newClass = instrumentClass(className.replace('/', '.'), classBeingRedefined, classfileBuffer);
 
-		return instrumentClass(className.replace('/', '.'), classBeingRedefined, classfileBuffer);
+		System.out.println("Analytica instrument " + className + " ");
+
+		return newClass;
 	}
 
 	private boolean isIgnoredClass(final String className) {
@@ -148,7 +151,8 @@ final class AnalyticaSpyTransformer implements ClassFileTransformer {
 
 	private void instrumentMethod(final CtBehavior method, final CtClass clThrowable) throws NotFoundException, CannotCompileException {
 		final StringBuilder sbBefore = new StringBuilder();
-		sbBefore.append("agentManager.startProcess(\"JAVASSIST\", \"" + method.getDeclaringClass().getName() + ", \"" + method.getName() + "\");");
+		sbBefore.append("final String[] subTypes = {\"" + method.getDeclaringClass().getName() + "\", \"" + method.getName() + "\"};");
+		sbBefore.append("agentManager.startProcess(\"JAVASSIST\", subTypes);");
 		//sbBefore.append("try {");
 		final StringBuilder sbCatch = new StringBuilder();
 		//sbCatch.append("} catch (final Throwable th) {");
