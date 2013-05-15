@@ -28,23 +28,22 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
+import javax.management.Query;
+import javax.xml.crypto.Data;
 
 import kasper.AbstractTestCaseJU4;
+import kasper.kernel.metamodel.DataType;
 import kasper.kernel.util.Assertion;
 
 import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.kleegroup.analytica.hcube.cube.DataKey;
-import com.kleegroup.analytica.hcube.cube.DataType;
-import com.kleegroup.analytica.hcube.cube.MetricKey;
-import com.kleegroup.analytica.hcube.dimension.TimeDimension;
-import com.kleegroup.analytica.hcube.dimension.WhatDimension;
-import com.kleegroup.analytica.hcube.query.Query;
-import com.kleegroup.analytica.hcube.query.QueryBuilder;
+import com.kleegroup.analytica.hcube.dimension.HTimeDimension;
+import com.kleegroup.analytica.hcube.query.HQuery;
+import com.kleegroup.analytica.hcube.query.HQueryBuilder;
+import com.kleegroup.analytica.hcube.result.HResult;
 import com.kleegroup.analytica.server.ServerManager;
-import com.kleegroup.analytica.server.data.Data;
 
 /**
  * Cas de Test JUNIT de l'API Analytics.
@@ -213,15 +212,13 @@ public abstract class AbstractAgentManagerTest extends AbstractTestCaseJU4 {
 		return metaDatas;
 	}
 
-	private List<Data> getCubeToday(final String module, final DataKey... metrics) {
-		final Query query = new QueryBuilder(asList(metrics)) //
-				.on(TimeDimension.Minute).from(new Date(System.currentTimeMillis() - 24 * 60 * 60 * 1000)).to(new Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000)) //
-				.on(WhatDimension.Module).with(WhatDimension.SEPARATOR + module) //
+	private HResult getCubeToday(final String module) {
+		final HQuery query = new HQueryBuilder().on(HTimeDimension.Minute).from(new Date(System.currentTimeMillis() - 24 * 60 * 60 * 1000)).to(new Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000)) //
+				.with(module) //
 				.build();
 
-		serverManager.store50NextProcessesAsCube();
 		//Accès au serveur pour valider les résultats injectés
-		final List<Data> datas = serverManager.getData(query);
+		final HResult datas = serverManager.execute(query);
 		return datas;
 	}
 
