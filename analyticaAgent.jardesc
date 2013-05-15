@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="WINDOWS-1252" standalone="no"?>
+<jardesc>
+    <jar path="kasper-analytica-agent/src/test/java/com/kleegroup/analytica/agent/analyticaAgent-1.0.0.jar"/>
+    <options buildIfNeeded="true" compress="true" descriptionLocation="/kasper-analytica-agent/analyticaAgent.jardesc" exportErrors="false" exportWarnings="true" includeDirectoryEntries="false" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
+    <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
+    <selectedProjects/>
+    <manifest generateManifest="false" manifestLocation="/kasper-analytica-agent/src/main/resources/META-INF/MANIFEST.MF" manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
+        <sealing sealJar="true">
+            <packagesToSeal/>
+            <packagesToUnSeal/>
+        </sealing>
+    </manifest>
+    <selectedElements exportClassFiles="true" exportJavaFiles="true" exportOutputFolder="false">
+        <folder path="/kasper-analytica-agent/src/main/resources/META-INF"/>
+        <javaElement handleIdentifier="=kasper-analytica-agent/src\/main\/java"/>
+    </selectedElements>
+</jardesc>
