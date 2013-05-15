@@ -26,5 +26,10 @@ import com.kleegroup.analytica.agent.AbstractAgentManagerTest;
  * @version $Id: AgentManagerTest.java,v 1.3 2012/03/29 08:48:19 npiedeloup Exp $
  */
 public final class LocalAgentManagerTest extends AbstractAgentManagerTest {
-	//tout est dans AbstractAgentManagerTest
+
+	/** {@inheritDoc} */
+	@Override
+	protected void flushAgentToServer() {
+		//rien en local pas de flush
+	}
 }

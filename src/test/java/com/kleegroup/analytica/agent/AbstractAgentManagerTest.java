@@ -17,32 +17,27 @@
  */
 package com.kleegroup.analytica.agent;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
-import javax.management.Query;
-import javax.xml.crypto.Data;
 
 import kasper.AbstractTestCaseJU4;
-import kasper.kernel.metamodel.DataType;
 import kasper.kernel.util.Assertion;
 
 import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.kleegroup.analytica.hcube.cube.HCube;
+import com.kleegroup.analytica.hcube.cube.HMetric;
+import com.kleegroup.analytica.hcube.cube.HMetricKey;
+import com.kleegroup.analytica.hcube.dimension.HCategory;
 import com.kleegroup.analytica.hcube.dimension.HTimeDimension;
 import com.kleegroup.analytica.hcube.query.HQuery;
-import com.kleegroup.analytica.hcube.query.HQueryBuilder;
-import com.kleegroup.analytica.hcube.result.HResult;
 import com.kleegroup.analytica.server.ServerManager;
 
 /**
@@ -68,6 +63,21 @@ public abstract class AbstractAgentManagerTest extends AbstractTestCaseJU4 {
 	//-------------------------------------------------------------------------
 
 	/**
+	 * Test simple avec un compteur. 
+	 * Test sur l'envoi d'un process 
+	 * Chaque article coute 10€.
+	 */
+	@Test
+	public void testOneProcess() {
+		agentManager.startProcess(PROCESS1_TYPE, "1 Article 25 Kg");
+		agentManager.setMeasure("POIDS", 25);
+		agentManager.incMeasure("MONTANT", 10);
+		agentManager.stopProcess();
+		flushAgentToServer();
+		checkMetricCount("MONTANT", 1, PROCESS1_TYPE);
+	}
+
+	/**
 	 * Test simple avec deux compteurs. 
 	 * Test sur l'envoi de 1000 articles d'un poids de 25 kg. 
 	 * Chaque article coute 10€.
@@ -75,7 +85,8 @@ public abstract class AbstractAgentManagerTest extends AbstractTestCaseJU4 {
 	@Test
 	public void test1000Articles() {
 		doNArticles(1000);
-		printDatas("MONTANT");
+		flushAgentToServer();
+		checkMetricCount("MONTANT", 1000, PROCESS1_TYPE);
 	}
 
 	/**
@@ -94,15 +105,6 @@ public abstract class AbstractAgentManagerTest extends AbstractTestCaseJU4 {
 	}
 
 	/**
-	 * Même test après désactivation.
-	 */
-	@Test
-	public void testOff() {
-		doNArticles(50);
-		printDatas("MONTANT");
-	}
-
-	/**
 	 * Test de récursivité. 
 	 * Test sur l'envoi de 500 commandes contenant chacune 500 articles d'un poids de 25 kg. 
 	 * Chaque article coute 10€. 
@@ -113,7 +115,9 @@ public abstract class AbstractAgentManagerTest extends AbstractTestCaseJU4 {
 		final long start = System.currentTimeMillis();
 		doNCommande(5, 15);
 		log.trace("elapsed = " + (System.currentTimeMillis() - start));
-		printDatas("MONTANT");
+		flushAgentToServer();
+		checkMetricCount("MONTANT", 5, PROCESS2_TYPE); //nombre de commande
+		checkMetricCount("MONTANT", 5 * 15, PROCESS1_TYPE); //nombre d'article
 	}
 
 	/**
@@ -137,112 +141,39 @@ public abstract class AbstractAgentManagerTest extends AbstractTestCaseJU4 {
 		Assertion.invariant(workersPool.isTerminated(), "Les threads ne sont pas tous stoppés");
 
 		log.trace("elapsed = " + (System.currentTimeMillis() - start));
-		printDatas("MONTANT");
-		//System.out.println(analyticaUIManager.toString(serverManager.getProcesses()));
+
+		flushAgentToServer();
+		checkMetricCount("MONTANT", 50, PROCESS2_TYPE); //nombre de commande
+		checkMetricCount("MONTANT", 50 * 5, PROCESS1_TYPE); //nombre d'article
 	}
 
-	//	@Test
-	//	public void testMetaData() {
-	//		agentManager.startProcess("TEST_META_DATA", "Process1");
-	//		agentManager.addMetaData("TEST_META_DATA_1", "MD1");
-	//		agentManager.stopProcess();
-	//		agentManager.startProcess("TEST_META_DATA", "Process2");
-	//		agentManager.addMetaData("TEST_META_DATA_1", "MD2");
-	//		agentManager.addMetaData("TEST_META_DATA_2", "MD3");
-	//		agentManager.stopProcess();
-	//		//---------------------------------------------------------------------
-	//		final DataKey[] metrics = new DataKey[] { new DataKey("TEST_META_DATA_1", DataType.metaData), new DataKey("TEST_META_DATA_2", DataType.metaData) };
-	//
-	//		final List<Data> datas = getCubeToday("TEST_META_DATA", metrics);
-	//		Set<String> value = getMetaData(datas, "TEST_META_DATA_1");
-	//		Assert.assertTrue("Le cube ne contient pas la metaData attendue : MD1\n" + datas, value.contains("MD1"));
-	//		Assert.assertTrue("Le cube ne contient pas la metaData attendue : MD2\n" + datas, value.contains("MD2"));
-	//		//---------------------------------------------------------------------
-	//		value = getMetaData(datas, "TEST_META_DATA_2");
-	//		Assert.assertTrue("Le cube ne contient pas la metaData attendue\n" + datas, value.contains("MD3"));
+	protected abstract void flushAgentToServer();
+
+	private HMetric getMetricInTodayCube(final String metricName, final String type, final String... subTypes) {
+		final HQuery query = serverManager.createQueryBuilder() //
+				.on(HTimeDimension.Day).from(new Date()).to(new Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000)) //
+				.with(type, subTypes) //
+				.build();
+		final HCategory category = new HCategory(type, subTypes);
+		final List<HCube> cubes = serverManager.execute(query).getSerie(category).getCubes();
+		Assert.assertFalse("Le cube [" + category + "] n'apparait pas dans les cubes", cubes.isEmpty());
+		final HCube firstCube = cubes.get(0);
+		final HMetricKey metricKey = new HMetricKey(metricName, false);
+		Assert.assertTrue("Le cube [" + firstCube + "] ne contient pas la metric: " + metricName, firstCube.getMetric(metricKey) != null);
+		return firstCube.getMetric(metricKey);
+	}
+
+	private void checkMetricCount(final String metricName, final long countExpected, final String type, final String... subTypes) {
+		final HCategory category = new HCategory(type, subTypes);
+		final HMetric metric = getMetricInTodayCube(metricName, type, subTypes);
+		Assert.assertEquals("Le cube [" + category + "] n'est pas peuplé correctement", countExpected, metric.getCount(), 0);
+	}
+
+	//	private void checkMetricMean(final String metricName, final double meanExpected, final String type, final String... subTypes) {
+	//		final HCategory category = new HCategory(type, subTypes);
+	//		final HMetric metric = getMetricInTodayCube(metricName, type, subTypes);
+	//		Assert.assertEquals("Le cube [" + category + "] n'est pas peuplé correctement", meanExpected, metric.getMean(), 0);
 	//	}
-
-	@Test
-	public void testMean() {
-		agentManager.startProcess("TEST_MEAN1", "Process1");
-		agentManager.incMeasure("TEST_MEAN_VALUE", 100);
-		agentManager.stopProcess();
-		agentManager.startProcess("TEST_MEAN1", "Process2");
-		agentManager.incMeasure("TEST_MEAN_VALUE", 50);
-		agentManager.stopProcess();
-		//---------------------------------------------------------------------
-		final DataKey[] metrics = new DataKey[] { new DataKey(new MetricKey("TEST_MEAN_VALUE"), DataType.mean) };
-		final List<Data> datas = getCubeToday("TEST_MEAN1", metrics);
-		final double valueMean = getMean(datas, "TEST_MEAN_VALUE");
-		Assert.assertEquals("Le cube ne contient pas la moyenne attendue\n" + datas, 75.0, valueMean, 0);
-	}
-
-	@Test
-	public void testMeanZero() {
-		agentManager.startProcess("TEST_MEAN2", "Process1");
-		agentManager.incMeasure("TEST_MEAN_VALUE", 90);
-		agentManager.stopProcess();
-		agentManager.startProcess("TEST_MEAN2", "Process2");
-		//TEST_MEAN_VALUE = 0 implicite
-		agentManager.stopProcess();
-		//---------------------------------------------------------------------
-		final DataKey[] metrics = new DataKey[] { new DataKey(new MetricKey("TEST_MEAN_VALUE"), DataType.mean) };
-		final List<Data> datas = getCubeToday("TEST_MEAN2", metrics);
-		final double valueMean = getMean(datas, "TEST_MEAN_VALUE");
-		Assert.assertEquals("Le cube ne contient pas la moyenne attendue\n" + datas, 45.0, valueMean, 0);
-	}
-
-	private double getMean(final List<Data> datas, final String measureName) {
-		for (final Data data : datas) {
-			if (data.getKey().getType() == DataType.mean && ("metric:" + measureName).equals(data.getKey().getMetricKey().id())) {
-				return data.getValue();
-			}
-		}
-		throw new IllegalArgumentException("La mesure " + measureName + " n'est pas trouvée dans le module \n" + datas);
-	}
-
-	private Set<String> getMetaData(final List<Data> datas, final String metadataName) {
-		final Set<String> metaDatas = new HashSet<String>();
-		for (final Data data : datas) {
-			if (metadataName.equals(data.getKey().getMetricKey().id())) {
-				metaDatas.addAll(data.getStringValues());
-			}
-		}
-		Assert.assertTrue("La metaData " + metadataName + " n'est pas trouvée dans le module\n" + datas, metaDatas.size() >= 1);
-		return metaDatas;
-	}
-
-	private HResult getCubeToday(final String module) {
-		final HQuery query = new HQueryBuilder().on(HTimeDimension.Minute).from(new Date(System.currentTimeMillis() - 24 * 60 * 60 * 1000)).to(new Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000)) //
-				.with(module) //
-				.build();
-
-		//Accès au serveur pour valider les résultats injectés
-		final HResult datas = serverManager.execute(query);
-		return datas;
-	}
-
-	private List<DataKey> asList(final DataKey... dataKey) {
-		return Arrays.asList(dataKey);
-	}
-
-	void printDatas(final String... metrics) {
-		final List<DataKey> keys = new ArrayList<DataKey>(metrics.length * 2);
-		for (final String metric : metrics) {
-			keys.add(new DataKey(new MetricKey(metric), DataType.count));
-			keys.add(new DataKey(new MetricKey(metric), DataType.mean));
-		}
-		final Query query = new QueryBuilder(keys) //
-				.on(TimeDimension.Day).from(new Date()).to(new Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000)) //
-				.on(WhatDimension.SimpleName).with("/") //
-				.build();
-
-		//Accès au serveur pour valider les résultats injectés
-		final List<Data> datas = serverManager.getData(query);
-		for (final Data data : datas) {
-			System.out.println(data);
-		}
-	}
 
 	/**
 	 * Passe N commandes.
