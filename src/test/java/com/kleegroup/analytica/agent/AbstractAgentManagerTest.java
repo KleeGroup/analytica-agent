@@ -147,6 +147,9 @@ public abstract class AbstractAgentManagerTest extends AbstractTestCaseJU4 {
 		checkMetricCount("MONTANT", 50 * 5, PROCESS1_TYPE); //nombre d'article
 	}
 
+	/**
+	 * Flush des données conservées par l'agent vers le server.
+	 */
 	protected abstract void flushAgentToServer();
 
 	private HMetric getMetricInTodayCube(final String metricName, final String type, final String... subTypes) {
