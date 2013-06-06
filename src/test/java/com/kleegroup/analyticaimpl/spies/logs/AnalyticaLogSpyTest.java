@@ -1,5 +1,7 @@
 package com.kleegroup.analyticaimpl.spies.logs;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -51,14 +53,16 @@ public final class AnalyticaLogSpyTest extends AbstractTestCaseJU4 {
 	 * Test simple avec deux compteurs. 
 	 * Test sur l'envoi de 1000 articles d'un poids de 25 kg. 
 	 * Chaque article coute 10€.
+	 * @throws ParseException 
 	 */
 	@Test
-	public void testMiniLog() {
+	public void testMiniLog() throws ParseException {
 		final LogSpyReader logSpyReader = new LogSpyReader(agentManager, resourceManager, translateFileName("./catalina.out", getClass()), translateFileName("./logSpyConf.json", getClass()));
 		logSpyReader.start();
 
 		flushAgentToServer();
-		checkMetricCount("duration", 1, "REQUETE");
+		final Date date = new SimpleDateFormat("ddMMyyyy").parse("30052013");
+		checkMetricCount(date, "duration", 7350, "REQUETE");
 	}
 
 	@Test
@@ -80,9 +84,9 @@ public final class AnalyticaLogSpyTest extends AbstractTestCaseJU4 {
 
 	}
 
-	private HMetric getMetricInTodayCube(final String metricName, final String type, final String... subTypes) {
+	private HMetric getMetricInDateCube(final Date date, final String metricName, final String type, final String... subTypes) {
 		final HQuery query = serverManager.createQueryBuilder() //
-				.on(HTimeDimension.Day).from(new Date()).to(new Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000)) //
+				.on(HTimeDimension.Day).from(date).to(new Date(date.getTime() + 24 * 60 * 60 * 1000)) //
 				.with(type, subTypes) //
 				.build();
 		final HCategory category = new HCategory(type, subTypes);
@@ -94,9 +98,9 @@ public final class AnalyticaLogSpyTest extends AbstractTestCaseJU4 {
 		return firstCube.getMetric(metricKey);
 	}
 
-	private void checkMetricCount(final String metricName, final long countExpected, final String type, final String... subTypes) {
+	private void checkMetricCount(final Date date, final String metricName, final long countExpected, final String type, final String... subTypes) {
 		final HCategory category = new HCategory(type, subTypes);
-		final HMetric metric = getMetricInTodayCube(metricName, type, subTypes);
+		final HMetric metric = getMetricInDateCube(date, metricName, type, subTypes);
 		Assert.assertEquals("Le cube [" + category + "] n'est pas peuplé correctement", countExpected, metric.getCount(), 0);
 	}
 

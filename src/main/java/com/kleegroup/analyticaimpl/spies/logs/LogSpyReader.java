@@ -224,11 +224,15 @@ public final class LogSpyReader implements Activeable {
 	}
 
 	private void readLogFile(final BufferedReader br) throws IOException {
+		long lineCount = 0;
+		long parsedLineCount = 0;
 		String currentLine;
 		Option<LogInfo> logInfoOption;
 		while ((currentLine = br.readLine()) != null) {
+			lineCount++;
 			logInfoOption = parseLine(currentLine);
 			if (logInfoOption.isDefined()) {
+				parsedLineCount++;
 				final LogInfo logInfo = logInfoOption.get();
 				appendLogInfo(logInfo);
 				if (logInfo.getLogPattern().isProcessRoot()) {
@@ -236,6 +240,9 @@ public final class LogSpyReader implements Activeable {
 				} else if (logInfo.getLogPattern().isCleanStack()) {
 					logInfoMap.clear();
 				}
+			}
+			if (lineCount % 10000 == 0) {
+				System.out.println("read " + lineCount + " lines, parsed: " + parsedLineCount + " (" + parsedLineCount * 100 / lineCount + "%)");
 			}
 		}
 	}
