@@ -116,7 +116,7 @@ public final class AgentManagerImpl implements AgentManager {
 	/**
 	* Termine le process courant.
 	* Le processus courant devient alors le processus parent le cas échéant.
-	* @return Processus uniquement dans le cas ou c'e'st le processus parent.
+	* @return Processus uniquement dans le cas ou c'est le processus parent.
 	*/
 	private KProcess doStopProcess() {
 		final KProcess process = pop().build();
@@ -126,7 +126,7 @@ public final class AgentManagerImpl implements AgentManager {
 			return process;
 		}
 		peek().addSubProcess(process);
-		//On n'est pas dans le cas de la racine/selon le contrat on renvoie null
+		//On n'est pas dans le cas de la racine : selon le contrat on renvoie null
 		return null;
 	}
 
@@ -136,5 +136,13 @@ public final class AgentManagerImpl implements AgentManager {
 		if (process != null) {
 			netPlugin.add(process);
 		}
+	}
+
+	/** {@inheritDoc} */
+	public void add(final KProcess process) {
+		Assertion.isNull(THREAD_LOCAL_PROCESS.get(), "Un process est en cours. Vous ne pouvez ajouter un process complet en même temps.");
+		Assertion.notNull(process, "Le process est obligatoire.");
+		//---------------------------------------------------------------------
+		netPlugin.add(process);
 	}
 }

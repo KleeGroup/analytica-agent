@@ -19,6 +19,8 @@ package com.kleegroup.analytica.agent;
 
 import kasper.kernel.manager.Manager;
 
+import com.kleegroup.analytica.core.KProcess;
+
 /**
  * Agent de collecte des données.
  * Collecte automatique des Process (les infos sont portées par le thread courant).
@@ -62,4 +64,11 @@ public interface AgentManager extends Manager {
 	 * Le processus courant devient alors le processus parent le cas échéant.
 	 */
 	void stopProcess();
+
+	/**
+	 * Ajout d'un process déjà assemblé par une sonde.
+	 * Cet ajout peut-être multi-threadé.
+	 * @param process Process à ajouter
+	 */
+	void add(KProcess process);
 }
