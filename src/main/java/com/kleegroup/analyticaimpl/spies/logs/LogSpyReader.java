@@ -47,6 +47,7 @@ public final class LogSpyReader implements Activeable {
 	private final URL logFileUrl;
 	private final List<String> dateFormats;
 	private final List<LogPattern> patterns;
+	private final Map<LogPattern, Integer> patternStats;
 
 	private final Map<String, List<LogInfo>> logInfoMap = new HashMap<String, List<LogInfo>>();
 	private Date lastDateRead = new Date(0);
@@ -85,6 +86,10 @@ public final class LogSpyReader implements Activeable {
 		final LogSpyConf conf = new Gson().fromJson(confJson, LogSpyConf.class);
 		dateFormats = conf.getDateFormats();
 		patterns = conf.getLogPatterns();
+		patternStats = new HashMap<LogPattern, Integer>();
+		for (final LogPattern pattern : patterns) {
+			patternStats.put(pattern, 0);
+		}
 	}
 
 	private List<LogInfo> getLogInfos(final String threadName) {
@@ -232,8 +237,9 @@ public final class LogSpyReader implements Activeable {
 			lineCount++;
 			logInfoOption = parseLine(currentLine);
 			if (logInfoOption.isDefined()) {
-				parsedLineCount++;
 				final LogInfo logInfo = logInfoOption.get();
+				parsedLineCount++;
+				patternHit(logInfo.getLogPattern());
 				appendLogInfo(logInfo);
 				if (logInfo.getLogPattern().isProcessRoot()) {
 					agentManager.add(extractProcess(logInfo.getThreadName()));
@@ -241,10 +247,27 @@ public final class LogSpyReader implements Activeable {
 					logInfoMap.clear();
 				}
 			}
-			if (lineCount % 10000 == 0) {
-				System.out.println("read " + lineCount + " lines, parsed: " + parsedLineCount + " (" + parsedLineCount * 100 / lineCount + "%)");
+			if (lineCount % 20000 == 0) {
+				final StringBuilder sb = new StringBuilder();
+				sb.append("read ").append(lineCount).append(" lines, parsed: ").append(parsedLineCount).append(" (").append(parsedLineCount * 100 / lineCount).append("%), detail:");
+				String sep = "";
+				sb.append("{");
+				for (final Map.Entry<LogPattern, Integer> entry : patternStats.entrySet()) {
+					sb.append(sep);
+					sb.append(entry.getKey().getCode());
+					sb.append("=");
+					sb.append(entry.getValue());
+					sep = ", ";
+				}
+				sb.append("}");
+
+				System.out.println(sb.toString());
 			}
 		}
+	}
+
+	private void patternHit(final LogPattern logPattern) {
+		patternStats.put(logPattern, patternStats.get(logPattern) + 1);
 	}
 
 	private Option<LogInfo> parseLine(final String currentLine) {
