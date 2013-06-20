@@ -1,6 +1,9 @@
 package com.kleegroup.analyticaimpl.spies.logs;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import kasper.kernel.util.Assertion;
 
 /**
  * Info sur le log lu.
@@ -9,6 +12,7 @@ import java.util.Date;
  */
 final class LogInfo {
 
+	private LogInfo startLogInfo = null;
 	private final Date dateEvent;
 	private final Date startDateEvent;
 	private final String threadName;
@@ -37,15 +41,32 @@ final class LogInfo {
 			startDateEvent = dateEvent;
 		} else {
 			this.time = time;
-			startDateEvent = new Date(dateEvent.getTime() - time);
+			startDateEvent = new Date(dateEvent.getTime() - time - (logPattern.isProcessRoot() ? 16 : 0));
 		}
 		//System.out.println("found " + toString());
+	}
+
+	/**
+	 * Associe un log de début à ce log de fin.
+	 * @param startLogInfo Log de début
+	 */
+	public void linkStartLogInfo(final LogInfo startLogInfo) {
+		Assertion.notNull(startLogInfo);
+		Assertion.precondition(startLogInfo != this, "Cycle");
+		Assertion.precondition(startLogInfo.getLogPattern().isStartLog(), "Ce LogInfo n''est pas un log de début : {0}", startLogInfo);
+		Assertion.precondition(startLogInfo.getType().equals(type), "Ce LogInfo n''est pas du même type : {0} != {1}", type, startLogInfo);
+		Assertion.precondition(startLogInfo.getSubType().equals(subType), "Ce LogInfo n''est pas du même sous-type : {0} != {1}", subType, startLogInfo);
+		//---------------------------------------------------------------------
+		this.startLogInfo = startLogInfo;
 	}
 
 	/**
 	 * @return Date de début du process
 	 */
 	public Date getStartDateEvent() {
+		if (startLogInfo != null) {
+			return startLogInfo.getStartDateEvent();
+		}
 		return startDateEvent;
 	}
 
@@ -94,7 +115,9 @@ final class LogInfo {
 	/** {@inheritDoc} */
 	@Override
 	public String toString() {
-		return startDateEvent.toString() + " " + threadName + " " + type + " " + subType + " " + time + " " + logPattern.getCode();
+		final SimpleDateFormat sdfDate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.SSS");
+		final SimpleDateFormat sdfHour = new SimpleDateFormat("HH:mm:ss.SSS ");
+		return sdfDate.format(getStartDateEvent()) + (startLogInfo != null ? "(link)" : "") + ">" + sdfHour.format(getDateEvent()) + threadName + " " + type + " " + subType + " " + time + " " + logPattern.getCode();
 	}
 
 }

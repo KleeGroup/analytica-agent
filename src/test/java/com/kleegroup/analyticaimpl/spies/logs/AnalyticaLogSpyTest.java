@@ -57,7 +57,7 @@ public final class AnalyticaLogSpyTest extends AbstractTestCaseJU4 {
 	 */
 	@Test
 	public void testMiniLog() throws ParseException {
-		final LogSpyReader logSpyReader = new LogSpyReader(agentManager, resourceManager, translateFileName("./catalina.out", getClass()), translateFileName("./sparkLogSpyConf.json", getClass()));
+		final LogSpyReader logSpyReader = new LogSpyReader(agentManager, resourceManager, translateFileName("./tomcat7_spark-stdout.2013-06-05.log", getClass()), translateFileName("./sparkLogSpyConf-v1.json", getClass()));
 		logSpyReader.start();
 
 		flushAgentToServer();

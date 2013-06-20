@@ -60,8 +60,17 @@ public final class LogSpyReader implements Activeable {
 			} else if (o2 == null) {
 				return 1;
 			}
-			final int compare = o1.getStartDateEvent().compareTo(o2.getStartDateEvent());
-			return compare != 0 ? compare : o1.getType().compareTo(o2.getType());
+			final int compareDate = o1.getStartDateEvent().compareTo(o2.getStartDateEvent());
+			final int compareTime = Long.valueOf(o2.getTime()).compareTo(o1.getTime());
+
+			//			if (o1.getLogPattern().isProcessRoot() && !o2.getLogPattern().isProcessRoot()) {
+			//				return -1;
+			//			} else if (o2.getLogPattern().isProcessRoot() && !o1.getLogPattern().isProcessRoot()) {
+			//				return 1;
+			//			}
+			//System.out.println(o1.getStartDateEvent().getTime() + " compareDate " + o2.getStartDateEvent().getTime() + " = " + compareDate);
+			//System.out.println(o1.getTime() + " compareTime " + o2.getTime() + " = " + compareTime);
+			return compareDate != 0 ? compareDate : compareTime;
 		}
 	};
 
@@ -103,19 +112,35 @@ public final class LogSpyReader implements Activeable {
 
 	private void appendLogInfo(final LogInfo logInfo) {
 		final List<LogInfo> logInfos = getLogInfos(logInfo.getThreadName());
+		if (!logInfo.getLogPattern().isStartLog()) {
+			for (final LogInfo oldLogInfo : logInfos) {
+				if (oldLogInfo.getLogPattern().isStartLog()) {
+					if (oldLogInfo.getType().equals(logInfo.getType()) && oldLogInfo.getSubType().equals(logInfo.getSubType())) {
+						logInfo.linkStartLogInfo(oldLogInfo);
+						logInfos.remove(oldLogInfo);
+						break;
+					}
+				}
+			}
+		}
 		logInfos.add(logInfo);
 	}
 
 	private KProcess extractProcess(final String threadName) {
 		final List<LogInfo> logInfos = getLogInfos(threadName);
 		//1 - on tri par date de début
+		System.out.println("extract >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+		for (final LogInfo logInfo : logInfos) {
+			System.out.println("    " + logInfo.toString());
+		}
+		System.out.println("extract <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
 		Collections.sort(logInfos, LOG_INFO_COMPARATOR);
 
-		//		System.out.println("extract >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-		//		for (final LogInfo logInfo : logInfos) {
-		//			System.out.println("    " + logInfo.toString());
-		//		}
-		//		System.out.println("extract <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+		System.out.println("extract sort >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+		for (final LogInfo logInfo : logInfos) {
+			System.out.println("    " + logInfo.toString());
+		}
+		System.out.println("extract sort <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
 
 		final Stack<KProcessBuilder> stackProcessBuilder = new Stack<KProcessBuilder>();
 		final Stack<LogInfo> stackLogInfo = new Stack<LogInfo>();
@@ -167,10 +192,14 @@ public final class LogSpyReader implements Activeable {
 			final KProcessBuilder processBuilderPrevious = stackProcessBuilder.pop();
 			stackLogInfo.pop();
 
-			Assertion.invariant(!stackProcessBuilder.isEmpty(), "La stackProcessBuilder est vide");
-			final KProcessBuilder processBuilderParent = stackProcessBuilder.peek();
-			processBuilderParent.addSubProcess(processBuilderPrevious.build());
-			push(logInfo, processBuilder, stackLogInfo, stackProcessBuilder);
+			Assertion.invariant(!stackProcessBuilder.isEmpty(), "La stackProcessBuilder est vide : \n\tcurrent:{0}\n\tprevious:{1}", processBuilder.build(), processBuilderPrevious.build());
+			if (!stackProcessBuilder.isEmpty()) {
+				final KProcessBuilder processBuilderParent = stackProcessBuilder.peek();
+				processBuilderParent.addSubProcess(processBuilderPrevious.build());
+				push(logInfo, processBuilder, stackLogInfo, stackProcessBuilder);
+			} else {
+				System.out.println("La stackProcessBuilder est vide : \n\tcurrent:" + processBuilder.build() + "\n\tprevious:" + processBuilderPrevious.build());
+			}
 		}
 	}
 
@@ -299,6 +328,7 @@ public final class LogSpyReader implements Activeable {
 				if (dateTime.getTime() <= ONE_DAY_MILLIS) {
 					dateTime = adjustDate(dateTime, lastDateRead);
 				}
+				break;
 			} catch (final ParseException e) {
 				//rien on tente les autres formats
 			}

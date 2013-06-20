@@ -70,7 +70,6 @@ public final class RemoteNetPlugin implements NetPlugin, Activeable {
 		this.serverUrl = serverUrl;
 		this.sendPaquetSize = sendPaquetSize;
 		this.sendPaquetFrequencySeconds = sendPaquetFrequencySeconds;
-
 	}
 
 	/** {@inheritDoc} */
@@ -102,6 +101,8 @@ public final class RemoteNetPlugin implements NetPlugin, Activeable {
 
 		processSenderThread = new SendProcessThread(this);
 		processSenderThread.start();
+
+		logger.info("Start Analytica RemoteNetPlugin : connect to " + serverUrl);
 	}
 
 	/** {@inheritDoc} */
@@ -118,6 +119,8 @@ public final class RemoteNetPlugin implements NetPlugin, Activeable {
 		locatorClient = null;
 		remoteWebResource = null;
 		manager.shutdown();
+
+		logger.info("Stop Analytica RemoteNetPlugin");
 	}
 
 	private static class SendProcessThread extends Thread {
@@ -181,6 +184,7 @@ public final class RemoteNetPlugin implements NetPlugin, Activeable {
 			final String json = new Gson().toJson(processes);
 			try {
 				doSendJson(remoteWebResource, json);
+				logger.info("[Analytica-RemoteNetPlugin] Send " + processes.size() + " processes to " + serverUrl);
 			} catch (final Exception e) {
 				logSendError(false, e);
 				doStoreJson(json);
