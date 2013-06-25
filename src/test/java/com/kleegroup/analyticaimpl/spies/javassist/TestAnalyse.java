@@ -41,10 +41,19 @@ public final class TestAnalyse {
 		}
 
 	}
-	
+
 	public void workError() {
 		throw new RuntimeException("MyError");
 
+	}
+
+	public int workResult() {
+		try {
+			Thread.sleep(1000);
+		} catch (final InterruptedException e) {
+			//rien
+		}
+		return 1;
 	}
 
 	public void workNoAnalyse() {

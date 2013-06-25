@@ -45,11 +45,11 @@ public final class AnalyticaSpyAgent {
 
 	private static void addTransformer(final String agentArgs, final Instrumentation inst) {
 		inst.addTransformer(new AnalyticaSpyTransformer(agentArgs));
-		System.out.println("Start at " + new Date());
+		System.out.println("AnalyticaAgent Start at " + new Date());
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			@Override
 			public void run() {
-				System.out.println("Stop at " + new Date());
+				System.out.println("AnalyticaAgent Stop at " + new Date());
 			}
 		});
 	}

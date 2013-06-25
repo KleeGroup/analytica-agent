@@ -1,0 +1,22 @@
+{ "fastExcludedPackages" : [ 
+	  "sun.*",
+      "java.*","javax.*",
+      "org.apache.log4j.*",
+      "kasper.*","kasperimpl.*"
+    ],
+   "fastIncludedPackages" : [ 
+    ],
+  "hookPoints" : [ 
+      { "className" : "*",
+        "inherits" : "java.sql.Statement",
+        "methods" : ["executeQuery"],
+        "processType" : "SQL",
+        "subTypes" : ["$method","$0.getClass().getName()","$1"]
+      },
+      { "className" : "com.kleegroup.analyticaimpl.spies.javassist.*",
+        "methods" :  ["work1s","workRandom", "workError", "workResult"],
+        "processType" : "JAVASSIST",
+        "subTypes" : ["$class.getName()","$method"]
+      }
+    ]
+}

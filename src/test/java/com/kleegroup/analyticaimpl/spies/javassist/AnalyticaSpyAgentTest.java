@@ -14,7 +14,6 @@ import kasper.kernel.exception.KRuntimeException;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.kleegroup.analytica.agent.AgentManager;
 import com.kleegroup.analytica.hcube.cube.HCube;
 import com.kleegroup.analytica.hcube.cube.HMetric;
 import com.kleegroup.analytica.hcube.cube.HMetricKey;
@@ -43,16 +42,14 @@ public final class AnalyticaSpyAgentTest extends AbstractTestCaseJU4 {
 	private static final String TEST_CLASS_NAME = "com.kleegroup.analyticaimpl.spies.javassist.TestAnalyse";
 
 	@Inject
-	private AgentManager agentManager;
-	@Inject
 	private ServerManager serverManager;
 
 	/**
 	 * Demarre l'agent de supervision des création d'instances.
 	 */
 	public static void startAgent() {
-		final File agentJar = getFile("analyticaAgent-1.0.0.jar", AnalyticaSpyAgentTest.class);
-		final File propertiesFile = getFile("testJavassistAnalyticaSpy.properties", AnalyticaSpyAgentTest.class);
+		final File agentJar = getFile("analyticaAgent-1.1.0.jar", AnalyticaSpyAgentTest.class);
+		final File propertiesFile = getFile("testJavassistAnalyticaSpy.json", AnalyticaSpyAgentTest.class);
 
 		VirtualMachineAgentLoader.loadAgent(agentJar.getAbsolutePath(), propertiesFile.getAbsolutePath());
 	}
@@ -89,9 +86,13 @@ public final class AnalyticaSpyAgentTest extends AbstractTestCaseJU4 {
 	public void testJavassistWork1s() {
 		new TestAnalyse().work1s();
 		flushAgentToServer();
-		checkMetricCount("duration", 1, "JAVASSIST", "com.kleegroup.analyticaimpl.spies.javassist.TestAnalyse", "work1s");
+		checkMetricCount("duration", 1, "JAVASSIST", TEST_CLASS_NAME, "work1s");
 	}
 
+	/**
+	 * Test d'un traitement qui fait une erreur.
+	 * Le process doit-être capturé malgré tout
+	 */
 	@Test
 	public void testJavassistWorkError() {
 		try {
@@ -101,7 +102,16 @@ public final class AnalyticaSpyAgentTest extends AbstractTestCaseJU4 {
 			//on veut vérifier que le process est renseigné après l'exception
 		}
 		flushAgentToServer();
-		checkMetricCount("duration", 1, "JAVASSIST", "com.kleegroup.analyticaimpl.spies.javassist.TestAnalyse", "workError");
+		checkMetricCount("duration", 1, "JAVASSIST", TEST_CLASS_NAME, "workError");
+		checkMetricMean("ME_ERROR_PCT", 100, "JAVASSIST", TEST_CLASS_NAME, "workError");
+	}
+
+	@Test
+	public void testJavassistWorkResult() {
+		final int result = new TestAnalyse().workResult();
+		Assert.assertEquals(1, result);
+		flushAgentToServer();
+		checkMetricCount("duration", 1, "JAVASSIST", TEST_CLASS_NAME, "workResult");
 	}
 
 	protected void flushAgentToServer() {
@@ -126,12 +136,13 @@ public final class AnalyticaSpyAgentTest extends AbstractTestCaseJU4 {
 		final HCategory category = new HCategory(type, subTypes);
 		final HMetric metric = getMetricInTodayCube(metricName, type, subTypes);
 		Assert.assertEquals("Le cube [" + category + "] n'est pas peuplé correctement", countExpected, metric.getCount(), 0);
+		System.out.println("Cube OK :" + category + " metric " + metric);
 	}
 
-	//	private void checkMetricMean(final String metricName, final double meanExpected, final String type, final String... subTypes) {
-	//		final HCategory category = new HCategory(type, subTypes);
-	//		final HMetric metric = getMetricInTodayCube(metricName, type, subTypes);
-	//		Assert.assertEquals("Le cube [" + category + "] n'est pas peuplé correctement", meanExpected, metric.getMean(), 0);
-	//	}
+	private void checkMetricMean(final String metricName, final double meanExpected, final String type, final String... subTypes) {
+		final HCategory category = new HCategory(type, subTypes);
+		final HMetric metric = getMetricInTodayCube(metricName, type, subTypes);
+		Assert.assertEquals("Le cube [" + category + "] n'est pas peuplé correctement", meanExpected, metric.getMean(), 0);
+	}
 
 }
