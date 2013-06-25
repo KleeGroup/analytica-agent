@@ -2,6 +2,7 @@ package com.kleegroup.analyticaimpl.spies.logs;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -23,8 +24,6 @@ import com.kleegroup.analytica.hcube.dimension.HCategory;
 import com.kleegroup.analytica.hcube.dimension.HTimeDimension;
 import com.kleegroup.analytica.hcube.query.HQuery;
 import com.kleegroup.analytica.server.ServerManager;
-
-import edu.emory.mathcs.backport.java.util.Arrays;
 
 /**
  * Implementation d'un agent de jvm.

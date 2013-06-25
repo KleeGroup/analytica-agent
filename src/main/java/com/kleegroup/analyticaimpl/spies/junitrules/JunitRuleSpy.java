@@ -1,11 +1,9 @@
 package com.kleegroup.analyticaimpl.spies.junitrules;
 
-import javax.inject.Inject;
-
 import kasper.kernel.Home;
 
-import org.junit.rules.MethodRule;
-import org.junit.runners.model.FrameworkMethod;
+import org.junit.rules.TestRule;
+import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 import com.kleegroup.analytica.agent.AgentManager;
@@ -15,44 +13,30 @@ import com.kleegroup.analytica.agent.AgentManager;
  * @author npiedeloup
  * @version $Id: KTransactionInterceptor.java,v 1.1 2012/07/20 12:43:53 pchretien Exp $
  */
-public class JunitRuleSpy implements MethodRule {
+public class JunitRuleSpy implements TestRule {
 	private static final String PT_JUNIT = "JUNIT";
 	private static final String ME_ERROR_PCT = "ERROR_PCT";
 	private static final String ME_ERROR_HEADER = "ERROR_HEADER";
 
-	//private final AgentManager agentManager;
-
-	/**
-	 * Constructeur.
-	 * @param agentManager  Agent de récolte de process
-	 */
-	@Inject
-	public JunitRuleSpy() {
-		//Assertion.notNull();
-		//---------------------------------------------------------------------
-
-	}
-
 	@Override
-	public Statement apply(final Statement base, final FrameworkMethod meth, final Object target) {
-		return new JunitRuleStatement(base, meth, Home.getContainer().getManager(AgentManager.class));
+	public Statement apply(final Statement base, final Description description) {
+		return new JunitRuleStatement(base, description);
 	}
 
 	static class JunitRuleStatement extends Statement {
 
-		private final AgentManager agentManager;
 		private final Statement base;
-		private final FrameworkMethod meth;
+		private final Description description;
 
-		public JunitRuleStatement(final Statement base, final FrameworkMethod meth, final AgentManager agentManager) {
+		public JunitRuleStatement(final Statement base, final Description description) {
 			this.base = base;
-			this.meth = meth;
-			this.agentManager = agentManager;
+			this.description = description;
 		}
 
 		@Override
 		public void evaluate() throws Throwable {
-			agentManager.startProcess(PT_JUNIT, meth.getType().getSimpleName(), meth.getName());
+			final AgentManager agentManager = Home.getContainer().getManager(AgentManager.class);
+			agentManager.startProcess(PT_JUNIT, description.getTestClass().getSimpleName(), description.getMethodName());
 			try {
 				base.evaluate();
 			} catch (final Throwable th) {
