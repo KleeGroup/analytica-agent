@@ -75,11 +75,11 @@ public final class RemoteNetPlugin implements NetPlugin, Activeable {
 	/** {@inheritDoc} */
 	public void add(final KProcess process) {
 		processQueue.add(process);
-		if (processQueue.size() >= sendPaquetSize) {
-			synchronized (processQueue) {
-				processQueue.notify();
-			}
-		}
+		//		if (processQueue.size() >= sendPaquetSize) {
+		//			synchronized (processQueue) {
+		//			processQueue.notify();
+		//			}
+		//		}
 	}
 
 	/** {@inheritDoc} */
