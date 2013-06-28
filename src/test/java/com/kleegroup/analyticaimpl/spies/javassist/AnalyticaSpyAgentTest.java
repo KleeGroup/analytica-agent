@@ -1,16 +1,21 @@
 package com.kleegroup.analyticaimpl.spies.javassist;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.ws.rs.core.UriBuilder;
 
 import kasper.AbstractTestCaseJU4;
 import kasper.kernel.exception.KRuntimeException;
+import kasper.kernel.util.ClassUtil;
 
+import org.glassfish.grizzly.http.server.HttpServer;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -22,6 +27,9 @@ import com.kleegroup.analytica.hcube.dimension.HTimeDimension;
 import com.kleegroup.analytica.hcube.query.HQuery;
 import com.kleegroup.analytica.server.ServerManager;
 import com.kleegroup.analyticaimpl.spies.javassist.agentloader.VirtualMachineAgentLoader;
+import com.sun.jersey.api.container.grizzly2.GrizzlyServerFactory;
+import com.sun.jersey.api.core.PackagesResourceConfig;
+import com.sun.jersey.api.core.ResourceConfig;
 
 /**
  * Implementation d'un agent de jvm.
@@ -39,7 +47,10 @@ import com.kleegroup.analyticaimpl.spies.javassist.agentloader.VirtualMachineAge
  */
 public final class AnalyticaSpyAgentTest extends AbstractTestCaseJU4 {
 
-	private static final String TEST_CLASS_NAME = "com.kleegroup.analyticaimpl.spies.javassist.TestAnalyse";
+	private static final String TEST1_CLASS_NAME = "com.kleegroup.analyticaimpl.spies.javassist.TestAnalyse";
+	private static final String TEST2_CLASS_NAME = "com.kleegroup.analyticaimpl.spies.javassist.TestAnalyse2";
+	private static final String TEST3_CLASS_NAME = "com.kleegroup.analyticaimpl.spies.javassist.TestAnalyse3";
+	//private static final String TEST3_PARENT_CLASS_NAME = "com.kleegroup.analyticaimpl.spies.javassist.ParentTestAnalyse";
 
 	@Inject
 	private ServerManager serverManager;
@@ -57,9 +68,42 @@ public final class AnalyticaSpyAgentTest extends AbstractTestCaseJU4 {
 	/** {@inheritDoc} */
 	@Override
 	protected void doSetUp() throws Exception {
+		//on charge la class avant pour s'assurer que le load fonctionne
+		ClassUtil.classForName(TestAnalyse.class.getName());
 		startAgent();
-		//il faut charger la class, sans la référencer pour avoir le temps de démarrer l'agent
-		//ClassUtil.classForName(TEST_CLASS_NAME);
+		httpServer = startServer();
+		System.out.println(String.format("Jersey app started with WADL available at " + "%sapplication.wadl", BASE_URI));
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	protected void doTearDown() throws Exception {
+		AnalyticaSpyAgent.stopAgent();
+		httpServer.stop();
+	}
+
+	private HttpServer httpServer;
+
+	private static URI getBaseURI() {
+		return UriBuilder.fromUri("http://localhost/").port(9998).build();
+	}
+
+	public static final URI BASE_URI = getBaseURI();
+
+	protected static HttpServer startServer() throws IOException {
+		System.out.println("Starting grizzly...");
+		final ResourceConfig rc = new PackagesResourceConfig("com.kleegroup.analyticaimpl.server.plugins.api.rest");
+		rc.getProperties().put(ResourceConfig.PROPERTY_CONTAINER_REQUEST_FILTERS, com.sun.jersey.api.container.filter.GZIPContentEncodingFilter.class.getName());
+		rc.getProperties().put(ResourceConfig.PROPERTY_CONTAINER_RESPONSE_FILTERS, com.sun.jersey.api.container.filter.GZIPContentEncodingFilter.class.getName());
+		return GrizzlyServerFactory.createHttpServer(BASE_URI, rc);
+	}
+
+	protected void flushAgentToServer() {
+		try {
+			Thread.sleep(5000);//on attend 2s que le process soit envoyé au serveur.
+		} catch (final InterruptedException e) {
+			//rien on stop juste l'attente
+		}
 	}
 
 	/**
@@ -86,7 +130,7 @@ public final class AnalyticaSpyAgentTest extends AbstractTestCaseJU4 {
 	public void testJavassistWork1s() {
 		new TestAnalyse().work1s();
 		flushAgentToServer();
-		checkMetricCount("duration", 1, "JAVASSIST", TEST_CLASS_NAME, "work1s");
+		checkMetricCount("duration", 1, "JAVASSIST", TEST1_CLASS_NAME, "work1s");
 	}
 
 	/**
@@ -102,8 +146,8 @@ public final class AnalyticaSpyAgentTest extends AbstractTestCaseJU4 {
 			//on veut vérifier que le process est renseigné après l'exception
 		}
 		flushAgentToServer();
-		checkMetricCount("duration", 1, "JAVASSIST", TEST_CLASS_NAME, "workError");
-		checkMetricMean("ME_ERROR_PCT", 100, "JAVASSIST", TEST_CLASS_NAME, "workError");
+		checkMetricCount("duration", 1, "JAVASSIST", TEST1_CLASS_NAME, "workError");
+		checkMetricMean("ME_ERROR_PCT", 100, "JAVASSIST", TEST1_CLASS_NAME, "workError");
 	}
 
 	@Test
@@ -111,11 +155,124 @@ public final class AnalyticaSpyAgentTest extends AbstractTestCaseJU4 {
 		final int result = new TestAnalyse().workResult();
 		Assert.assertEquals(1, result);
 		flushAgentToServer();
-		checkMetricCount("duration", 1, "JAVASSIST", TEST_CLASS_NAME, "workResult");
+		checkMetricCount("duration", 1, "JAVASSIST", TEST1_CLASS_NAME, "workResult");
 	}
 
-	protected void flushAgentToServer() {
-		//rien en local pas d'attente
+	@Test
+	public void testJavassistWorkReentrant() {
+		new TestAnalyse().workReentrant();
+		flushAgentToServer();
+		checkMetricCount("duration", 1, "JAVASSIST", TEST1_CLASS_NAME, "workReentrant");
+		checkMetricCount("duration", 1, "JAVASSIST", TEST1_CLASS_NAME, "work1s");
+	}
+
+	@Test
+	public void testJavassistWorkInterface() {
+		new TestAnalyse2().workInterface();
+		flushAgentToServer();
+		checkMetricCount("duration", 1, "JAVASSIST", TEST2_CLASS_NAME, "workInterface");
+	}
+
+	@Test
+	public void testJavassistWorkParent() {
+		new TestAnalyse3().workParent();
+		flushAgentToServer();
+		checkMetricCount("duration", 1, "JAVASSIST", TEST3_CLASS_NAME, "workParent");
+	}
+
+	@Test
+	public void testJavassistWorkParentAbstract() {
+		new TestAnalyse3().workParentAbstract();
+		flushAgentToServer();
+		checkMetricCount("duration", 1, "JAVASSIST", TEST3_CLASS_NAME, "workParentAbstract");
+	}
+
+	/**
+	 * Test simple avec deux compteurs. 
+	 * Test sur l'envoi de 1000 articles d'un poids de 25 kg. 
+	 * Chaque article coute 10€.
+	 */
+	@Test
+	public void testJavassistWorkStatic() {
+		TestAnalyse.workStatic();
+		flushAgentToServer();
+		checkMetricCount("duration", 1, "JAVASSIST", TEST1_CLASS_NAME, "workStatic");
+	}
+
+	/**
+	 * Test simple avec deux compteurs. 
+	 * Test sur l'envoi de 1000 articles d'un poids de 25 kg. 
+	 * Chaque article coute 10€.
+	 */
+	@Test
+	public void testInstrumentPerf() {
+		for (int i = 0; i < 10; i++) {
+			new TestAnalyse().workFastest();
+			new TestAnalyse().workFastestNotInstrumented();
+		}
+
+		final int nbLoop = 100000;
+		final long start = System.currentTimeMillis();
+		for (int i = 0; i < nbLoop; i++) {
+			new TestAnalyse().workFastest();
+		}
+		final long timeInstrumented = System.currentTimeMillis() - start;
+
+		final long startNotInstrumented = System.currentTimeMillis();
+		for (int i = 0; i < nbLoop; i++) {
+			new TestAnalyse().workFastestNotInstrumented();
+		}
+		final long timeNotInstrumented = System.currentTimeMillis() - startNotInstrumented;
+		final long delta = timeInstrumented - timeNotInstrumented;
+		final long percent = timeNotInstrumented > 0 ? delta * 100 / timeNotInstrumented : 0;
+		System.out.println("Time Instrumentation : " + delta + " ms pour " + nbLoop + " soit " + percent + "% de " + timeNotInstrumented + " ms (" + delta * 1000 / nbLoop / 1000d + "ms par appel)");
+		flushAgentToServer();
+		checkMetricCount("duration", nbLoop + 10, "JAVASSIST", TEST1_CLASS_NAME, "workFastest");
+	}
+
+	/**
+	 * Test simple avec deux compteurs. 
+	 * Test sur l'envoi de 1000 articles d'un poids de 25 kg. 
+	 * Chaque article coute 10€.
+	 */
+	@Test
+	public void testActivateDesactivate() {
+		new TestAnalyse().work1s();
+		flushAgentToServer();
+		checkMetricCount("duration", 1, "JAVASSIST", TEST1_CLASS_NAME, "work1s");
+
+		AnalyticaSpyAgent.stopAgent();
+		new TestAnalyse().work1s();
+		flushAgentToServer();
+		checkMetricCount("duration", 1, "JAVASSIST", TEST1_CLASS_NAME, "work1s");
+
+		startAgent();
+		new TestAnalyse().work1s();
+		flushAgentToServer();
+		checkMetricCount("duration", 2, "JAVASSIST", TEST1_CLASS_NAME, "work1s");
+	}
+
+	/**
+	 * Test simple avec deux compteurs. 
+	 * Test sur l'envoi de 1000 articles d'un poids de 25 kg. 
+	 * Chaque article coute 10€.
+	 */
+	@Test
+	public void testActivateDesactivateSameInstance() {
+		final TestAnalyse testAnalyse = new TestAnalyse();
+		testAnalyse.work1s();
+		flushAgentToServer();
+		checkMetricCount("duration", 1, "JAVASSIST", TEST1_CLASS_NAME, "work1s");
+
+		AnalyticaSpyAgent.stopAgent();
+		testAnalyse.work1s();
+		flushAgentToServer();
+		checkMetricCount("duration", 1, "JAVASSIST", TEST1_CLASS_NAME, "work1s");
+
+		startAgent();
+		testAnalyse.work1s();
+		flushAgentToServer();
+		checkMetricCount("duration", 2, "JAVASSIST", TEST1_CLASS_NAME, "work1s");
 	}
 
 	private HMetric getMetricInTodayCube(final String metricName, final String type, final String... subTypes) {

@@ -64,4 +64,17 @@ public class AnalyticaSpyHookPoint {
 	public List<String> getSubTypes() {
 		return subTypes;
 	}
+
+	/** {@inheritDoc} */
+	@Override
+	public String toString() {
+		final StringBuilder sb = new StringBuilder();
+		sb.append("{ \"className\" : \"" + className + "\",\n");
+		sb.append(" \"inherits\" : \"" + inherits + "\",\n");
+		sb.append(" \"methods\" : " + methods + ",\n");
+		sb.append(" \"processType\" : \"" + processType + "\",\n");
+		sb.append(" \"subTypes\" : " + subTypes + " }\n");
+
+		return sb.toString();
+	}
 }

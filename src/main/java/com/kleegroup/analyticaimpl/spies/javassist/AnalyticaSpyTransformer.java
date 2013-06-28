@@ -12,7 +12,7 @@ import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,7 +20,6 @@ import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtBehavior;
 import javassist.CtClass;
-import javassist.CtField;
 import javassist.NotFoundException;
 
 import com.google.gson.Gson;
@@ -42,9 +41,9 @@ final class AnalyticaSpyTransformer implements ClassFileTransformer {
 	private final AnalyticaSpyConf analyticaSpyConf;
 	private final Matcher<String> excludeMatcher;
 	private final Matcher<String> includeMatcher;
-	private final Map<Matcher<String>, AnalyticaSpyHookPoint> classNameHookPointMatchers = new HashMap<Matcher<String>, AnalyticaSpyHookPoint>();
-	private final Map<AnalyticaSpyHookPoint, Matcher<CtClass>> classHookPointMatchers = new HashMap<AnalyticaSpyHookPoint, Matcher<CtClass>>();
-	private final Map<AnalyticaSpyHookPoint, Matcher<CtBehavior>> methodHookPointMatchers = new HashMap<AnalyticaSpyHookPoint, Matcher<CtBehavior>>();
+	private final Map<Matcher<String>, AnalyticaSpyHookPoint> classNameHookPointMatchers = new LinkedHashMap<Matcher<String>, AnalyticaSpyHookPoint>();
+	private final Map<AnalyticaSpyHookPoint, Matcher<CtClass>> classHookPointMatchers = new LinkedHashMap<AnalyticaSpyHookPoint, Matcher<CtClass>>();
+	private final Map<AnalyticaSpyHookPoint, Matcher<CtBehavior>> methodHookPointMatchers = new LinkedHashMap<AnalyticaSpyHookPoint, Matcher<CtBehavior>>();
 
 	/**
 	 * @param agentArgs parametres du javaagent de ligne de commande
@@ -90,9 +89,16 @@ final class AnalyticaSpyTransformer implements ClassFileTransformer {
 		return new CompositeMatcher<CtBehavior>(ctBehaviorMatchers);
 	}
 
-	/** {@inheritDoc} */
-	public byte[] transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain, final byte[] classfileBuffer) throws IllegalClassFormatException {
+	/**
+	 * @param className Nom de la classe
+	 * @return si cette classe doit être instrumentée
+	 */
+	public boolean shouldTransform(final String className) {
 		final String adaptedclassName = className.replace('/', '.');
+		return lookForHookPoint(adaptedclassName) != null;
+	}
+
+	private AnalyticaSpyHookPoint lookForHookPoint(final String adaptedclassName) {
 		//Test d'exclusions et d'inclusion rapide
 		if (excludeMatcher.isMatch(adaptedclassName) || !includeMatcher.isMatch(adaptedclassName)) {
 			// @see ClassFileTransformer : Returning null means that no transformation was done.
@@ -101,28 +107,39 @@ final class AnalyticaSpyTransformer implements ClassFileTransformer {
 		}
 
 		//Test de d'inclusions par le nom de class (pour ne créer la CtClass qu'au besoin)
-		final AnalyticaSpyHookPoint hookPoint = getHookPointByClassName(adaptedclassName);
-		if (hookPoint == null) {
+		final List<AnalyticaSpyHookPoint> hookPoints = getHookPointByClassName(adaptedclassName);
+		if (hookPoints.isEmpty()) {
 			// @see ClassFileTransformer : Returning null means that no transformation was done.
 			//System.out.println("Analytica noHookPoint " + adaptedclassName + " ");
 			return null;
 		}
 
 		final CtClass ctClass = obtainCtClass(adaptedclassName);
+		if (ctClass.isInterface()) {
+			return null; //pas d'instrumentation des interfaces
+		}
 		//Test de l'héritage si présent
-		final Matcher<CtClass> classMatcher = classHookPointMatchers.get(hookPoint);
-		if (classMatcher != null && !classMatcher.isMatch(ctClass)) {
-			// @see ClassFileTransformer : Returning null means that no transformation was done.
+		for (final AnalyticaSpyHookPoint hookPoint : hookPoints) {
+			final Matcher<CtClass> classMatcher = classHookPointMatchers.get(hookPoint);
+			if (classMatcher == null || classMatcher.isMatch(ctClass)) {
+				return hookPoint;
+			}
+		}
+		// @see ClassFileTransformer : Returning null means that no transformation was done.
+		return null;
+	}
+
+	/** {@inheritDoc} */
+	public byte[] transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain, final byte[] classfileBuffer) throws IllegalClassFormatException {
+		final String adaptedclassName = className.replace('/', '.');
+		final AnalyticaSpyHookPoint hookPoint = lookForHookPoint(adaptedclassName);
+		if (hookPoint == null) {
 			return null;
 		}
+
 		//Sinon on instrument
-		System.out.println("Analytica instrument " + adaptedclassName + " ");
-		try {
-			final byte[] newClass = instrumentClass(adaptedclassName, ctClass, hookPoint);
-			return newClass;
-		} finally {
-			ctClass.detach();
-		}
+		final byte[] newClass = instrumentClass(adaptedclassName, hookPoint);
+		return newClass;
 
 	}
 
@@ -138,39 +155,46 @@ final class AnalyticaSpyTransformer implements ClassFileTransformer {
 		return cl;
 	}
 
-	private AnalyticaSpyHookPoint getHookPointByClassName(final String adaptedclassName) {
+	private List<AnalyticaSpyHookPoint> getHookPointByClassName(final String adaptedclassName) {
+		final List<AnalyticaSpyHookPoint> hookPoints = new ArrayList<AnalyticaSpyHookPoint>();
 		for (final Map.Entry<Matcher<String>, AnalyticaSpyHookPoint> entry : classNameHookPointMatchers.entrySet()) {
 			if (entry.getKey().isMatch(adaptedclassName)) {
-				return entry.getValue();
+				hookPoints.add(entry.getValue());
 			}
 		}
-		return null;
+		return hookPoints;
 	}
 
-	private byte[] instrumentClass(final String adaptedclassName, final CtClass cl, final AnalyticaSpyHookPoint hookPoint) {
-		final Matcher<CtBehavior> methodMatcher = methodHookPointMatchers.get(hookPoint);
-		final ClassPool pool = ClassPool.getDefault();
+	private byte[] instrumentClass(final String adaptedclassName, final AnalyticaSpyHookPoint hookPoint) {
+		System.out.println("Analytica instrument " + adaptedclassName + " with : " + hookPoint);
+		final CtClass ctClass = obtainCtClass(adaptedclassName);
 		try {
-			final CtClass clThrowable = pool.get("java.lang.Throwable");
-			if (!cl.isInterface()) {
-				final String agentManagerDef = "private final com.kleegroup.analytica.agent.AgentManager agentManager = kasper.kernel.Home.getContainer().getManager(com.kleegroup.analytica.agent.AgentManager.class);";
-				final CtField agentManagerField = CtField.make(agentManagerDef, cl);
-				cl.addField(agentManagerField);
+			final Matcher<CtBehavior> methodMatcher = methodHookPointMatchers.get(hookPoint);
+			final ClassPool pool = ClassPool.getDefault();
+			try {
+				final CtClass clThrowable = pool.get("java.lang.Throwable");
+				if (!ctClass.isInterface()) {
+					//final String agentManagerDef = "private final com.kleegroup.analytica.agent.AgentManager agentManager = kasper.kernel.Home.getContainer().getManager(com.kleegroup.analytica.agent.AgentManager.class);";
+					//final CtField agentManagerField = CtField.make(agentManagerDef, cl);
+					//cl.addField(agentManagerField);
 
-				final CtBehavior[] methods = cl.getDeclaredBehaviors();
-				for (int i = 0; i < methods.length; i++) {
-					if (methods[i].isEmpty() == false && methodMatcher.isMatch(methods[i])) {
-						instrumentMethod(methods[i], clThrowable, hookPoint);
+					final CtBehavior[] methods = ctClass.getDeclaredBehaviors();
+					for (int i = 0; i < methods.length; i++) {
+						if (methods[i].isEmpty() == false && methodMatcher.isMatch(methods[i])) {
+							instrumentMethod(methods[i], clThrowable, hookPoint);
+						}
 					}
+					return ctClass.toBytecode();
+				} else {
+					throw new InvalidClassException("Can't instrument interfaces");
 				}
-				return cl.toBytecode();
-			} else {
-				throw new InvalidClassException("Can't instrument interfaces");
+			} catch (final Exception e) {
+				System.err.println("Could not instrument  " + adaptedclassName + ",  exception : " + e.getMessage());
+				e.printStackTrace();
+				throw new RuntimeException(e);
 			}
-		} catch (final Exception e) {
-			System.err.println("Could not instrument  " + adaptedclassName + ",  exception : " + e.getMessage());
-			e.printStackTrace();
-			throw new RuntimeException(e);
+		} finally {
+			ctClass.detach();
 		}
 	}
 
@@ -178,16 +202,20 @@ final class AnalyticaSpyTransformer implements ClassFileTransformer {
 		final String processType = hookPoint.getProcessType();
 		final StringBuilder sbBefore = new StringBuilder();
 		appendSubTypes(sbBefore, hookPoint, method.getName());
+		final String agentManagerDef = "final com.kleegroup.analytica.agent.AgentManager agentManager = kasper.kernel.Home.getContainer().getManager(com.kleegroup.analytica.agent.AgentManager.class);";
+		sbBefore.append(agentManagerDef);
 		sbBefore.append("agentManager.startProcess(\"").append(processType).append("\", subTypes);");
 		sbBefore.append("agentManager.setMeasure(\"ME_ERROR_PCT\", 0d);"); //le setMeasure surchargera si besoin
 		//sbBefore.append("try {");
 		final StringBuilder sbCatch = new StringBuilder();
 		//sbCatch.append("} catch (final Throwable th) {");
+		sbCatch.append(agentManagerDef);
 		sbCatch.append("	agentManager.setMeasure(\"ME_ERROR_PCT\", 100d);");
 		sbCatch.append("	agentManager.addMetaData(\"ME_ERROR_HEADER\", String.valueOf($e));");
 		sbCatch.append("	throw $e;");
 		final StringBuilder sbAfter = new StringBuilder();
 		//sbAfter.append("} finally {");
+		sbAfter.append(agentManagerDef);
 		sbAfter.append("	agentManager.stopProcess();");
 		//sbAfter.append("}");
 
@@ -237,6 +265,7 @@ final class AnalyticaSpyTransformer implements ClassFileTransformer {
 
 	private static final AnalyticaSpyConf loadJsonConf(final String configurationFileName) {
 		try {
+			//System.out.println("root : " + new File(configurationFileName).getAbsolutePath());
 			final String confJson = readConf(new File(configurationFileName));
 			final AnalyticaSpyConf conf = new Gson().fromJson(confJson, AnalyticaSpyConf.class);
 			return conf;

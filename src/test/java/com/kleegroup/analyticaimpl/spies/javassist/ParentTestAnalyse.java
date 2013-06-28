@@ -23,12 +23,11 @@ package com.kleegroup.analyticaimpl.spies.javassist;
  * @author pchretien, npiedeloup
  * @version $Id: AgentManagerTest.java,v 1.3 2012/03/29 08:48:19 npiedeloup Exp $
  */
-public final class TestAnalyse {
-	static {
-		System.out.println("Loading TestAnalyse.class");
-	}
+public abstract class ParentTestAnalyse {
 
-	public void work1s() {
+	abstract void workParentAbstract();
+
+	public final void workParent() {
 		try {
 			Thread.sleep(1000);
 		} catch (final InterruptedException e) {
@@ -36,45 +35,4 @@ public final class TestAnalyse {
 		}
 	}
 
-	public void workRandom() {
-		try {
-			Thread.sleep((long) (Math.random() * 5000L));
-		} catch (final InterruptedException e) {
-			//rien
-		}
-	}
-
-	public void workError() {
-		throw new RuntimeException("MyError");
-
-	}
-
-	public int workResult() {
-		try {
-			Thread.sleep(1000);
-		} catch (final InterruptedException e) {
-			//rien
-		}
-		return 1;
-	}
-
-	public void workReentrant() {
-		work1s();
-	}
-
-	public static void workStatic() {
-		try {
-			Thread.sleep(1000);
-		} catch (final InterruptedException e) {
-			//rien
-		}
-	}
-
-	public int workFastest() {
-		return new Integer((int) (Math.random() * 100000));
-	}
-
-	public int workFastestNotInstrumented() {
-		return new Integer((int) (Math.random() * 100000));
-	}
 }

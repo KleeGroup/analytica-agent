@@ -2,21 +2,35 @@
 	  "sun.*",
       "java.*","javax.*",
       "org.apache.log4j.*",
-      "kasper.*","kasperimpl.*"
+      "kasper.*","kasperimpl.*",
+      "$Proxy*"
     ],
    "fastIncludedPackages" : [ 
     ],
   "hookPoints" : [ 
-      { "className" : "*",
+      { "className" : "*.oracle.*",
         "inherits" : "java.sql.Statement",
         "methods" : ["executeQuery"],
         "processType" : "SQL",
         "subTypes" : ["$method","$0.getClass().getName()","$1"]
       },
       { "className" : "com.kleegroup.analyticaimpl.spies.javassist.*",
-        "methods" :  ["work1s","workRandom", "workError", "workResult"],
+        "inherits" : "com.kleegroup.analyticaimpl.spies.javassist.ParentTestAnalyse",
+        "methods" :  ["workParent*"],
+        "processType" : "JAVASSIST",
+        "subTypes" : ["$0.getClass().getName()","$method"]
+      },
+      { "className" : "com.kleegroup.analyticaimpl.spies.javassist.*",
+        "inherits" : "com.kleegroup.analyticaimpl.spies.javassist.InterfaceTestAnalyse",
+        "methods" :  ["workInterface"],
+        "processType" : "JAVASSIST",
+        "subTypes" : ["$class.getName()","$method"]
+      },
+      { "className" : "com.kleegroup.analyticaimpl.spies.javassist.TestAnalyse",
+        "methods" :  ["work1s","workRandom", "workError", "workResult", "workReentrant", "workStatic", "workFastest"],
         "processType" : "JAVASSIST",
         "subTypes" : ["$class.getName()","$method"]
       }
+      
     ]
 }

@@ -2,7 +2,12 @@
 <modules>
 	<module name="anlaytica">
 		<manager name="AgentManager" class="com.kleegroup.analyticaimpl.agent.AgentManagerImpl">
-			<plugin name="NetPlugin" class="com.kleegroup.analyticaimpl.agent.plugins.net.direct.DirectNetPlugin" />
+			<!--  plugin name="NetPlugin" class="com.kleegroup.analyticaimpl.agent.plugins.net.direct.DirectNetPlugin" /  -->
+			<plugin name="NetPlugin" class="com.kleegroup.analyticaimpl.agent.plugins.net.remote.RemoteNetPlugin">
+				<param name="serverUrl" value="http://localhost:9998/process" />
+				<param name="sendPaquetSize" value="500" />
+				<param name="sendPaquetFrequencySeconds" value="2" />
+			</plugin>
 		</manager>
 		
 		<manager name="ServerManager" class="com.kleegroup.analyticaimpl.server.ServerManagerImpl" >

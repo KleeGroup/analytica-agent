@@ -60,6 +60,7 @@ public final class RegExpMatcher implements Matcher<String> {
 					if (!matchesFixed(in, currentIndex, patternParts[i])) {
 						return false;
 					}
+					currentIndex = currentIndex + patternParts[i].length;
 				} else {
 					final int m = nextFixedMatch(in, currentIndex, patternParts[i]);
 					if (m == -1) {
@@ -70,7 +71,7 @@ public final class RegExpMatcher implements Matcher<String> {
 				canSkip = false;
 			}
 		}
-		return true;
+		return canSkip || currentIndex == in.length;
 	}
 
 	private static int nextFixedMatch(final char[] cs, final int offSet, final char[] ps) {

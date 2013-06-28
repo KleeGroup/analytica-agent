@@ -31,7 +31,7 @@ public final class InheritClassMatcher implements Matcher<CtClass> {
 	public boolean isMatch(final CtClass input) {
 		Assertion.notNull(input);
 		try {
-			return isParentMatch(input, false);
+			return isParentMatch(input, true);
 		} catch (final NotFoundException e) {
 			System.err.println("Could not check inherit matchs of " + input.getName() + ",  exception : " + e.getMessage());
 			throw new KRuntimeException(e);
