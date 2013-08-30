@@ -23,7 +23,7 @@ import com.kleegroup.analytica.agent.AgentManager;
 /**
  * Filtre de servlet (javax.servlet.Filter).
  * Il permet d'instrumenter les pages avec appels, durées, taille des flux d'entrée et de sortie.
- * TODO : redondant avec kasperimpl.jsf.servlet.analytics.AnalyticsUIFilter
+ * 
  * @author pchretien, npiedeloup 
  * @version $Id: UIFilter.java,v 1.7 2010/11/16 10:36:54 pchretien Exp $
  */
