@@ -59,7 +59,7 @@ public final class AnalyticaSpyAgentTest extends AbstractTestCaseJU4 {
 	 * Demarre l'agent de supervision des création d'instances.
 	 */
 	public static void startAgent() {
-		final File agentJar = getFile("analyticaAgent-1.1.0.jar", AnalyticaSpyAgentTest.class);
+		final File agentJar = getFile("analyticaAgent-1.3.0.jar", AnalyticaSpyAgentTest.class);
 		final File propertiesFile = getFile("testJavassistAnalyticaSpy.json", AnalyticaSpyAgentTest.class);
 
 		VirtualMachineAgentLoader.loadAgent(agentJar.getAbsolutePath(), propertiesFile.getAbsolutePath());

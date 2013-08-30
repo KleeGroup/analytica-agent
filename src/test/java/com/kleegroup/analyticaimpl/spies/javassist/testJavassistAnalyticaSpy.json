@@ -1,6 +1,18 @@
-{ "fastExcludedPackages" : [ 
+{
+"localVariables" : { },
+"methodBefore": ["com.kleegroup.analytica.agent.AgentManager agentManager = kasper.kernel.Home.getContainer().getManager(com.kleegroup.analytica.agent.AgentManager.class);",
+		"agentManager.startProcess(processType, subTypes);",
+		"agentManager.setMeasure(\"ME_ERROR_PCT\", 0d);"		
+		],
+"methodAfter": [],
+"methodCatchs" : {"java.lang.Throwable" : "com.kleegroup.analytica.agent.AgentManager agentManager = kasper.kernel.Home.getContainer().getManager(com.kleegroup.analytica.agent.AgentManager.class);agentManager.setMeasure(\"ME_ERROR_PCT\", 100d); agentManager.addMetaData(\"ME_ERROR_HEADER\", String.valueOf($e)); throw $e;" },
+"methodFinally": ["com.kleegroup.analytica.agent.AgentManager agentManager = kasper.kernel.Home.getContainer().getManager(com.kleegroup.analytica.agent.AgentManager.class);",
+	"agentManager.stopProcess();"],
+
+"fastExcludedPackages" : [ 
 	  "sun.*",
       "java.*","javax.*",
+      "javassist.*",
       "org.apache.log4j.*",
       "kasper.*","kasperimpl.*",
       "$Proxy*"
@@ -12,24 +24,24 @@
         "inherits" : "java.sql.Statement",
         "methods" : ["executeQuery"],
         "processType" : "SQL",
-        "subTypes" : ["$method","$0.getClass().getName()","$1"]
+        "subTypes" : ["$methodName","$class.getName()","$1"]
       },
       { "className" : "com.kleegroup.analyticaimpl.spies.javassist.*",
         "inherits" : "com.kleegroup.analyticaimpl.spies.javassist.ParentTestAnalyse",
         "methods" :  ["workParent*"],
         "processType" : "JAVASSIST",
-        "subTypes" : ["$0.getClass().getName()","$method"]
+        "subTypes" : ["$0.getClass().getName()","$methodName"]
       },
       { "className" : "com.kleegroup.analyticaimpl.spies.javassist.*",
         "inherits" : "com.kleegroup.analyticaimpl.spies.javassist.InterfaceTestAnalyse",
         "methods" :  ["workInterface"],
         "processType" : "JAVASSIST",
-        "subTypes" : ["$class.getName()","$method"]
+        "subTypes" : ["$class.getName()","$methodName"]
       },
       { "className" : "com.kleegroup.analyticaimpl.spies.javassist.TestAnalyse",
         "methods" :  ["work1s","workRandom", "workError", "workResult", "workReentrant", "workStatic", "workFastest"],
         "processType" : "JAVASSIST",
-        "subTypes" : ["$class.getName()","$method"]
+        "subTypes" : ["$class.getName()","$methodName"]
       }
       
     ]
