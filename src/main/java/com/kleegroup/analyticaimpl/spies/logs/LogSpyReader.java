@@ -9,9 +9,12 @@ import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -60,8 +63,10 @@ public final class LogSpyReader implements Activeable {
 			} else if (o2 == null) {
 				return 1;
 			}
-			final int compareDate = o1.getStartDateEvent().compareTo(o2.getStartDateEvent());
-			final int compareTime = Long.valueOf(o2.getTime()).compareTo(o1.getTime());
+			final int compareDate = o1.getStartDateEvent().compareTo(o2.getStartDateEvent()); //le plus petit en premier
+			final int compareTime = Long.valueOf(o1.getTime()).compareTo(o2.getTime()) * -1; //le plus grand en premier
+			//sinon requete/job en premier, Service puis Tache => ordre alphabetique du type
+			final int compareType = o1.getType().compareTo(o2.getType()); //le plus petit en premier
 
 			//			if (o1.getLogPattern().isProcessRoot() && !o2.getLogPattern().isProcessRoot()) {
 			//				return -1;
@@ -70,7 +75,7 @@ public final class LogSpyReader implements Activeable {
 			//			}
 			//System.out.println(o1.getStartDateEvent().getTime() + " compareDate " + o2.getStartDateEvent().getTime() + " = " + compareDate);
 			//System.out.println(o1.getTime() + " compareTime " + o2.getTime() + " = " + compareTime);
-			return compareDate != 0 ? compareDate : compareTime;
+			return compareDate != 0 ? compareDate : compareTime != 0 ? compareTime : compareType;
 		}
 	};
 
@@ -129,11 +134,11 @@ public final class LogSpyReader implements Activeable {
 	private KProcess extractProcess(final String threadName) {
 		final List<LogInfo> logInfos = getLogInfos(threadName);
 		//1 - on tri par date de début
-		System.out.println("extract >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-		for (final LogInfo logInfo : logInfos) {
-			System.out.println("    " + logInfo.toString());
-		}
-		System.out.println("extract <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+		//System.out.println("extract >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+		//for (final LogInfo logInfo : logInfos) {
+		//	System.out.println("    " + logInfo.toString());
+		//}
+		//System.out.println("extract <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
 		Collections.sort(logInfos, LOG_INFO_COMPARATOR);
 
 		System.out.println("extract sort >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
@@ -175,13 +180,63 @@ public final class LogSpyReader implements Activeable {
 		getLogInfos(threadName).clear();
 
 		//5 - On retourne le process résultat
+		System.out.println("process<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+		System.out.println("process:" + fullToString(process, new StringBuilder(), "").toString());
+
 		return process;
 	}
 
+	private StringBuilder fullToString(final KProcess process, final StringBuilder sb, final String linePrefix) {
+		final SimpleDateFormat sdfHour = new SimpleDateFormat("HH:mm:ss.SSS ");
+
+		sb.append(linePrefix);
+		sb.append("{").append("").append(process.getType()).append(":").append(Arrays.asList(process.getSubTypes())).append("; startDate:").append(sdfHour.format(process.getStartDate())).append("; endDate:").append(sdfHour.format(new Date(process.getStartDate().getTime() + (long) process.getDuration()))).append("; duration:").append(process.getDuration());
+		if (!process.getSubProcesses().isEmpty()) {
+			sb.append("\n").append(linePrefix).append("subprocess:{");
+			for (final KProcess subProcess : process.getSubProcesses()) {
+				sb.append("\n");
+				fullToString(subProcess, sb, linePrefix + "  ");
+				sb.append(";");
+			}
+
+			sb.append("\n").append(linePrefix).append("}");
+		}
+		sb.append("}");
+		return sb;
+	}
+
 	private void push(final LogInfo logInfo, final KProcessBuilder processBuilder, final Stack<LogInfo> stackLogInfo, final Stack<KProcessBuilder> stackProcessBuilder) {
+		final SimpleDateFormat sdfDate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.SSS");
+
 		final LogInfo logInfoPrevious = stackLogInfo.peek();
-		final Date dateEvent = logInfo.getDateEvent();
-		if (!dateEvent.after(logInfoPrevious.getDateEvent()) && !dateEvent.before(logInfoPrevious.getStartDateEvent())) {
+		final boolean sameType = logInfo.getType().equals(logInfoPrevious.getType());
+		//final Date dateEvent = logInfo.getDateEvent();
+		final boolean dateIncluded;
+		final long timeD1 = logInfoPrevious.getStartDateEvent().getTime();
+		final long timeF1 = logInfoPrevious.getDateEvent().getTime();
+		final long timeD2 = logInfo.getStartDateEvent().getTime();
+		final long timeF2 = logInfo.getDateEvent().getTime();
+		final long timeInclude = Math.min(timeF1, timeF2) - timeD2;
+		final long timeExclude = timeF2 - timeF1;
+		dateIncluded = !(timeInclude == 0 && sameType) && timeInclude >= timeExclude;
+		if (dateIncluded) {
+			System.out.println(logInfo.getSubType() + " in " + logInfoPrevious.getSubType() + " " + dateIncluded + "=" + timeInclude + ">=" + timeExclude);
+			//
+			//		if (sameType) {
+			//			dateIncluded = logInfo.getStartDateEvent().before(logInfoPrevious.getDateEvent()) && logInfo.getDateEvent().after(logInfoPrevious.getStartDateEvent());
+			//			System.out.print(dateIncluded + "(sametype) = ");
+			//			System.out.print(sdfDate.format(logInfo.getStartDateEvent()) + "<" + sdfDate.format(logInfoPrevious.getDateEvent()) + " && ");
+			//			System.out.println(sdfDate.format(logInfo.getDateEvent()) + ">" + sdfDate.format(logInfoPrevious.getStartDateEvent()));
+			//
+			//		} else {
+			//			dateIncluded = !logInfo.getStartDateEvent().after(logInfoPrevious.getDateEvent()) && !logInfo.getDateEvent().before(logInfoPrevious.getStartDateEvent());
+			//			System.out.print(dateIncluded + " = ");
+			//			System.out.print(sdfDate.format(logInfo.getStartDateEvent()) + "<=" + sdfDate.format(logInfoPrevious.getDateEvent()) + " && ");
+			//			System.out.println(sdfDate.format(logInfo.getDateEvent()) + ">=" + sdfDate.format(logInfoPrevious.getStartDateEvent()));
+			//		}
+		}
+
+		if (dateIncluded) {
 			//Si l'event est inclus dans les dates du précédent on l'ajout dedans
 			stackLogInfo.push(logInfo);
 			stackProcessBuilder.push(processBuilder);
@@ -276,7 +331,7 @@ public final class LogSpyReader implements Activeable {
 					logInfoMap.clear();
 				}
 			}
-			if (lineCount % 20000 == 0) {
+			if (lineCount % 200 == 0) {
 				final StringBuilder sb = new StringBuilder();
 				sb.append("read ").append(lineCount).append(" lines, parsed: ").append(parsedLineCount).append(" (").append(parsedLineCount * 100 / lineCount).append("%), detail:");
 				String sep = "";
@@ -341,15 +396,33 @@ public final class LogSpyReader implements Activeable {
 	}
 
 	private static Date adjustDate(final Date dateToAdjust, final Date lastDateRead) {
-		final long dateToAdjustTime = dateToAdjust.getTime();
-		Assertion.invariant(dateToAdjustTime < ONE_DAY_MILLIS, "La dateTime à ajuster contenait déjà la date");
-		final long lastDateReadTime = lastDateRead.getTime();
-		final long dateAdjustedTime = dateToAdjustTime + lastDateReadTime / ONE_DAY_MILLIS * ONE_DAY_MILLIS;
-		if (dateAdjustedTime >= lastDateReadTime - ONE_DAY_MILLIS / 24) { //au moins 1h d'écart (ce point est util pour les changements de jour donc on passe de 22h à 7h par exemple)
-			return new Date(dateAdjustedTime);
+		//		final long dateToAdjustTime = dateToAdjust.getTime();
+		//		Assertion.invariant(dateToAdjustTime < ONE_DAY_MILLIS, "La dateTime à ajuster contenait déjà la date");
+		//		final long lastDateReadTime = lastDateRead.getTime();
+		//		final long dateAdjustedTime = dateToAdjustTime + lastDateReadTime / ONE_DAY_MILLIS * ONE_DAY_MILLIS;
+		//		if (dateAdjustedTime >= lastDateReadTime - ONE_DAY_MILLIS / 24) { //au moins 1h d'écart (ce point est util pour les changements de jour donc on passe de 22h à 7h par exemple)
+		//			return new Date(dateAdjustedTime);
+		//		} else {
+		//			return new Date(dateAdjustedTime + ONE_DAY_MILLIS);
+		//		}
+		final Calendar lastDateReadCal = new GregorianCalendar();
+		final Calendar dateToAdjustCal = new GregorianCalendar();
+		lastDateReadCal.setTime(lastDateRead);
+		dateToAdjustCal.setTime(dateToAdjust);
+		dateToAdjustCal.set(Calendar.YEAR, lastDateReadCal.get(Calendar.YEAR));
+		dateToAdjustCal.set(Calendar.MONTH, lastDateReadCal.get(Calendar.MONTH));
+		dateToAdjustCal.set(Calendar.DAY_OF_MONTH, lastDateReadCal.get(Calendar.DAY_OF_MONTH));
+		//		lastDateReadCal.set(Calendar.HOUR_OF_DAY, dateToAdjustCal.get(Calendar.HOUR_OF_DAY));
+		//		lastDateReadCal.set(Calendar.MINUTE, dateToAdjustCal.get(Calendar.MINUTE));
+		//		lastDateReadCal.set(Calendar.SECOND, dateToAdjustCal.get(Calendar.SECOND));
+		//		lastDateReadCal.set(Calendar.MILLISECOND, dateToAdjustCal.get(Calendar.MILLISECOND));
+		if (dateToAdjustCal.getTimeInMillis() >= lastDateReadCal.getTimeInMillis() - ONE_DAY_MILLIS / 24) { //au moins 1h d'écart (ce point est util pour les changements de jour donc on passe de 22h à 7h par exemple)
+			return dateToAdjustCal.getTime();
 		} else {
-			return new Date(dateAdjustedTime + ONE_DAY_MILLIS);
+			dateToAdjustCal.add(Calendar.DAY_OF_MONTH, 1);
+			return dateToAdjustCal.getTime();
 		}
+
 	}
 
 	/** {@inheritDoc} */

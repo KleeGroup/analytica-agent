@@ -11,7 +11,7 @@ import kasper.kernel.util.Assertion;
  * @version $Id: $
  */
 final class LogInfo {
-
+	private static final long ROOT_DECAL_MS = 0;
 	private LogInfo startLogInfo = null;
 	private final Date dateEvent;
 	private final Date startDateEvent;
@@ -31,17 +31,22 @@ final class LogInfo {
 	 * @param logPattern Pattern de lecture du log
 	 */
 	public LogInfo(final Date dateEvent, final String threadName, final String type, final String subType, final long time, final LogPattern logPattern) {
-		this.dateEvent = dateEvent;
 		this.threadName = threadName;
 		this.type = type.toUpperCase();
 		this.subType = subType;
 		this.logPattern = logPattern;
 		if (logPattern.isStartLog()) {
-			this.time = -1;
+			this.time = time;
 			startDateEvent = dateEvent;
+			if (time > 0) {
+				this.dateEvent = new Date(dateEvent.getTime() + time + (logPattern.isProcessRoot() ? ROOT_DECAL_MS : 0));
+			} else {
+				this.dateEvent = new Date(dateEvent.getTime() + (logPattern.isProcessRoot() ? ROOT_DECAL_MS : 0));
+			}
 		} else {
 			this.time = time;
-			startDateEvent = new Date(dateEvent.getTime() - time - (logPattern.isProcessRoot() ? 16 : 0));
+			this.dateEvent = new Date(dateEvent.getTime() + (logPattern.isProcessRoot() ? ROOT_DECAL_MS : 0));
+			startDateEvent = new Date(dateEvent.getTime() - time - (logPattern.isProcessRoot() ? ROOT_DECAL_MS : 0));
 		}
 		//System.out.println("found " + toString());
 	}
@@ -102,6 +107,9 @@ final class LogInfo {
 	 * @return Durée du process
 	 */
 	public long getTime() {
+		if (time == -1 && startLogInfo != null) {
+			return getDateEvent().getTime() - getStartDateEvent().getTime();
+		}
 		return time;
 	}
 
@@ -117,7 +125,7 @@ final class LogInfo {
 	public String toString() {
 		final SimpleDateFormat sdfDate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.SSS");
 		final SimpleDateFormat sdfHour = new SimpleDateFormat("HH:mm:ss.SSS ");
-		return sdfDate.format(getStartDateEvent()) + (startLogInfo != null ? "(link)" : "") + ">" + sdfHour.format(getDateEvent()) + threadName + " " + type + " " + subType + " " + time + " " + logPattern.getCode();
+		return sdfDate.format(getStartDateEvent()) + (startLogInfo != null ? "(link)" : "") + ">" + sdfHour.format(getDateEvent()) + threadName + " " + type + " " + subType + " " + getTime() + " " + logPattern.getCode();
 	}
 
 }

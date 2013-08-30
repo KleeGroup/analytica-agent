@@ -25,7 +25,7 @@ public final class LogSpyStandaloneParser {
 	 * @param args "Usage: java kasper.kernel.Starter managers.xml <conf.properties>"
 	 */
 	public static void main(final String[] args) {
-		final String usageMsg = "Usage: java com.kleegroup.analyticaimpl.spies.logs.LogSpyStandaloneParser \"http://analyticaServer:port\" confPattern.json logFile.out";
+		final String usageMsg = "Usage: java com.kleegroup.analyticaimpl.spies.logs.LogSpyStandaloneParser \"http://analyticaServer:port/analytica/rest/process\" confPattern.json logFile.out";
 		Assertion.precondition(args.length == 3, usageMsg + " (nombre d'arguments incorrect : " + args.length + ")");
 		Assertion.precondition(args[0].contains("http://"), usageMsg + " (" + args[0] + ")");
 		Assertion.precondition(args[1].endsWith(".json"), usageMsg + " (" + args[1] + ")");
