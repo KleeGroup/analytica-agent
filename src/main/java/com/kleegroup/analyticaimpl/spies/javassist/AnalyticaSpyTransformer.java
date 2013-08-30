@@ -12,6 +12,7 @@ import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,18 +46,32 @@ final class AnalyticaSpyTransformer implements ClassFileTransformer {
 	private final Map<AnalyticaSpyHookPoint, Matcher<CtClass>> classHookPointMatchers = new LinkedHashMap<AnalyticaSpyHookPoint, Matcher<CtClass>>();
 	private final Map<AnalyticaSpyHookPoint, Matcher<CtBehavior>> methodHookPointMatchers = new LinkedHashMap<AnalyticaSpyHookPoint, Matcher<CtBehavior>>();
 
+	private final Map<String, CtClass> localVariables = new HashMap<String, CtClass>();
+	private final List<String> methodBefore;
+	private final List<String> methodAfter;
+	private final Map<CtClass, String> methodCatchs = new HashMap<CtClass, String>();
+	private final List<String> methodFinally;
+
+	private final List<ClassLoader> registeredClassLoader = new ArrayList<ClassLoader>();
+	private final ClassPool classPool = ClassPool.getDefault();
+
 	/**
 	 * @param agentArgs parametres du javaagent de ligne de commande
 	 */
 	AnalyticaSpyTransformer(final String agentArgs) {
 		//Assertion.notEmpty(agentArgs); //pas Asssertion pour eviter une dépendance
 		if (agentArgs == null || agentArgs.isEmpty()) {
-			throw new IllegalArgumentException("Usage : -javaAgent:analyticaSpyAgent.jar=analyticaPlugs.json");
+			throw new IllegalArgumentException("Usage : -javaagent:analyticaAgent.jar=analyticaPlugs.json");
 		}
 		analyticaSpyConf = loadJsonConf(agentArgs);
+		System.out.println("Analytica start conf : " + analyticaSpyConf.toJson());
 
 		excludeMatcher = buildStringMatchers(analyticaSpyConf.getFastExcludedPackages(), false);
 		includeMatcher = buildStringMatchers(analyticaSpyConf.getFastIncludedPackages(), true);
+
+		methodBefore = analyticaSpyConf.getMethodBefore();
+		methodAfter = analyticaSpyConf.getMethodAfter();
+		methodFinally = analyticaSpyConf.getMethodFinally();
 
 		for (final AnalyticaSpyHookPoint hookPoint : analyticaSpyConf.getHookPoints()) {
 			classNameHookPointMatchers.put(new RegExpMatcher(hookPoint.getClassName()), hookPoint);
@@ -64,6 +79,41 @@ final class AnalyticaSpyTransformer implements ClassFileTransformer {
 				classHookPointMatchers.put(hookPoint, new InheritClassMatcher(hookPoint.getInherits()));
 			}
 			methodHookPointMatchers.put(hookPoint, buildCtBehaviorMatchers(hookPoint.getMethods(), true));
+		}
+	}
+
+	/** {@inheritDoc} */
+	public byte[] transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain, final byte[] classfileBuffer) throws IllegalClassFormatException {
+		try {
+			final String adaptedclassName = className.replace('/', '.');
+			final AnalyticaSpyHookPoint hookPoint = lookForHookPoint(loader, adaptedclassName);
+			if (hookPoint == null) {
+				return null;
+			}
+
+			//Sinon on instrument
+			final byte[] newClass = instrumentClass(loader, adaptedclassName, hookPoint);
+			return newClass;
+		} catch (final Throwable th) {
+			System.err.println("Could not instrument  " + className + ",  exception : " + th.getMessage());
+			return null;
+		}
+	}
+
+	/**
+	 * @param loader Class loader
+	 * @param className Nom de la classe
+	 * @return si cette classe doit être instrumentée
+	 */
+	boolean shouldTransform(final ClassLoader loader, final String className) {
+		final String adaptedclassName = className.replace('/', '.');
+		return lookForHookPoint(loader, adaptedclassName) != null;
+	}
+
+	private void registerClassLoader(final ClassLoader loader) {
+		if (!registeredClassLoader.contains(loader)) {
+			classPool.appendClassPath(new javassist.LoaderClassPath(loader));
+			registeredClassLoader.add(loader);
 		}
 	}
 
@@ -89,16 +139,7 @@ final class AnalyticaSpyTransformer implements ClassFileTransformer {
 		return new CompositeMatcher<CtBehavior>(ctBehaviorMatchers);
 	}
 
-	/**
-	 * @param className Nom de la classe
-	 * @return si cette classe doit être instrumentée
-	 */
-	public boolean shouldTransform(final String className) {
-		final String adaptedclassName = className.replace('/', '.');
-		return lookForHookPoint(adaptedclassName) != null;
-	}
-
-	private AnalyticaSpyHookPoint lookForHookPoint(final String adaptedclassName) {
+	private AnalyticaSpyHookPoint lookForHookPoint(final ClassLoader loader, final String adaptedclassName) {
 		//Test d'exclusions et d'inclusion rapide
 		if (excludeMatcher.isMatch(adaptedclassName) || !includeMatcher.isMatch(adaptedclassName)) {
 			// @see ClassFileTransformer : Returning null means that no transformation was done.
@@ -114,7 +155,7 @@ final class AnalyticaSpyTransformer implements ClassFileTransformer {
 			return null;
 		}
 
-		final CtClass ctClass = obtainCtClass(adaptedclassName);
+		final CtClass ctClass = obtainCtClass(loader, adaptedclassName);
 		if (ctClass.isInterface()) {
 			return null; //pas d'instrumentation des interfaces
 		}
@@ -129,25 +170,11 @@ final class AnalyticaSpyTransformer implements ClassFileTransformer {
 		return null;
 	}
 
-	/** {@inheritDoc} */
-	public byte[] transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain, final byte[] classfileBuffer) throws IllegalClassFormatException {
-		final String adaptedclassName = className.replace('/', '.');
-		final AnalyticaSpyHookPoint hookPoint = lookForHookPoint(adaptedclassName);
-		if (hookPoint == null) {
-			return null;
-		}
-
-		//Sinon on instrument
-		final byte[] newClass = instrumentClass(adaptedclassName, hookPoint);
-		return newClass;
-
-	}
-
-	private CtClass obtainCtClass(final String adaptedclassName) {
-		final ClassPool pool = ClassPool.getDefault();
+	private CtClass obtainCtClass(final ClassLoader loader, final String adaptedclassName) {
+		registerClassLoader(loader);
 		final CtClass cl;
 		try {
-			cl = pool.get(adaptedclassName);
+			cl = classPool.get(adaptedclassName);
 		} catch (final NotFoundException e) {
 			System.err.println("Could not instrument  " + adaptedclassName + ",  exception : " + e.getMessage());
 			throw new RuntimeException(e);
@@ -165,14 +192,15 @@ final class AnalyticaSpyTransformer implements ClassFileTransformer {
 		return hookPoints;
 	}
 
-	private byte[] instrumentClass(final String adaptedclassName, final AnalyticaSpyHookPoint hookPoint) {
+	private byte[] instrumentClass(final ClassLoader loader, final String adaptedclassName, final AnalyticaSpyHookPoint hookPoint) {
 		System.out.println("Analytica instrument " + adaptedclassName + " with : " + hookPoint);
-		final CtClass ctClass = obtainCtClass(adaptedclassName);
+		final CtClass ctClass = obtainCtClass(loader, adaptedclassName);
 		try {
 			final Matcher<CtBehavior> methodMatcher = methodHookPointMatchers.get(hookPoint);
-			final ClassPool pool = ClassPool.getDefault();
 			try {
-				final CtClass clThrowable = pool.get("java.lang.Throwable");
+				populateLocalVariables(analyticaSpyConf.getLocalVariables());
+				populateMethodCatchs(analyticaSpyConf.getMethodCatchs());
+
 				if (!ctClass.isInterface()) {
 					//final String agentManagerDef = "private final com.kleegroup.analytica.agent.AgentManager agentManager = kasper.kernel.Home.getContainer().getManager(com.kleegroup.analytica.agent.AgentManager.class);";
 					//final CtField agentManagerField = CtField.make(agentManagerDef, cl);
@@ -181,7 +209,7 @@ final class AnalyticaSpyTransformer implements ClassFileTransformer {
 					final CtBehavior[] methods = ctClass.getDeclaredBehaviors();
 					for (int i = 0; i < methods.length; i++) {
 						if (methods[i].isEmpty() == false && methodMatcher.isMatch(methods[i])) {
-							instrumentMethod(methods[i], clThrowable, hookPoint);
+							instrumentMethod(methods[i], hookPoint);
 						}
 					}
 					return ctClass.toBytecode();
@@ -198,70 +226,90 @@ final class AnalyticaSpyTransformer implements ClassFileTransformer {
 		}
 	}
 
-	private void instrumentMethod(final CtBehavior method, final CtClass clThrowable, final AnalyticaSpyHookPoint hookPoint) throws CannotCompileException {
-		final String processType = hookPoint.getProcessType();
-		final StringBuilder sbBefore = new StringBuilder();
-		appendSubTypes(sbBefore, hookPoint, method.getName());
-		final String agentManagerDef = "final com.kleegroup.analytica.agent.AgentManager agentManager = kasper.kernel.Home.getContainer().getManager(com.kleegroup.analytica.agent.AgentManager.class);";
-		sbBefore.append(agentManagerDef);
-		sbBefore.append("agentManager.startProcess(\"").append(processType).append("\", subTypes);");
-		sbBefore.append("agentManager.setMeasure(\"ME_ERROR_PCT\", 0d);"); //le setMeasure surchargera si besoin
-		//sbBefore.append("try {");
-		final StringBuilder sbCatch = new StringBuilder();
-		//sbCatch.append("} catch (final Throwable th) {");
-		sbCatch.append(agentManagerDef);
-		sbCatch.append("	agentManager.setMeasure(\"ME_ERROR_PCT\", 100d);");
-		sbCatch.append("	agentManager.addMetaData(\"ME_ERROR_HEADER\", String.valueOf($e));");
-		sbCatch.append("	throw $e;");
-		final StringBuilder sbAfter = new StringBuilder();
-		//sbAfter.append("} finally {");
-		sbAfter.append(agentManagerDef);
-		sbAfter.append("	agentManager.stopProcess();");
-		//sbAfter.append("}");
-
-		method.addCatch(sbCatch.toString(), clThrowable);
-		method.insertBefore(sbBefore.toString());
-		method.insertAfter(sbAfter.toString(), true); //second param : finally	
-		System.out.println("Analytica instrument " + method.getLongName());
-
-	}
-
-	private void appendSubTypes(final StringBuilder sbBefore, final AnalyticaSpyHookPoint hookPoint, final String methodName) {
-		sbBefore.append("String[] subTypes = new String[" + hookPoint.getSubTypes().size() + "];\n");
-		int i = 0;
-		for (final String subType : hookPoint.getSubTypes()) {
-			sbBefore.append("subTypes[").append(i).append("] = ");
-			if (subType.equals("$method")) {
-				sbBefore.append("\"");
-				sbBefore.append(methodName);
-				sbBefore.append("\"");
-			} else if (subType.startsWith("$")) {
-				sbBefore.append(subType);
-			} else {
-				sbBefore.append("\"");
-				sbBefore.append(subType);
-				sbBefore.append("\"");
-			}
-			sbBefore.append(";\n");
-			i++;
+	private void populateLocalVariables(final Map<String, String> localVariablesConf) throws NotFoundException {
+		for (final Map.Entry<String, String> entry : localVariablesConf.entrySet()) {
+			localVariables.put(entry.getKey(), classPool.get(entry.getValue()));
 		}
 	}
 
-	//	private static final Properties loadProperties(final String propertiesFileName) {
-	//		final Properties properties = new Properties();
-	//		//---------------------------------------------------------------------
-	//		try {
-	//			final InputStream in = new FileInputStream(new File(propertiesFileName));
-	//			try {
-	//				properties.load(in);
-	//			} finally {
-	//				in.close();
-	//			}
-	//		} catch (final IOException e) {
-	//			throw new IllegalArgumentException("Impossible de charger le fichier de configuration : " + propertiesFileName, e);
-	//		}
-	//		return properties;
-	//	}
+	private void populateMethodCatchs(final Map<String, String> methodCatchsConf) throws NotFoundException {
+		for (final Map.Entry<String, String> entry : methodCatchsConf.entrySet()) {
+			methodCatchs.put(classPool.get(entry.getKey()), entry.getValue());
+		}
+	}
+
+	private void instrumentMethod(final CtBehavior method, final AnalyticaSpyHookPoint hookPoint) throws CannotCompileException {
+		//method.addLocalVariable("processType", classPool.get("String"));
+		//method.addLocalVariable("subTypes", classPool.get("java.lang.String[]"));
+
+		for (final Map.Entry<String, CtClass> entry : localVariables.entrySet()) {
+			method.addLocalVariable(entry.getKey(), entry.getValue());
+			//System.out.println("addLocalVariable " + entry.getKey() + " : " + entry.getValue().getName());
+		}
+
+		final StringBuilder sbBefore = new StringBuilder();
+		appendPredefinedVariable(sbBefore, hookPoint, method.getName());
+		for (final String line : methodBefore) {
+			if (!line.isEmpty()) {
+				sbBefore.append(line).append("\n");
+			}
+		}
+		if (sbBefore.length() > 0) {
+			method.insertBefore(sbBefore.toString());
+		}
+		//System.out.println("sbBefore " + sbBefore.toString());
+
+		final StringBuilder sbAfter = new StringBuilder();
+		for (final String line : methodAfter) {
+			if (!line.isEmpty()) {
+				sbAfter.append(line).append("\n");
+			}
+		}
+		if (sbAfter.length() > 0) {
+			method.insertAfter(sbAfter.toString(), false);
+		}
+		//System.out.println("sbAfter " + sbAfter.toString());
+
+		for (final Map.Entry<CtClass, String> entry : methodCatchs.entrySet()) {
+			method.addCatch(entry.getValue(), entry.getKey());
+			//System.out.println("addCatch " + entry.getKey().getName() + " : " + entry.getValue());
+		}
+
+		final StringBuilder sbFinally = new StringBuilder();
+		for (final String line : methodFinally) {
+			if (!line.isEmpty()) {
+				sbFinally.append(line).append("\n");
+			}
+		}
+		if (sbFinally.length() > 0) {
+			method.insertAfter(sbFinally.toString(), true);
+		}
+		//System.out.println("sbFinally " + sbFinally.toString());
+
+		System.out.println("Analytica instrument " + method.getLongName());
+	}
+
+	private void appendPredefinedVariable(final StringBuilder buffer, final AnalyticaSpyHookPoint hookPoint, final String methodName) {
+		buffer.append("final String processType = \"" + hookPoint.getProcessType() + "\";\n");
+		buffer.append("final String[] subTypes = new String[" + hookPoint.getSubTypes().size() + "];\n");
+		int i = 0;
+		for (final String subType : hookPoint.getSubTypes()) {
+			buffer.append("subTypes[").append(i).append("] = ");
+			if (subType.equals("$methodName")) {
+				buffer.append("\"");
+				buffer.append(methodName);
+				buffer.append("\"");
+			} else if (subType.startsWith("$")) {
+				buffer.append(subType);
+			} else {
+				buffer.append("\"");
+				buffer.append(subType);
+				buffer.append("\"");
+			}
+			buffer.append(";\n");
+			i++;
+		}
+	}
 
 	private static final AnalyticaSpyConf loadJsonConf(final String configurationFileName) {
 		try {

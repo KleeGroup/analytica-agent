@@ -84,7 +84,7 @@ public final class AnalyticaSpyAgent {
 		final Class<?>[] allLoadedClasses = instrumentation.getAllLoadedClasses();
 		final List<Class<?>> classes = new ArrayList<Class<?>>(allLoadedClasses.length);
 		for (final Class<?> clazz : allLoadedClasses) {
-			if (((AnalyticaSpyTransformer) transformer).shouldTransform(clazz.getName())) {
+			if (((AnalyticaSpyTransformer) transformer).shouldTransform(clazz.getClassLoader(), clazz.getName())) {
 				classes.add(clazz);
 			}
 		}
@@ -100,8 +100,8 @@ public final class AnalyticaSpyAgent {
 		for (final Class<?> clazz : classes) {
 			try {
 				instrumentation.retransformClasses(clazz);
-			} catch (final Exception e) {
-				System.err.println("Erreur retransformClasses " + clazz.getName());
+			} catch (final Throwable e) {
+				System.err.println("Erreur retransformClasses " + clazz.getName() + " : (" + e.getClass().getName() + ") " + e.getMessage());
 				//throw e;
 			}
 		}
