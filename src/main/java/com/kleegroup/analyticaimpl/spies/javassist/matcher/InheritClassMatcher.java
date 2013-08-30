@@ -2,8 +2,6 @@ package com.kleegroup.analyticaimpl.spies.javassist.matcher;
 
 import javassist.CtClass;
 import javassist.NotFoundException;
-import kasper.kernel.exception.KRuntimeException;
-import kasper.kernel.util.Assertion;
 
 /**
  * Match une class héritant ou implémentant d'une autre class.
@@ -22,19 +20,19 @@ public final class InheritClassMatcher implements Matcher<CtClass> {
 	 * @param pattenString initializes the matcher with the glob patterm.
 	 */
 	public InheritClassMatcher(final String pattenString) {
-		Assertion.notEmpty(pattenString);
+		//Assertion.notEmpty(pattenString);
 		//---------------------------------------------------------------------
 		superClassMatcher = new RegExpMatcher(pattenString);
 	}
 
 	/** {@inheritDoc}*/
 	public boolean isMatch(final CtClass input) {
-		Assertion.notNull(input);
+		//Assertion.notNull(input);
 		try {
 			return isParentMatch(input, true);
 		} catch (final NotFoundException e) {
 			System.err.println("Could not check inherit matchs of " + input.getName() + ",  exception : " + e.getMessage());
-			throw new KRuntimeException(e);
+			throw new RuntimeException(e);
 		}
 	}
 

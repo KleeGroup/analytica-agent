@@ -2,8 +2,6 @@ package com.kleegroup.analyticaimpl.spies.javassist.matcher;
 
 import java.util.StringTokenizer;
 
-import kasper.kernel.util.Assertion;
-
 /**
  * Class matches simple regular expressions of the form:
  * <li>this*
@@ -25,7 +23,7 @@ public final class RegExpMatcher implements Matcher<String> {
 	 * @param pattenString initializes the matcher with the glob patterm.
 	 */
 	public RegExpMatcher(final String pattenString) {
-		Assertion.notNull(pattenString);
+		//Assertion.notNull(pattenString);
 		//---------------------------------------------------------------------
 		this.pattenString = pattenString;
 		patternParts = getPatternParts(pattenString);
@@ -33,7 +31,7 @@ public final class RegExpMatcher implements Matcher<String> {
 
 	/** {@inheritDoc}*/
 	public boolean isMatch(final String inputString) {
-		Assertion.notNull(inputString);
+		//Assertion.notNull(inputString);
 		//---------------------------------------------------------------------
 		return isMatch(inputString, patternParts);
 	}

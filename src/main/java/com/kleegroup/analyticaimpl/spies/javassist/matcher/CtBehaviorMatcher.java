@@ -1,7 +1,6 @@
 package com.kleegroup.analyticaimpl.spies.javassist.matcher;
 
 import javassist.CtBehavior;
-import kasper.kernel.util.Assertion;
 
 /**
  * Class matches simple regular expressions of the form:
@@ -23,14 +22,14 @@ public final class CtBehaviorMatcher implements Matcher<CtBehavior> {
 	 * @param pattenString initializes the matcher with the glob patterm.
 	 */
 	public CtBehaviorMatcher(final String pattenString) {
-		Assertion.notEmpty(pattenString);
+		//Assertion.notEmpty(pattenString);
 		//---------------------------------------------------------------------
 		methodNameMatcher = new RegExpMatcher(pattenString);
 	}
 
 	/** {@inheritDoc}*/
 	public boolean isMatch(final CtBehavior input) {
-		Assertion.notNull(input);
+		//Assertion.notNull(input);
 		return methodNameMatcher.isMatch(input.getName());
 	}
 
