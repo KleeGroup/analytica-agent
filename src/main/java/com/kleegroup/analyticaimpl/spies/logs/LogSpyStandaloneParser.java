@@ -45,6 +45,8 @@ public final class LogSpyStandaloneParser {
 		logSpyReader.start();
 
 		flushAgentToServer();
+
+		starter.stop();
 	}
 
 	private static void flushAgentToServer() {

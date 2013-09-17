@@ -45,6 +45,7 @@ final class LogPattern {
 		this.indexThreadName = indexThreadName;
 		this.indexType = indexType;
 		this.indexSubType = indexSubType;
+		/** TODO : un tableau ? */
 		this.indexTime = indexTime;
 		this.processRoot = processRoot;
 		this.cleanStack = cleanStack;

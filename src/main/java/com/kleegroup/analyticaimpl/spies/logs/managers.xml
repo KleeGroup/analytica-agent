@@ -4,6 +4,7 @@
 		<manager name="ResourceManager" class="kasperimpl.resource.ResourceManagerImpl" >
 			<plugin id="javaRR"  	name="ResourceResolver" class="kasperimpl.resource.plugins.java.ClassPathResourceResolverPlugin"/>
 			<plugin id="urlRR"  	name="ResourceResolver" class="kasperimpl.resource.plugins.url.URLResourceResolverPlugin"/>
+			<plugin id="localRR"  	name="ResourceResolver" class="kasperimpl.resource.plugins.local.LocalResourceResolverPlugin"/>			
 		</manager>
 	</module>
 	<module name="anlaytica">
