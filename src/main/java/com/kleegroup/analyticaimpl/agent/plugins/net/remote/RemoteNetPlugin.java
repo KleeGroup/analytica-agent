@@ -61,15 +61,23 @@ public final class RemoteNetPlugin implements NetPlugin, Activeable {
 	private net.sf.ehcache.CacheManager manager;
 	private final String serverUrl;
 	private final int sendPaquetSize;
+	private final int sizeCheckFrequencyMs;
 	private final int sendPaquetFrequencySeconds;
 	private Client locatorClient;
 	private WebResource remoteWebResource;
+	private final int maxResendJson = 5; //On limite a 5 car ce sont déjà des paquets de sendPaquetSize Processes
 
+	/**
+	 * @param serverUrl Url du serveur Analytica
+	 * @param sendPaquetSize Taille des paquets déclenchant l'envoi anticipé
+	 * @param sendPaquetFrequencySeconds Frequence normal d'envoi des paquets (en seconde)
+	 */
 	@Inject
 	public RemoteNetPlugin(@Named("serverUrl") final String serverUrl, @Named("sendPaquetSize") final int sendPaquetSize, @Named("sendPaquetFrequencySeconds") final int sendPaquetFrequencySeconds) {
 		this.serverUrl = serverUrl;
 		this.sendPaquetSize = sendPaquetSize;
 		this.sendPaquetFrequencySeconds = sendPaquetFrequencySeconds;
+		sizeCheckFrequencyMs = 250;
 	}
 
 	/** {@inheritDoc} */
@@ -77,7 +85,8 @@ public final class RemoteNetPlugin implements NetPlugin, Activeable {
 		processQueue.add(process);
 		//		if (processQueue.size() >= sendPaquetSize) {
 		//			synchronized (processQueue) {
-		//			processQueue.notify();
+		//				processQueue.notify();
+		//				logger.trace("processQueue.size() >= sendPaquetSize notify : " + processQueue.size() + " >= " + sendPaquetSize);
 		//			}
 		//		}
 	}
@@ -103,6 +112,7 @@ public final class RemoteNetPlugin implements NetPlugin, Activeable {
 		processSenderThread.start();
 
 		logger.info("Start Analytica RemoteNetPlugin : connect to " + serverUrl);
+		//checkServerVersion();
 	}
 
 	/** {@inheritDoc} */
@@ -126,6 +136,8 @@ public final class RemoteNetPlugin implements NetPlugin, Activeable {
 	private static class SendProcessThread extends Thread {
 		private final RemoteNetPlugin remoteNetPlugin;
 
+		//private final Logger logger = Logger.getLogger(SendProcessThread.class);
+
 		SendProcessThread(final RemoteNetPlugin remoteNetPlugin) {
 			super("AnalyticaSendProcessThread");
 			setDaemon(false); //ce n'est pas un démon car on veux envoyer les derniers process
@@ -142,6 +154,7 @@ public final class RemoteNetPlugin implements NetPlugin, Activeable {
 					remoteNetPlugin.waitToSendPacket();
 				} catch (final InterruptedException e) {
 					interrupt();//On remet le flag qui a été reset lors du throw InterruptedException (pour le test isInterrupted())
+					//logger.trace("interrupt()");
 					//on envoi avant l'arret du serveur
 				}
 				//On flush la queue sur :
@@ -163,9 +176,16 @@ public final class RemoteNetPlugin implements NetPlugin, Activeable {
 	 * @throws InterruptedException Si interrupt
 	 */
 	void waitToSendPacket() throws InterruptedException {
-		synchronized (processQueue) {
-			processQueue.wait(sendPaquetFrequencySeconds * 1000);
+		final long start = System.currentTimeMillis();
+		while (processQueue.size() < sendPaquetSize // 
+				&& System.currentTimeMillis() - start < sendPaquetFrequencySeconds * 1000) {
+			Thread.sleep(sizeCheckFrequencyMs);
 		}
+		//		synchronized (processQueue) { //synchronized pour recevoir le notifiy
+		//			logger.trace("processQueue.wait");
+		//			processQueue.wait(sendPaquetFrequencySeconds * 1000);
+		//			logger.trace("processQueue.wait continue");
+		//		}
 	}
 
 	/**
@@ -179,25 +199,37 @@ public final class RemoteNetPlugin implements NetPlugin, Activeable {
 			if (head != null) {
 				processes.add(head);
 			}
+			if (processes.size() >= sendPaquetSize * 2) { //si besoin on va jusqu'a un sur-booking x2 des paquets
+				doSendProcesses(processes);
+				processes.clear();
+			}
 		} while (head != null); //On depile tout : car lors de l'arret du serveur on aura pas d'autre flush
+		doSendProcesses(processes);
+
+		//On n'utilise pas le MediaType.APPLICATION_JSON, car jackson a besoin de modifications sur KProcess
+		//final ClientResponse response = remoteWeResource.accept(MediaType.APPLICATION_JSON).put(ClientResponse.class, processes);
+	}
+
+	private void doSendProcesses(final Collection<KProcess> processes) {
 		if (!processes.isEmpty()) {
 			final String json = new Gson().toJson(processes);
 			try {
 				doSendJson(remoteWebResource, json);
-				logger.info("[Analytica-RemoteNetPlugin] Send " + processes.size() + " processes to " + serverUrl);
+				logger.info("Send " + processes.size() + " processes to " + serverUrl);
 			} catch (final Exception e) {
 				logSendError(false, e);
 				doStoreJson(json);
 			}
 		}
-		//On n'utilise pas le MediaType.APPLICATION_JSON, car jackson a besoin de modifications sur KProcess
-		//final ClientResponse response = remoteWeResource.accept(MediaType.APPLICATION_JSON).put(ClientResponse.class, processes);
 	}
 
-	private void retrySendProcesses() {
+	/**
+	 * Tente de renvoyer les paquets qui ont échoués.
+	 */
+	void retrySendProcesses() {
 		try {
 			final List<UUID> keys = manager.getCache(SPOOL_CONTEXT).getKeys();
-			for (int i = 0; i < 5 && i < keys.size(); i++) {
+			for (int i = 0; i < maxResendJson && i < keys.size(); i++) { //on limite a 5 car ce sont déjà des paquets constitués 
 				final UUID key = keys.get(i);
 				doSendJson(remoteWebResource, (String) manager.getCache(SPOOL_CONTEXT).get(key).getValue());
 				manager.getCache(SPOOL_CONTEXT).remove(key); //si l'envoi est passé, on retire du cache
@@ -251,7 +283,17 @@ public final class RemoteNetPlugin implements NetPlugin, Activeable {
 	private void checkServerVersion() {
 		//On check la version
 		final WebResource remoteVersionWebResource = locatorClient.resource(serverUrl + "/version");
-		final String serverVersion = doGet(remoteVersionWebResource);
-		Assertion.precondition(serverVersion.startsWith(VERSION_MAJOR), "Cette version du client Analytica ({0}) n''est pas compatible avec la version du serveur ({1})", VERSION, serverVersion);
+		try {
+			final String serverVersion = doGet(remoteVersionWebResource);
+			if (!serverVersion.startsWith(VERSION_MAJOR)) {
+				logger.warn("Cette version du client Analytica (" + VERSION + ") n''est pas compatible avec la version du serveur (" + serverVersion + ")");
+			} else {
+				logger.info("Connexion OK avec le serveur Analytica (" + serverUrl + ")");
+			}
+		} catch (final Exception e) {
+			//serveur indisponible ou en erreur
+			logger.warn("Serveur Analytica indisponible (" + serverUrl + ") : " + e.getMessage());
+		}
+
 	}
 }

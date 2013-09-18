@@ -7,7 +7,7 @@
 			<plugin id="localRR"  	name="ResourceResolver" class="kasperimpl.resource.plugins.local.LocalResourceResolverPlugin"/>			
 		</manager>
 	</module>
-	<module name="anlaytica">
+	<module name="analytica">
 		<manager name="AgentManager" class="com.kleegroup.analyticaimpl.agent.AgentManagerImpl">
 			<plugin name="NetPlugin" class="com.kleegroup.analyticaimpl.agent.plugins.net.remote.RemoteNetPlugin">
 				<param name="serverUrl" value="{serverUrl}" />

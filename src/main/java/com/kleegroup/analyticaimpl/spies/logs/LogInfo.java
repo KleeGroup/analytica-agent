@@ -15,6 +15,7 @@ final class LogInfo {
 	private LogInfo startLogInfo = null;
 	private final Date dateEvent;
 	private final Date startDateEvent;
+	private final String json;
 	private final String threadName;
 	private final String type;
 	private final String subType;
@@ -48,7 +49,25 @@ final class LogInfo {
 			this.dateEvent = new Date(dateEvent.getTime() + (logPattern.isProcessRoot() ? ROOT_DECAL_MS : 0));
 			startDateEvent = new Date(dateEvent.getTime() - time - (logPattern.isProcessRoot() ? ROOT_DECAL_MS : 0));
 		}
+		json = null;
 		//System.out.println("found " + toString());
+	}
+
+	/**
+	 * Constructeur.
+	 *  @param threadName Nom du thread
+	 * @param json Json complet du process
+	 * @param logPattern Pattern de lecture du log
+	 */
+	public LogInfo(final String threadName, final String json, final LogPattern logPattern) {
+		this.threadName = threadName;
+		this.json = json;
+		this.logPattern = logPattern;
+		type = null;
+		subType = null;
+		time = -1;
+		dateEvent = null;
+		startDateEvent = null;
 	}
 
 	/**
@@ -87,6 +106,13 @@ final class LogInfo {
 	 */
 	public String getThreadName() {
 		return threadName;
+	}
+
+	/**
+	 * @return Json
+	 */
+	public String getJson() {
+		return json;
 	}
 
 	/**

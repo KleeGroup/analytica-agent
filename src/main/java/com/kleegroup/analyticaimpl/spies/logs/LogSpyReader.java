@@ -31,6 +31,8 @@ import kasper.kernel.lang.Option;
 import kasper.kernel.util.Assertion;
 import kasper.resource.ResourceManager;
 
+import org.apache.log4j.Logger;
+
 import com.google.gson.Gson;
 import com.kleegroup.analytica.agent.AgentManager;
 import com.kleegroup.analytica.core.KProcess;
@@ -45,6 +47,7 @@ public final class LogSpyReader implements Activeable {
 
 	private static final String ME_ERROR_PCT = "ERROR_PCT";
 	private static final long ONE_DAY_MILLIS = 24 * 60 * 60 * 1000;
+	private final Logger logger = Logger.getLogger(getClass());
 
 	private final AgentManager agentManager;
 	private final URL logFileUrl;
@@ -73,8 +76,8 @@ public final class LogSpyReader implements Activeable {
 			//			} else if (o2.getLogPattern().isProcessRoot() && !o1.getLogPattern().isProcessRoot()) {
 			//				return 1;
 			//			}
-			//System.out.println(o1.getStartDateEvent().getTime() + " compareDate " + o2.getStartDateEvent().getTime() + " = " + compareDate);
-			//System.out.println(o1.getTime() + " compareTime " + o2.getTime() + " = " + compareTime);
+			//Systemlogger.infoprintln(o1.getStartDateEvent().getTime() + " compareDate " + o2.getStartDateEvent().getTime() + " = " + compareDate);
+			//logger.info(o1.getTime() + " compareTime " + o2.getTime() + " = " + compareTime);
 			return compareDate != 0 ? compareDate : compareTime != 0 ? compareTime : compareType;
 		}
 	};
@@ -134,18 +137,18 @@ public final class LogSpyReader implements Activeable {
 	private KProcess extractProcess(final String threadName) {
 		final List<LogInfo> logInfos = getLogInfos(threadName);
 		//1 - on tri par date de début
-		//System.out.println("extract >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+		//logger.info("extract >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 		//for (final LogInfo logInfo : logInfos) {
-		//	System.out.println("    " + logInfo.toString());
+		//	logger.info("    " + logInfo.toString());
 		//}
-		//System.out.println("extract <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+		//logger.info("extract <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
 		Collections.sort(logInfos, LOG_INFO_COMPARATOR);
 
-		System.out.println("extract sort >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+		logger.info("extract sort >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 		for (final LogInfo logInfo : logInfos) {
-			System.out.println("    " + logInfo.toString());
+			logger.info("    " + logInfo.toString());
 		}
-		System.out.println("extract sort <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+		logger.info("extract sort <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
 
 		final Stack<KProcessBuilder> stackProcessBuilder = new Stack<KProcessBuilder>();
 		final Stack<LogInfo> stackLogInfo = new Stack<LogInfo>();
@@ -180,8 +183,8 @@ public final class LogSpyReader implements Activeable {
 		getLogInfos(threadName).clear();
 
 		//5 - On retourne le process résultat
-		System.out.println("process<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
-		System.out.println("process:" + fullToString(process, new StringBuilder(), "").toString());
+		logger.info("process<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+		logger.info("process:" + fullToString(process, new StringBuilder(), "").toString());
 
 		return process;
 	}
@@ -220,19 +223,19 @@ public final class LogSpyReader implements Activeable {
 		final long timeExclude = timeF2 - timeF1;
 		dateIncluded = !(timeInclude == 0 && sameType) && timeInclude >= timeExclude;
 		if (dateIncluded) {
-			System.out.println(logInfo.getSubType() + " in " + logInfoPrevious.getSubType() + " " + dateIncluded + "=" + timeInclude + ">=" + timeExclude);
+			logger.info(logInfo.getSubType() + " in " + logInfoPrevious.getSubType() + " " + dateIncluded + "=" + timeInclude + ">=" + timeExclude);
 			//
 			//		if (sameType) {
 			//			dateIncluded = logInfo.getStartDateEvent().before(logInfoPrevious.getDateEvent()) && logInfo.getDateEvent().after(logInfoPrevious.getStartDateEvent());
 			//			System.out.print(dateIncluded + "(sametype) = ");
 			//			System.out.print(sdfDate.format(logInfo.getStartDateEvent()) + "<" + sdfDate.format(logInfoPrevious.getDateEvent()) + " && ");
-			//			System.out.println(sdfDate.format(logInfo.getDateEvent()) + ">" + sdfDate.format(logInfoPrevious.getStartDateEvent()));
+			//			logger.info(sdfDate.format(logInfo.getDateEvent()) + ">" + sdfDate.format(logInfoPrevious.getStartDateEvent()));
 			//
 			//		} else {
 			//			dateIncluded = !logInfo.getStartDateEvent().after(logInfoPrevious.getDateEvent()) && !logInfo.getDateEvent().before(logInfoPrevious.getStartDateEvent());
 			//			System.out.print(dateIncluded + " = ");
 			//			System.out.print(sdfDate.format(logInfo.getStartDateEvent()) + "<=" + sdfDate.format(logInfoPrevious.getDateEvent()) + " && ");
-			//			System.out.println(sdfDate.format(logInfo.getDateEvent()) + ">=" + sdfDate.format(logInfoPrevious.getStartDateEvent()));
+			//			logger.info(sdfDate.format(logInfo.getDateEvent()) + ">=" + sdfDate.format(logInfoPrevious.getStartDateEvent()));
 			//		}
 		}
 
@@ -253,7 +256,7 @@ public final class LogSpyReader implements Activeable {
 				processBuilderParent.addSubProcess(processBuilderPrevious.build());
 				push(logInfo, processBuilder, stackLogInfo, stackProcessBuilder);
 			} else {
-				System.out.println("La stackProcessBuilder est vide : \n\tcurrent:" + processBuilder.build() + "\n\tprevious:" + processBuilderPrevious.build());
+				logger.info("La stackProcessBuilder est vide : \n\tcurrent:" + processBuilder.build() + "\n\tprevious:" + processBuilderPrevious.build());
 			}
 		}
 	}
@@ -324,30 +327,42 @@ public final class LogSpyReader implements Activeable {
 				final LogInfo logInfo = logInfoOption.get();
 				parsedLineCount++;
 				patternHit(logInfo.getLogPattern());
-				appendLogInfo(logInfo);
-				if (logInfo.getLogPattern().isProcessRoot()) {
-					agentManager.add(extractProcess(logInfo.getThreadName()));
-				} else if (logInfo.getLogPattern().isCleanStack()) {
-					logInfoMap.clear();
+				if (logInfo.getLogPattern().isProcessesJson()) {
+					final KProcess[] processes = new Gson().fromJson(logInfo.getJson(), KProcess[].class);
+					for (final KProcess process : processes) {
+						agentManager.add(process);
+					}
+				} else {
+					appendLogInfo(logInfo);
+					if (logInfo.getLogPattern().isProcessRoot()) {
+						agentManager.add(extractProcess(logInfo.getThreadName()));
+					} else if (logInfo.getLogPattern().isCleanStack()) {
+						logInfoMap.clear();
+					}
 				}
 			}
-			if (lineCount % 200 == 0) {
-				final StringBuilder sb = new StringBuilder();
-				sb.append("read ").append(lineCount).append(" lines, parsed: ").append(parsedLineCount).append(" (").append(parsedLineCount * 100 / lineCount).append("%), detail:");
-				String sep = "";
-				sb.append("{");
-				for (final Map.Entry<LogPattern, Integer> entry : patternStats.entrySet()) {
-					sb.append(sep);
-					sb.append(entry.getKey().getCode());
-					sb.append("=");
-					sb.append(entry.getValue());
-					sep = ", ";
-				}
-				sb.append("}");
-
-				System.out.println(sb.toString());
+			if (lineCount % 250 == 0) {
+				logPatternMatchingSummary(lineCount, parsedLineCount);
 			}
 		}
+		logPatternMatchingSummary(lineCount, parsedLineCount);
+	}
+
+	private void logPatternMatchingSummary(final long lineCount, final long parsedLineCount) {
+		final StringBuilder sb = new StringBuilder();
+		sb.append("read ").append(lineCount).append(" lines, parsed: ").append(parsedLineCount).append(" (").append(parsedLineCount * 100 / lineCount).append("%), detail:");
+		String sep = "";
+		sb.append("{");
+		for (final Map.Entry<LogPattern, Integer> entry : patternStats.entrySet()) {
+			sb.append(sep);
+			sb.append(entry.getKey().getCode());
+			sb.append("=");
+			sb.append(entry.getValue());
+			sep = ", ";
+		}
+		sb.append("}");
+
+		logger.info(sb.toString());
 	}
 
 	private void patternHit(final LogPattern logPattern) {
@@ -359,12 +374,18 @@ public final class LogSpyReader implements Activeable {
 		for (final LogPattern logPattern : patterns) {
 			final Matcher startMatch = logPattern.getPattern().matcher(currentLine);
 			if (startMatch.find()) {
-				final String date = startMatch.group(logPattern.getIndexDate());
-				final String threadName = logPattern.getIndexThreadName() != -1 ? startMatch.group(logPattern.getIndexThreadName()) : "none";
-				final String type = logPattern.getIndexType() != -1 ? startMatch.group(logPattern.getIndexType()) : logPattern.getCode();
-				final String subType = logPattern.getIndexSubType() != -1 ? startMatch.group(logPattern.getIndexSubType()) : "";
-				final String time = logPattern.getIndexTime() != -1 ? startMatch.group(logPattern.getIndexTime()) : null;
-				return Option.some(new LogInfo(readDate(date), threadName, type, subType, readTime(time), logPattern));
+				if (logPattern.isProcessesJson()) {
+					final String json = startMatch.group(logPattern.getIndexProcessesJson());
+					final String threadName = logPattern.getIndexThreadName() > 0 ? startMatch.group(logPattern.getIndexThreadName()) : "none";
+					return Option.some(new LogInfo(threadName, json, logPattern));
+				} else {
+					final String date = startMatch.group(logPattern.getIndexDate());
+					final String threadName = logPattern.getIndexThreadName() > 0 ? startMatch.group(logPattern.getIndexThreadName()) : "none";
+					final String type = logPattern.getIndexType() > 0 ? startMatch.group(logPattern.getIndexType()) : logPattern.getCode();
+					final String subType = logPattern.getIndexSubType() > 0 ? startMatch.group(logPattern.getIndexSubType()) : "";
+					final String time = logPattern.getIndexTime() > 0 ? startMatch.group(logPattern.getIndexTime()) : null;
+					return Option.some(new LogInfo(readDate(date), threadName, type, subType, readTime(time), logPattern));
+				}
 			}
 		}
 		return Option.none();

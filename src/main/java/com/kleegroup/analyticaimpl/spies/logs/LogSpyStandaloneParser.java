@@ -36,6 +36,7 @@ public final class LogSpyStandaloneParser {
 		defaultProperties.setProperty("serverUrl", args[0]);
 		defaultProperties.setProperty("confFileUrl", args[1]);
 		defaultProperties.setProperty("logFileUrl", args[2]);
+
 		final Starter starter = new Starter(managersXmlFileName, propertiesFileName, LogSpyStandaloneParser.class, Option.some(defaultProperties), 0);
 		starter.start();
 
