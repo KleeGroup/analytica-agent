@@ -3,6 +3,12 @@
       "MMM d, yyyy h:mm:ss a"
     ],
   "logPatterns" : [ 
+      { "code" : "AGENT-FILELOG",
+        "patternRegExp" : "^.*\\[([a-zA-Z0-9-_]+)\\] INFO  FILELOG-AGENT - (\\[.*\\]) *$",
+        "indexProcessesJson" : 2,
+        "indexThreadName" : 1,
+        "processRoot" : true
+      }, 
       { "code" : "REQUETE",
         "patternRegExp" : "^INFO  ([0-9:\\.]+) \\[([a-zA-Z0-9-_]+)\\] LogFilter - Sortie de la ([\\u0000-\\uFFFF]+) [\\u0000-\\uFFFF]+/pages/([\\u0000-\\uFFFF]+) in ([0-9]+)ms$",
         "cleanStack" : false,

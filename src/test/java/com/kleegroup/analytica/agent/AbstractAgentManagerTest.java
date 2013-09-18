@@ -132,8 +132,8 @@ public abstract class AbstractAgentManagerTest extends AbstractTestCaseJU4 {
 	public void testMultiThread() throws InterruptedException {
 		final long start = System.currentTimeMillis();
 		final ExecutorService workersPool = Executors.newFixedThreadPool(20);
-
-		for (int i = 0; i < 50; i++) {
+		final long nbCommandes = 200;
+		for (int i = 0; i < nbCommandes; i++) {
 			workersPool.execute(new CommandeTask(String.valueOf(i), 5));
 		}
 		workersPool.shutdown();
@@ -143,8 +143,8 @@ public abstract class AbstractAgentManagerTest extends AbstractTestCaseJU4 {
 		log.trace("elapsed = " + (System.currentTimeMillis() - start));
 
 		flushAgentToServer();
-		checkMetricCount("MONTANT", 50, PROCESS2_TYPE); //nombre de commande
-		checkMetricCount("MONTANT", 50 * 5, PROCESS1_TYPE); //nombre d'article
+		checkMetricCount("MONTANT", nbCommandes, PROCESS2_TYPE); //nombre de commande
+		checkMetricCount("MONTANT", nbCommandes * 5, PROCESS1_TYPE); //nombre d'article
 	}
 
 	/**
@@ -230,12 +230,12 @@ public abstract class AbstractAgentManagerTest extends AbstractTestCaseJU4 {
 
 		public void run() {
 			doOneCommande(numCommande, nbArticles);
+			System.out.println("Finish commande n°" + numCommande);
 			try {
 				Thread.sleep(100);
 			} catch (final InterruptedException e) {
 				//rien
 			}
-			System.out.println("Finish commande n°" + numCommande);
 		}
 	}
 }

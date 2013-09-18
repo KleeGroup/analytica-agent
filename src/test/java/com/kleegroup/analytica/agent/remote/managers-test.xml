@@ -4,21 +4,22 @@
 		<manager name="AgentManager" class="com.kleegroup.analyticaimpl.agent.AgentManagerImpl">
 			<plugin name="NetPlugin" class="com.kleegroup.analyticaimpl.agent.plugins.net.remote.RemoteNetPlugin">
 				<param name="serverUrl" value="http://localhost:9998/process" />
-				<param name="sendPaquetSize" value="10" />
+				<param name="sendPaquetSize" value="20" />
 				<param name="sendPaquetFrequencySeconds" value="1" />
 			</plugin>
 		</manager>
 
-		<manager name="ServerManager" class="com.kleegroup.analyticaimpl.server.ServerManagerImpl" >
-	       <plugin name="ProcessStorePlugin" class="com.kleegroup.analyticaimpl.server.plugins.processstore.berkeley.BerkeleyProcessStorePlugin">
-	        	<param name="dbPath" value="d:/analytica/db-test" />
-	        </plugin>
-	         <!-- <plugin name="ProcessEncoderPlugin" class="com.kleegroup.analyticaimpl.server.plugins.processencoder.standard.StandardProcessEncoderPlugin">
-	        </plugin>  -->       
-	     </manager>
-	     <manager name="HCubeManager" class="com.kleegroup.analyticaimpl.hcube.HCubeManagerImpl">
+		<manager name="HCubeManager" class="com.kleegroup.analyticaimpl.hcube.HCubeManagerImpl">
 				<plugin name="CubeStorePlugin" class="com.kleegroup.analyticaimpl.hcube.plugins.store.memory.MemoryCubeStorePlugin">
 				</plugin>
 		</manager>
+		<manager name="ServerManager" class="com.kleegroup.analyticaimpl.server.ServerManagerImpl" >
+			<plugin name="ProcessStorePlugin" class="com.kleegroup.analyticaimpl.server.plugins.processstore.memory.MemoryProcessStorePlugin" />		
+<!-- 	       <plugin name="ProcessStorePlugin" class="com.kleegroup.analyticaimpl.server.plugins.processstore.berkeley.BerkeleyProcessStorePlugin">
+	        	<param name="dbPath" value="d:/analytica/db-test" />
+	        </plugin>
+ -->	         <!-- <plugin name="ProcessEncoderPlugin" class="com.kleegroup.analyticaimpl.server.plugins.processencoder.standard.StandardProcessEncoderPlugin">
+	        </plugin>  -->       
+	     </manager>
 	</module>
 </modules>

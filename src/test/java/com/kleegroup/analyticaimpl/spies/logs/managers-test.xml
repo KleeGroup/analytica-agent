@@ -11,16 +11,21 @@
 			<plugin name="NetPlugin" class="com.kleegroup.analyticaimpl.agent.plugins.net.direct.DirectNetPlugin" />
 		</manager> -->
 		<manager name="AgentManager" class="com.kleegroup.analyticaimpl.agent.AgentManagerImpl">
-			<plugin name="NetPlugin" class="com.kleegroup.analyticaimpl.agent.plugins.net.remote.RemoteNetPlugin">
+			<!-- <plugin name="NetPlugin" class="com.kleegroup.analyticaimpl.agent.plugins.net.filelog.FileLogNetPlugin">
+				<param name="logName" value="FILELOG-AGENT" />
+			</plugin> -->
+			<!-- <plugin name="NetPlugin" class="com.kleegroup.analyticaimpl.agent.plugins.net.remote.RemoteNetPlugin">
 				<param name="serverUrl" value="http://localhost:8080/analytica/rest/process" />
 				<param name="sendPaquetSize" value="500" />
 				<param name="sendPaquetFrequencySeconds" value="1" />
-			</plugin>
+			</plugin> -->
+			<plugin name="NetPlugin" class="com.kleegroup.analyticaimpl.agent.plugins.net.direct.DirectNetPlugin" />
 		</manager>
 		<manager name="ServerManager" class="com.kleegroup.analyticaimpl.server.ServerManagerImpl" >
-	       <plugin name="ProcessStorePlugin" class="com.kleegroup.analyticaimpl.server.plugins.processstore.berkeley.BerkeleyProcessStorePlugin">
+	       	<plugin name="ProcessStorePlugin" class="com.kleegroup.analyticaimpl.server.plugins.processstore.memory.MemoryProcessStorePlugin" />
+			<!-- <plugin name="ProcessStorePlugin" class="com.kleegroup.analyticaimpl.server.plugins.processstore.berkeley.BerkeleyProcessStorePlugin">
 	        	<param name="dbPath" value="d:/analytica/db-test" />
-	        </plugin>
+	        </plugin> -->
 	         <!-- <plugin name="ProcessEncoderPlugin" class="com.kleegroup.analyticaimpl.server.plugins.processencoder.standard.StandardProcessEncoderPlugin">
 	        </plugin>  -->       
 	     </manager>
