@@ -1,0 +1,54 @@
+{
+"pluginName" : "FileLogNetPlugin",
+"pluginParams" : {"logName" : "FILELOG-AGENT"},
+
+"localVariables" : { },
+"methodBefore": ["com.kleegroup.analyticaimpl.agent.KProcessCollector processCollector = com.kleegroup.analyticaimpl.spies.javassist.AnalyticaSpyAgentContainer.getProcessCollector();",
+		"processCollector.startProcess(processType, subTypes);",
+		"processCollector.setMeasure(\"ME_ERROR_PCT\", 0d);"
+	],
+"methodAfter": [],
+"methodCatchs" : {"java.lang.Throwable" : "com.kleegroup.analyticaimpl.agent.KProcessCollector processCollector = com.kleegroup.analyticaimpl.spies.javassist.AnalyticaSpyAgentContainer.getProcessCollector();processCollector.setMeasure(\"ME_ERROR_PCT\", 100d); processCollector.addMetaData(\"ME_ERROR_HEADER\", String.valueOf($e)); throw $e;" },
+"methodFinally": [
+  "com.kleegroup.analyticaimpl.agent.KProcessCollector processCollector = com.kleegroup.analyticaimpl.spies.javassist.AnalyticaSpyAgentContainer.getProcessCollector();",
+	"processCollector.stopProcess();"],
+
+"fastExcludedPackages" : [ 
+	  "sun.*",
+      "java.*","javax.*",
+      "javassist.*",
+      "org.apache.log4j.*",
+      "kasper.*","kasperimpl.*",
+      "$Proxy*"
+    ],
+   "fastIncludedPackages" : [ 
+    ],
+  "hookPoints" : [ 
+      { "className" : "oracle.jdbc.driver.OraclePreparedStatement",
+        "methods" : ["*"],
+        "methodTypes" : ["INIT"],
+        "processType" : "SQL",
+        "subTypes" : ["$methodName","$class.getName()", $2]
+      },
+      { "className" : "invs.mdo.ui.controller.*",
+        "inherits" : "com.opensymphony.xwork2.ActionSupport",
+        "methods" :  ["*"],
+        "methodTypes" : ["!PRIVATE", "!INIT", "!CLINIT", "!ABSTRACT"],
+        "processType" : "ACTION",
+        "subTypes" : ["$class.getName()","$methodName"]
+      },
+      { "className" : "invs.mdo.services.*",
+        "inherits" : "vertigo.kernel.component.Manager",
+        "methods" :  ["*"],
+        "methodTypes" : ["!PRIVATE", "!INIT", "!CLINIT", "!ABSTRACT"],
+        "processType" : "SERVICE",
+        "subTypes" : ["$class.getName()","$methodName"]
+      },
+      { "className" : "org.apache.struts2.dispatcher.ng.filter.StrutsPrepareAndExecuteFilter",
+        "methods" :  ["doFilter"],
+        "processType" : "REQUEST",
+        "subTypes" : ["((javax.servlet.http.HttpServletRequest)$1).getRequestURI()"]
+      }
+      
+    ]
+}

@@ -10,6 +10,7 @@ import java.io.InvalidClassException;
 import java.io.Reader;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
+import java.security.InvalidParameterException;
 import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,7 +22,10 @@ import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtBehavior;
 import javassist.CtClass;
+import javassist.Modifier;
 import javassist.NotFoundException;
+import javassist.bytecode.MethodInfo;
+import javassist.runtime.Desc;
 
 import com.google.gson.Gson;
 import com.kleegroup.analyticaimpl.spies.javassist.matcher.CompositeMatcher;
@@ -66,6 +70,8 @@ final class AnalyticaSpyTransformer implements ClassFileTransformer {
 		analyticaSpyConf = loadJsonConf(agentArgs);
 		System.out.println("Analytica start conf : " + analyticaSpyConf.toJson());
 
+		AnalyticaSpyAgentContainer.initNetPlugin(analyticaSpyConf);
+
 		excludeMatcher = buildStringMatchers(analyticaSpyConf.getFastExcludedPackages(), false);
 		includeMatcher = buildStringMatchers(analyticaSpyConf.getFastIncludedPackages(), true);
 
@@ -80,6 +86,8 @@ final class AnalyticaSpyTransformer implements ClassFileTransformer {
 			}
 			methodHookPointMatchers.put(hookPoint, buildCtBehaviorMatchers(hookPoint.getMethods(), true));
 		}
+
+		Desc.useContextClassLoader = true;
 	}
 
 	/** {@inheritDoc} */
@@ -192,6 +200,11 @@ final class AnalyticaSpyTransformer implements ClassFileTransformer {
 		return hookPoints;
 	}
 
+	private enum MethodType {
+		INIT, CLINIT, METHOD, // présent dans MethodInfo
+		ABSTRACT, FINAL, NATIVE, PRIVATE, PROTECTED, PUBLIC, STATIC, SYNCHRONIZED // quelques javassist.Modifier
+	}
+
 	private byte[] instrumentClass(final ClassLoader loader, final String adaptedclassName, final AnalyticaSpyHookPoint hookPoint) {
 		System.out.println("Analytica instrument " + adaptedclassName + " with : " + hookPoint);
 		final CtClass ctClass = obtainCtClass(loader, adaptedclassName);
@@ -201,15 +214,24 @@ final class AnalyticaSpyTransformer implements ClassFileTransformer {
 				populateLocalVariables(analyticaSpyConf.getLocalVariables());
 				populateMethodCatchs(analyticaSpyConf.getMethodCatchs());
 
-				if (!ctClass.isInterface()) {
+				if (!ctClass.isInterface()) { // on ne peut pas instrumenter les interfaces
 					//final String agentManagerDef = "private final com.kleegroup.analytica.agent.AgentManager agentManager = kasper.kernel.Home.getContainer().getManager(com.kleegroup.analytica.agent.AgentManager.class);";
 					//final CtField agentManagerField = CtField.make(agentManagerDef, cl);
 					//cl.addField(agentManagerField);
 
 					final CtBehavior[] methods = ctClass.getDeclaredBehaviors();
 					for (int i = 0; i < methods.length; i++) {
-						if (methods[i].isEmpty() == false && methodMatcher.isMatch(methods[i])) {
-							instrumentMethod(methods[i], hookPoint);
+						final CtBehavior method = methods[i];
+						if (method.isEmpty() == false && methodMatcher.isMatch(method)) {
+							if (isAttributsAccepted(hookPoint.getMethodTypes(), method)) {
+								try {
+									instrumentMethod(method, hookPoint);
+								} catch (final Exception e) {
+									System.err.println("Could not instrument  " + adaptedclassName + "." + methods[i].getName() + ",  exception : " + e.getMessage());
+									e.printStackTrace();
+									throw new RuntimeException(e);
+								}
+							}
 						}
 					}
 					return ctClass.toBytecode();
@@ -224,6 +246,61 @@ final class AnalyticaSpyTransformer implements ClassFileTransformer {
 		} finally {
 			ctClass.detach();
 		}
+	}
+
+	private boolean isAttributsAccepted(final List<String> methodTypesStr, final CtBehavior method) {
+		final MethodInfo methodInfo = method.getMethodInfo();
+		final int modifiers = method.getModifiers();
+		boolean attributesAccepted = true;
+		for (final String attrStr : methodTypesStr) {
+			final boolean isNot = attrStr.startsWith("!");
+			final MethodType attr = MethodType.valueOf((isNot ? attrStr.substring(1) : attrStr).toUpperCase());
+			switch (attr) {
+				case INIT:
+					attributesAccepted = attributesAccepted && applyINot(isNot, methodInfo.isConstructor());
+					break;
+				case CLINIT:
+					attributesAccepted = attributesAccepted && applyINot(isNot, methodInfo.isStaticInitializer());
+					break;
+				case METHOD:
+					attributesAccepted = attributesAccepted && applyINot(isNot, methodInfo.isMethod());
+					break;
+				case ABSTRACT:
+					attributesAccepted = attributesAccepted && applyINot(isNot, Modifier.isAbstract(modifiers));
+					break;
+				case FINAL:
+					attributesAccepted = attributesAccepted && applyINot(isNot, Modifier.isFinal(modifiers));
+					break;
+				case NATIVE:
+					attributesAccepted = attributesAccepted && applyINot(isNot, Modifier.isNative(modifiers));
+					break;
+				case PRIVATE:
+					attributesAccepted = attributesAccepted && applyINot(isNot, Modifier.isPrivate(modifiers));
+					break;
+				case PROTECTED:
+					attributesAccepted = attributesAccepted && applyINot(isNot, Modifier.isProtected(modifiers));
+					break;
+				case PUBLIC:
+					attributesAccepted = attributesAccepted && applyINot(isNot, Modifier.isPublic(modifiers));
+					break;
+				case STATIC:
+					attributesAccepted = attributesAccepted && applyINot(isNot, Modifier.isStatic(modifiers));
+					break;
+				case SYNCHRONIZED:
+					attributesAccepted = attributesAccepted && applyINot(isNot, Modifier.isSynchronized(modifiers));
+					break;
+				default:
+					throw new InvalidParameterException("Type d'attributs non géré : " + attrStr);
+			}
+			if (!attributesAccepted) {
+				break; //inutil de continuer
+			}
+		}
+		return attributesAccepted;
+	}
+
+	private boolean applyINot(final boolean isNot, final boolean test) {
+		return isNot ? !test : test;
 	}
 
 	private void populateLocalVariables(final Map<String, String> localVariablesConf) throws NotFoundException {
@@ -241,14 +318,13 @@ final class AnalyticaSpyTransformer implements ClassFileTransformer {
 	private void instrumentMethod(final CtBehavior method, final AnalyticaSpyHookPoint hookPoint) throws CannotCompileException {
 		//method.addLocalVariable("processType", classPool.get("String"));
 		//method.addLocalVariable("subTypes", classPool.get("java.lang.String[]"));
-
 		for (final Map.Entry<String, CtClass> entry : localVariables.entrySet()) {
 			method.addLocalVariable(entry.getKey(), entry.getValue());
 			//System.out.println("addLocalVariable " + entry.getKey() + " : " + entry.getValue().getName());
 		}
 
 		final StringBuilder sbBefore = new StringBuilder();
-		appendPredefinedVariable(sbBefore, hookPoint, method.getName());
+		appendPredefinedVariable(sbBefore, hookPoint, method.getDeclaringClass().getName(), method.getName());
 		for (final String line : methodBefore) {
 			if (!line.isEmpty()) {
 				sbBefore.append(line).append("\n");
@@ -289,7 +365,7 @@ final class AnalyticaSpyTransformer implements ClassFileTransformer {
 		System.out.println("Analytica instrument " + method.getLongName());
 	}
 
-	private void appendPredefinedVariable(final StringBuilder buffer, final AnalyticaSpyHookPoint hookPoint, final String methodName) {
+	private void appendPredefinedVariable(final StringBuilder buffer, final AnalyticaSpyHookPoint hookPoint, final String className, final String methodName) {
 		buffer.append("final String processType = \"" + hookPoint.getProcessType() + "\";\n");
 		buffer.append("final String[] subTypes = new String[" + hookPoint.getSubTypes().size() + "];\n");
 		int i = 0;
@@ -299,7 +375,11 @@ final class AnalyticaSpyTransformer implements ClassFileTransformer {
 				buffer.append("\"");
 				buffer.append(methodName);
 				buffer.append("\"");
-			} else if (subType.startsWith("$")) {
+			} else if (subType.equals("$className")) {
+				buffer.append("\"");
+				buffer.append(className);
+				buffer.append("\"");
+			} else if (subType.contains("$")) {
 				buffer.append(subType);
 			} else {
 				buffer.append("\"");

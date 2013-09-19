@@ -17,8 +17,6 @@
  */
 package com.kleegroup.analyticaimpl.agent.plugins.net;
 
-import kasper.kernel.manager.Plugin;
-
 import com.kleegroup.analytica.core.KProcess;
 
 /**
@@ -28,11 +26,21 @@ import com.kleegroup.analytica.core.KProcess;
  * @author pchretien, npiedeloup
  * @version $Id: NetPlugin.java,v 1.1 2012/03/22 18:20:57 pchretien Exp $
  */
-public interface NetPlugin extends Plugin {
+public interface NetPlugin {
 	/**
 	 * Ajout d'un process dans le système.
 	 * Cet ajout peut-être multi-threadé.
 	 * @param process Process à ajouter
 	 */
 	void add(KProcess process);
+
+	/**
+	 * A appeller lors du lancement du plugin.
+	 */
+	void start();
+
+	/**
+	 * A appeller lors de l'arret du plugin.
+	 */
+	void stop();
 }

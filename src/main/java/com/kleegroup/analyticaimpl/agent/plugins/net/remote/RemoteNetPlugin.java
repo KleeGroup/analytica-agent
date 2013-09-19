@@ -29,14 +29,13 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status.Family;
 
 import kasper.kernel.exception.KRuntimeException;
-import kasper.kernel.lang.Activeable;
-import kasper.kernel.util.Assertion;
 import net.sf.ehcache.Element;
 
 import org.apache.log4j.Logger;
 
 import com.google.gson.Gson;
 import com.kleegroup.analytica.core.KProcess;
+import com.kleegroup.analyticaimpl.Assertion;
 import com.kleegroup.analyticaimpl.agent.plugins.net.NetPlugin;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
@@ -48,7 +47,7 @@ import com.sun.jersey.api.client.WebResource;
  * @author npiedeloup
  * @version $Id: RemoteNetPlugin.java,v 1.4 2012/06/14 13:49:17 npiedeloup Exp $
  */
-public final class RemoteNetPlugin implements NetPlugin, Activeable {
+public final class RemoteNetPlugin implements NetPlugin {
 	private static final String SPOOL_CONTEXT = "Analytica_Spool";
 	private static final String VERSION_MAJOR = "1.0"; //definit la compatibilité
 	private static final String VERSION_MINOR = "0";

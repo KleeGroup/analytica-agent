@@ -11,6 +11,8 @@ import com.google.gson.Gson;
  * @version $Id: MemoryLeakTransformer.java,v 1.1 2011/05/12 10:16:05 prahmoune Exp $
  */
 public final class AnalyticaSpyConf {
+	private final String pluginName;
+	private final Map<String, String> pluginParams;
 	private final List<String> fastExcludedPackages;
 	private final List<String> fastIncludedPackages;
 	private final List<AnalyticaSpyHookPoint> hookPoints;
@@ -22,6 +24,8 @@ public final class AnalyticaSpyConf {
 
 	/**
 	 * Constructeur.
+	 * @param pluginName Nom du plugin a utiliser
+	 * @param pluginParams Paramètres du plugin
 	 * @param excludedPackages Liste de package à exclure
 	 * @param includedPackages Liste de package à inclure
 	 * @param hookPoints Liste de point d'accroche de l'agent
@@ -31,7 +35,9 @@ public final class AnalyticaSpyConf {
 	 * @param methodCatchs Liste des catchs (ExceptionClass => code)
 	 * @param methodFinally Code inséré en finally
 	 */
-	public AnalyticaSpyConf(final List<String> excludedPackages, final List<String> includedPackages, final List<AnalyticaSpyHookPoint> hookPoints, final Map<String, String> localVariables, final List<String> methodBefore, final List<String> methodAfter, final Map<String, String> methodCatchs, final List<String> methodFinally) {
+	public AnalyticaSpyConf(final String pluginName, final Map<String, String> pluginParams, final List<String> excludedPackages, final List<String> includedPackages, final List<AnalyticaSpyHookPoint> hookPoints, final Map<String, String> localVariables, final List<String> methodBefore, final List<String> methodAfter, final Map<String, String> methodCatchs, final List<String> methodFinally) {
+		this.pluginName = pluginName;
+		this.pluginParams = pluginParams;
 		fastExcludedPackages = excludedPackages;
 		fastIncludedPackages = includedPackages;
 		this.hookPoints = hookPoints;
@@ -40,6 +46,20 @@ public final class AnalyticaSpyConf {
 		this.methodAfter = methodAfter;
 		this.methodCatchs = methodCatchs;
 		this.methodFinally = methodFinally;
+	}
+
+	/**
+	 * @return Nom du plugin
+	 */
+	public String getPluginName() {
+		return pluginName;
+	}
+
+	/**
+	 * @return Liste des catchs (ExceptionClass => code)
+	 */
+	public Map<String, String> getPluginParams() {
+		return pluginParams;
 	}
 
 	/**

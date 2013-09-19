@@ -35,7 +35,7 @@ public final class AnalyticaSpyAgent {
 	 */
 	public static void premain(final String agentArgs, final Instrumentation inst) {
 		//System.out.println("premain method invoked with args: {" + agentArgs + "} and inst: {" + inst + "}");
-		addTransformer(agentArgs, inst);
+		addTransformer(agentArgs, inst, false);
 	}
 
 	/**
@@ -45,7 +45,7 @@ public final class AnalyticaSpyAgent {
 	 */
 	public static void agentmain(final String agentArgs, final Instrumentation inst) {
 		//System.out.println("agentmain method invoked with args: {" + agentArgs + "} and inst: {" + inst + "}");
-		addTransformer(agentArgs, inst);
+		addTransformer(agentArgs, inst, true);
 	}
 
 	public static void stopAgent() {
@@ -63,12 +63,12 @@ public final class AnalyticaSpyAgent {
 		doReload(obtainInstrumentedClasses());
 	}
 
-	private static void addTransformer(final String agentArgs, final Instrumentation inst) {
+	private static void addTransformer(final String agentArgs, final Instrumentation inst, final boolean canRetransform) {
 		if (instrumentation == null) {
 			instrumentation = inst;
 			System.out.println("AnalyticaAgent prepare at " + new Date());
 			transformer = new AnalyticaSpyTransformer(agentArgs);
-			inst.addTransformer(transformer, true);
+			inst.addTransformer(transformer, canRetransform);
 			System.out.println("AnalyticaAgent Start at " + new Date());
 			Runtime.getRuntime().addShutdownHook(new Thread() {
 				@Override

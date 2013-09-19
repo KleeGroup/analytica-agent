@@ -2,10 +2,9 @@ package com.kleegroup.analyticaimpl.agent.plugins.net.direct;
 
 import javax.inject.Inject;
 
-import kasper.kernel.util.Assertion;
-
 import com.kleegroup.analytica.core.KProcess;
 import com.kleegroup.analytica.server.ServerManager;
+import com.kleegroup.analyticaimpl.Assertion;
 import com.kleegroup.analyticaimpl.agent.plugins.net.NetPlugin;
 
 /**
@@ -32,5 +31,15 @@ public final class DirectNetPlugin implements NetPlugin {
 	/** {@inheritDoc} */
 	public void add(final KProcess process) {
 		serverManager.push(process);
+	}
+
+	/** {@inheritDoc} */
+	public void start() {
+		//rien
+	}
+
+	/** {@inheritDoc} */
+	public void stop() {
+		//rien
 	}
 }
