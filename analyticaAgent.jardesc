@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="WINDOWS-1252" standalone="no"?>
 <jardesc>
-    <jar path="kasper-analytica-agent/src/test/java/com/kleegroup/analyticaimpl/spies/javassist/analyticaAgent-1.3.0.jar"/>
+    <jar path="kasper-analytica-agent/src/test/java/com/kleegroup/analyticaimpl/spies/javassist/analyticaAgent-1.4.0.jar"/>
     <options buildIfNeeded="true" compress="true" descriptionLocation="/kasper-analytica-agent/analyticaAgent.jardesc" exportErrors="false" exportWarnings="true" includeDirectoryEntries="false" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
     <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
     <selectedProjects/>
@@ -11,23 +11,29 @@
         </sealing>
     </manifest>
     <selectedElements exportClassFiles="true" exportJavaFiles="true" exportOutputFolder="false">
-        <javaElement handleIdentifier="=kasper-analytica-agent/src\/main\/java&lt;com.kleegroup.analyticaimpl.agent.plugins.net.remote"/>
         <javaElement handleIdentifier="=kasper-analytica-agent/src\/main\/java&lt;kasperimpl.analytics.plugins.analytica"/>
+        <javaElement handleIdentifier="=kasper-analytica-agent/src\/main\/java&lt;com.kleegroup.analyticaimpl.agent.plugins.net.remote"/>
+        <folder path="/kasper-analytica-agent/com"/>
+        <javaElement handleIdentifier="=kasper-analytica-agent/src\/main\/java&lt;com.kleegroup.analyticaimpl.agent.plugins.net.filelog"/>
         <javaElement handleIdentifier="=kasper-analytica-agent/src\/main\/java&lt;com.kleegroup.analyticaimpl.agent.plugins.net.direct"/>
+        <javaElement handleIdentifier="=kasper-analytica-server/src\/main\/java&lt;com.kleegroup.analytica.core"/>
         <javaElement handleIdentifier="=kasper-analytica-agent/src\/main\/java&lt;com.kleegroup.analyticaimpl.agent.plugins.net"/>
+        <folder path="/kasper-analytica-agent/src/dev/agentIncluded"/>
         <javaElement handleIdentifier="=kasper-analytica-agent/src\/main\/java&lt;com.kleegroup.analyticaimpl.agent"/>
+        <javaElement handleIdentifier="=kasper-analytica-agent/src\/main\/java&lt;com.kleegroup.analyticaimpl.spies"/>
         <javaElement handleIdentifier="=kasper-analytica-agent/src\/main\/java&lt;com.kleegroup.analyticaimpl.spies.facade"/>
         <folder path="/kasper-analytica-agent/src/main/resources/META-INF"/>
         <javaElement handleIdentifier="=kasper-analytica-agent/src\/main\/java&lt;com.kleegroup.analytica.agent"/>
-        <javaElement handleIdentifier="=kasper-analytica-agent/src\/main\/java&lt;kasper"/>
         <javaElement handleIdentifier="=kasper-analytica-agent/src\/main\/java&lt;com.kleegroup.analyticaimpl.spies.logs"/>
-        <javaElement handleIdentifier="=kasper-analytica-agent/src\/main\/java&lt;kasperimpl.analytics"/>
-        <javaElement handleIdentifier="=kasper-analytica-agent/src\/main\/java&lt;com.kleegroup.analyticaimpl.spies.javassist"/>
+        <folder path="/kasper-analytica-agent/org"/>
+        <javaElement handleIdentifier="=kasper-analytica-agent/src\/main\/java&lt;com.kleegroup.analyticaimpl.agent.net"/>
+        <folder path="/kasper-analytica-agent/javassist"/>
         <javaElement handleIdentifier="=kasper-analytica-agent/src\/main\/java&lt;com.kleegroup.analyticaimpl.spies.junitrules"/>
+        <javaElement handleIdentifier="=kasper-analytica-agent/src\/main\/java&lt;com.kleegroup.analyticaimpl.spies.javassist"/>
         <javaElement handleIdentifier="=kasper-analytica-agent/src\/main\/java&lt;kasperimpl.resource.plugins.local"/>
-        <javaElement handleIdentifier="=kasper-analytica-agent/src\/main\/java&lt;kasper.analytics"/>
         <javaElement handleIdentifier="=kasper-analytica-agent/src\/main\/java&lt;com.kleegroup.analyticaimpl.spies.httprequest"/>
         <javaElement handleIdentifier="=kasper-analytica-agent/src\/main\/java&lt;com.kleegroup.analyticaimpl.spies.javassist.agentloader"/>
         <javaElement handleIdentifier="=kasper-analytica-agent/src\/main\/java&lt;com.kleegroup.analyticaimpl.spies.javassist.matcher"/>
+        <javaElement handleIdentifier="=kasper-analytica-agent/src\/main\/java&lt;com.kleegroup.analyticaimpl"/>
     </selectedElements>
 </jardesc>

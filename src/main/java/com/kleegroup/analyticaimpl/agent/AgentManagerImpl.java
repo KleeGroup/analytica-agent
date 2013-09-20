@@ -19,9 +19,10 @@ package com.kleegroup.analyticaimpl.agent;
 
 import javax.inject.Inject;
 
+import kasper.kernel.util.Assertion;
+
 import com.kleegroup.analytica.agent.AgentManager;
 import com.kleegroup.analytica.core.KProcess;
-import com.kleegroup.analyticaimpl.Assertion;
 import com.kleegroup.analyticaimpl.agent.plugins.net.NetPlugin;
 
 /**

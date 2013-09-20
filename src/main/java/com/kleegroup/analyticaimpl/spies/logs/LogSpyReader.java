@@ -37,6 +37,7 @@ import com.google.gson.Gson;
 import com.kleegroup.analytica.agent.AgentManager;
 import com.kleegroup.analytica.core.KProcess;
 import com.kleegroup.analytica.core.KProcessBuilder;
+import com.kleegroup.analyticaimpl.spies.JsonConfReader;
 
 /**
  * Monitoring de facade par Proxy automatique sur les interfaces.
@@ -97,10 +98,9 @@ public final class LogSpyReader implements Activeable {
 		//---------------------------------------------------------------------
 		this.agentManager = agentManager;
 		this.logFileUrl = resourceManager.resolve(logFileUrl);
-
 		final URL confFile = resourceManager.resolve(confFileUrl);
-		final String confJson = readConf(confFile);
-		final LogSpyConf conf = new Gson().fromJson(confJson, LogSpyConf.class);
+		final LogSpyConf conf = JsonConfReader.loadJsonConf(confFile, LogSpyConf.class);
+
 		dateFormats = conf.getDateFormats();
 		patterns = conf.getLogPatterns();
 		patternStats = new HashMap<LogPattern, Integer>();
@@ -284,35 +284,6 @@ public final class LogSpyReader implements Activeable {
 		} catch (final IOException e) {
 			throw new KRuntimeException(e, "Erreur de lecture du log");
 		}
-	}
-
-	private String readConf(final URL confFileURL) {
-		final StringBuilder sb = new StringBuilder();
-		try {
-			//on lit le fichier
-			final InputStream in = confFileURL.openStream();
-			try {
-				final Reader isr = new InputStreamReader(in);
-				try {
-					final BufferedReader br = new BufferedReader(isr);
-					try {
-						String currentLine;
-						while ((currentLine = br.readLine()) != null) {
-							sb.append(currentLine).append('\n');
-						}
-					} finally {
-						br.close();
-					}
-				} finally {
-					isr.close();
-				}
-			} finally {
-				in.close();
-			}
-		} catch (final IOException e) {
-			throw new KRuntimeException(e, "Erreur de lecture de la conf");
-		}
-		return sb.toString();
 	}
 
 	private void readLogFile(final BufferedReader br) throws IOException {

@@ -15,25 +15,27 @@
  * You should have received a copy of the GNU General Public License along with this program;
  * if not, see <http://www.gnu.org/licenses>
  */
-package com.kleegroup.analyticaimpl.agent.plugins.net;
-
-import kasper.kernel.manager.Plugin;
+package com.kleegroup.analyticaimpl.agent.net;
 
 import com.kleegroup.analytica.core.KProcess;
-import com.kleegroup.analyticaimpl.agent.net.KProcessConnector;
 
 /**
- * Producteur des messages.
- * Les messages sont composés des Processus et envoyés ; un consommateur les traitera.
- * 
- * @author pchretien, npiedeloup
- * @version $Id: NetPlugin.java,v 1.1 2012/03/22 18:20:57 pchretien Exp $
+ * @author npiedeloup
+ * @version $Id: RemoteNetPlugin.java,v 1.4 2012/06/14 13:49:17 npiedeloup Exp $
  */
-public interface NetPlugin extends Plugin, KProcessConnector {
-	/**
-	 * Ajout d'un process dans le système.
-	 * Cet ajout peut-être multi-threadé.
-	 * @param process Process à ajouter
-	 */
-	void add(KProcess process);
+public final class DummyConnector implements KProcessConnector {
+	/** {@inheritDoc} */
+	public void add(final KProcess process) {
+		//rien
+	}
+
+	/** {@inheritDoc} */
+	public void start() {
+		//rien
+	}
+
+	/** {@inheritDoc} */
+	public void stop() {
+		//rien
+	}
 }

@@ -19,7 +19,7 @@ public final class AnalyticaSpyConf {
 	private final Map<String, String> localVariables;
 	private final List<String> methodBefore;
 	private final List<String> methodAfter;
-	private final Map<String, String> methodCatchs;
+	private final Map<String, List<String>> methodCatchs;
 	private final List<String> methodFinally;
 
 	/**
@@ -35,7 +35,7 @@ public final class AnalyticaSpyConf {
 	 * @param methodCatchs Liste des catchs (ExceptionClass => code)
 	 * @param methodFinally Code inséré en finally
 	 */
-	public AnalyticaSpyConf(final String pluginName, final Map<String, String> pluginParams, final List<String> excludedPackages, final List<String> includedPackages, final List<AnalyticaSpyHookPoint> hookPoints, final Map<String, String> localVariables, final List<String> methodBefore, final List<String> methodAfter, final Map<String, String> methodCatchs, final List<String> methodFinally) {
+	public AnalyticaSpyConf(final String pluginName, final Map<String, String> pluginParams, final List<String> excludedPackages, final List<String> includedPackages, final List<AnalyticaSpyHookPoint> hookPoints, final Map<String, String> localVariables, final List<String> methodBefore, final List<String> methodAfter, final Map<String, List<String>> methodCatchs, final List<String> methodFinally) {
 		this.pluginName = pluginName;
 		this.pluginParams = pluginParams;
 		fastExcludedPackages = excludedPackages;
@@ -79,7 +79,7 @@ public final class AnalyticaSpyConf {
 	/**
 	 * @return Liste des catchs (ExceptionClass => code)
 	 */
-	public Map<String, String> getMethodCatchs() {
+	public Map<String, List<String>> getMethodCatchs() {
 		return methodCatchs;
 	}
 

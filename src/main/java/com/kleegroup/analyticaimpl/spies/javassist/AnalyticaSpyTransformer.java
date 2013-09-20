@@ -1,13 +1,6 @@
 package com.kleegroup.analyticaimpl.spies.javassist;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.InvalidClassException;
-import java.io.Reader;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.InvalidParameterException;
@@ -27,7 +20,7 @@ import javassist.NotFoundException;
 import javassist.bytecode.MethodInfo;
 import javassist.runtime.Desc;
 
-import com.google.gson.Gson;
+import com.kleegroup.analyticaimpl.spies.JsonConfReader;
 import com.kleegroup.analyticaimpl.spies.javassist.matcher.CompositeMatcher;
 import com.kleegroup.analyticaimpl.spies.javassist.matcher.CtBehaviorMatcher;
 import com.kleegroup.analyticaimpl.spies.javassist.matcher.InheritClassMatcher;
@@ -53,7 +46,7 @@ final class AnalyticaSpyTransformer implements ClassFileTransformer {
 	private final Map<String, CtClass> localVariables = new HashMap<String, CtClass>();
 	private final List<String> methodBefore;
 	private final List<String> methodAfter;
-	private final Map<CtClass, String> methodCatchs = new HashMap<CtClass, String>();
+	private final Map<CtClass, List<String>> methodCatchs = new HashMap<CtClass, List<String>>();
 	private final List<String> methodFinally;
 
 	private final List<ClassLoader> registeredClassLoader = new ArrayList<ClassLoader>();
@@ -67,10 +60,10 @@ final class AnalyticaSpyTransformer implements ClassFileTransformer {
 		if (agentArgs == null || agentArgs.isEmpty()) {
 			throw new IllegalArgumentException("Usage : -javaagent:analyticaAgent.jar=analyticaPlugs.json");
 		}
-		analyticaSpyConf = loadJsonConf(agentArgs);
+		analyticaSpyConf = JsonConfReader.loadJsonConf(agentArgs, AnalyticaSpyConf.class);
 		System.out.println("Analytica start conf : " + analyticaSpyConf.toJson());
 
-		AnalyticaSpyAgentContainer.initNetPlugin(analyticaSpyConf);
+		Container.initCollector(analyticaSpyConf);
 
 		excludeMatcher = buildStringMatchers(analyticaSpyConf.getFastExcludedPackages(), false);
 		includeMatcher = buildStringMatchers(analyticaSpyConf.getFastIncludedPackages(), true);
@@ -227,7 +220,7 @@ final class AnalyticaSpyTransformer implements ClassFileTransformer {
 								try {
 									instrumentMethod(method, hookPoint);
 								} catch (final Exception e) {
-									System.err.println("Could not instrument  " + adaptedclassName + "." + methods[i].getName() + ",  exception : " + e.getMessage());
+									System.err.println("Can't instrument " + adaptedclassName + "." + methods[i].getName() + ",  exception " + e.getClass().getName() + " : " + e.getMessage());
 									e.printStackTrace();
 									throw new RuntimeException(e);
 								}
@@ -239,7 +232,7 @@ final class AnalyticaSpyTransformer implements ClassFileTransformer {
 					throw new InvalidClassException("Can't instrument interfaces");
 				}
 			} catch (final Exception e) {
-				System.err.println("Could not instrument  " + adaptedclassName + ",  exception : " + e.getMessage());
+				System.err.println("Can't instrument " + adaptedclassName + ",  exception " + e.getClass().getName() + " : " + e.getMessage());
 				e.printStackTrace();
 				throw new RuntimeException(e);
 			}
@@ -309,8 +302,8 @@ final class AnalyticaSpyTransformer implements ClassFileTransformer {
 		}
 	}
 
-	private void populateMethodCatchs(final Map<String, String> methodCatchsConf) throws NotFoundException {
-		for (final Map.Entry<String, String> entry : methodCatchsConf.entrySet()) {
+	private void populateMethodCatchs(final Map<String, List<String>> methodCatchsConf) throws NotFoundException {
+		for (final Map.Entry<String, List<String>> entry : methodCatchsConf.entrySet()) {
 			methodCatchs.put(classPool.get(entry.getKey()), entry.getValue());
 		}
 	}
@@ -323,15 +316,17 @@ final class AnalyticaSpyTransformer implements ClassFileTransformer {
 			//System.out.println("addLocalVariable " + entry.getKey() + " : " + entry.getValue().getName());
 		}
 
+		final String className = method.getDeclaringClass().getName();
+		final String methodName = method.getName();
 		final StringBuilder sbBefore = new StringBuilder();
-		appendPredefinedVariable(sbBefore, hookPoint, method.getDeclaringClass().getName(), method.getName());
+		appendPredefinedVariable(sbBefore, hookPoint, className, methodName);
 		for (final String line : methodBefore) {
 			if (!line.isEmpty()) {
 				sbBefore.append(line).append("\n");
 			}
 		}
 		if (sbBefore.length() > 0) {
-			method.insertBefore(sbBefore.toString());
+			method.insertBefore(replaceAlias(sbBefore.toString(), className, methodName));
 		}
 		//System.out.println("sbBefore " + sbBefore.toString());
 
@@ -342,12 +337,18 @@ final class AnalyticaSpyTransformer implements ClassFileTransformer {
 			}
 		}
 		if (sbAfter.length() > 0) {
-			method.insertAfter(sbAfter.toString(), false);
+			method.insertAfter(replaceAlias(sbAfter.toString(), className, methodName), false);
 		}
 		//System.out.println("sbAfter " + sbAfter.toString());
 
-		for (final Map.Entry<CtClass, String> entry : methodCatchs.entrySet()) {
-			method.addCatch(entry.getValue(), entry.getKey());
+		for (final Map.Entry<CtClass, List<String>> entry : methodCatchs.entrySet()) {
+			final StringBuilder sbCatch = new StringBuilder();
+			for (final String line : entry.getValue()) {
+				if (!line.isEmpty()) {
+					sbCatch.append(line).append("\n");
+				}
+			}
+			method.addCatch(replaceAlias(sbCatch.toString(), className, methodName), entry.getKey());
 			//System.out.println("addCatch " + entry.getKey().getName() + " : " + entry.getValue());
 		}
 
@@ -358,7 +359,7 @@ final class AnalyticaSpyTransformer implements ClassFileTransformer {
 			}
 		}
 		if (sbFinally.length() > 0) {
-			method.insertAfter(sbFinally.toString(), true);
+			method.insertAfter(replaceAlias(sbFinally.toString(), className, methodName), true);
 		}
 		//System.out.println("sbFinally " + sbFinally.toString());
 
@@ -371,16 +372,9 @@ final class AnalyticaSpyTransformer implements ClassFileTransformer {
 		int i = 0;
 		for (final String subType : hookPoint.getSubTypes()) {
 			buffer.append("subTypes[").append(i).append("] = ");
-			if (subType.equals("$methodName")) {
-				buffer.append("\"");
-				buffer.append(methodName);
-				buffer.append("\"");
-			} else if (subType.equals("$className")) {
-				buffer.append("\"");
-				buffer.append(className);
-				buffer.append("\"");
-			} else if (subType.contains("$")) {
-				buffer.append(subType);
+			final String updatedSubType = replaceAlias(subType, className, methodName);
+			if (subType.contains("$")) {
+				buffer.append(updatedSubType);
 			} else {
 				buffer.append("\"");
 				buffer.append(subType);
@@ -391,46 +385,13 @@ final class AnalyticaSpyTransformer implements ClassFileTransformer {
 		}
 	}
 
-	private static final AnalyticaSpyConf loadJsonConf(final String configurationFileName) {
-		try {
-			//System.out.println("root : " + new File(configurationFileName).getAbsolutePath());
-			final String confJson = readConf(new File(configurationFileName));
-			final AnalyticaSpyConf conf = new Gson().fromJson(confJson, AnalyticaSpyConf.class);
-			return conf;
-		} catch (final Exception e) {
-			throw new IllegalArgumentException("Impossible de charger le fichier de configuration : " + configurationFileName, e);
-		}
+	private String replaceAlias(final String toReplace, final String className, final String methodName) {
+		String updated = toReplace.replaceAll("\\$methodName", "\"" + methodName + "\"");
+		updated = updated.replaceAll("\\$className", "\"" + className + "\"");
+		//updated = updated.replaceAll("\\$collector", "com.kleegroup.analyticaimpl.agent.KProcessCollector processCollector = com.kleegroup.analyticaimpl.spies.javassist.Container.getProcessCollector();");
+		updated = updated.replaceAll("\\$collector", "com.kleegroup.analyticaimpl.spies.javassist.Container.getProcessCollector()");
+		return updated;
 	}
-
-	private static String readConf(final File confFile) {
-		final StringBuilder sb = new StringBuilder();
-		try {
-			//on lit le fichier
-			final InputStream in = new FileInputStream(confFile);
-			try {
-				final Reader isr = new InputStreamReader(in);
-				try {
-					final BufferedReader br = new BufferedReader(isr);
-					try {
-						String currentLine;
-						while ((currentLine = br.readLine()) != null) {
-							sb.append(currentLine).append('\n');
-						}
-					} finally {
-						br.close();
-					}
-				} finally {
-					isr.close();
-				}
-			} finally {
-				in.close();
-			}
-		} catch (final IOException e) {
-			throw new RuntimeException("Erreur de lecture de la conf", e);
-		}
-		return sb.toString();
-	}
-
 	//
 	//	private void addProfilingInformation(final CtClass clas, final CtMethod mold) throws NotFoundException, CannotCompileException {
 	//		// get the method information (throws exception if method with

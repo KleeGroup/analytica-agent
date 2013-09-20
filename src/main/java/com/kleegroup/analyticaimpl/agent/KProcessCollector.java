@@ -21,10 +21,10 @@ import java.util.Stack;
 
 import javax.inject.Inject;
 
+import com.kleegroup.analytica.core.Assertion;
 import com.kleegroup.analytica.core.KProcess;
 import com.kleegroup.analytica.core.KProcessBuilder;
-import com.kleegroup.analyticaimpl.Assertion;
-import com.kleegroup.analyticaimpl.agent.plugins.net.NetPlugin;
+import com.kleegroup.analyticaimpl.agent.net.KProcessConnector;
 
 /**
  * Agent de collecte des données.
@@ -34,18 +34,18 @@ import com.kleegroup.analyticaimpl.agent.plugins.net.NetPlugin;
  * @version $Id: AgentManagerImpl.java,v 1.7 2012/03/29 08:48:19 npiedeloup Exp $
  */
 public final class KProcessCollector {
-	private final NetPlugin netPlugin;
+	private final KProcessConnector processConnector;
 
 	/**
 	 * Constructeur.
-	 * @param netPlugin Plugin de communication
+	 * @param processConnector Connecteur de communication
 	 */
 	@Inject
-	public KProcessCollector(final NetPlugin netPlugin) {
+	public KProcessCollector(final KProcessConnector processConnector) {
 		super();
-		Assertion.notNull(netPlugin);
+		Assertion.notNull(processConnector);
 		//-----------------------------------------------------------------
-		this.netPlugin = netPlugin;
+		this.processConnector = processConnector;
 	}
 
 	/**
@@ -90,23 +90,41 @@ public final class KProcessCollector {
 		stack.push(processBuilder);
 	}
 
-	/** {@inheritDoc} */
+	/**
+	 * Enregistre dans le thread courant le démarrage d'un process.
+	 * Doit respecter les règles sur le nom d'un process.
+	 * @param type Type de process
+	 * @param names Nom du process
+	 */
 	public void startProcess(final String type, final String... names) {
 		final KProcessBuilder processBuilder = new KProcessBuilder(type, names);
 		push(processBuilder);
 	}
 
-	/** {@inheritDoc} */
+	/**
+	 * Incrémentation d'une mesure du process courant (set si pas présente).
+	 * @param measureType Nom de la mesure
+	 * @param value Valeur
+	 */
 	public void incMeasure(final String measureType, final double value) {
 		peek().incMeasure(measureType, value);
 	}
 
-	/** {@inheritDoc} */
+	/**
+	 * Annule et remplace une mesure du process courant.
+	 * @param measureType Nom de la mesure
+	 * @param value Valeur
+	 */
 	public void setMeasure(final String measureType, final double value) {
 		peek().setMeasure(measureType, value);
 	}
 
-	/** {@inheritDoc} */
+	/**
+	 * Ajoute une méta-donnée du process courant (set si pas présente).
+	 * TODO V0+ : voir si mutlivaluée intéressante.
+	 * @param metaDataName Nom de la méta donnée
+	 * @param value Valeur
+	 */
 	public void addMetaData(final String metaDataName, final String value) {
 		peek().setMetaData(metaDataName, value);
 	}
@@ -128,19 +146,26 @@ public final class KProcessCollector {
 		return null;
 	}
 
-	/** {@inheritDoc} */
+	/**
+	 * Termine le process courant.
+	 * Le processus courant devient alors le processus parent le cas échéant.
+	 */
 	public void stopProcess() {
 		final KProcess process = doStopProcess();
 		if (process != null) {
-			netPlugin.add(process);
+			processConnector.add(process);
 		}
 	}
 
-	/** {@inheritDoc} */
+	/**
+	 * Ajout d'un process déjà assemblé par une sonde.
+	 * Cet ajout peut-être multi-threadé.
+	 * @param process Process à ajouter
+	 */
 	public void add(final KProcess process) {
 		Assertion.isNull(THREAD_LOCAL_PROCESS.get(), "Un process est en cours. Vous ne pouvez ajouter un process complet en même temps.");
 		Assertion.notNull(process, "Le process est obligatoire.");
 		//---------------------------------------------------------------------
-		netPlugin.add(process);
+		processConnector.add(process);
 	}
 }
