@@ -31,10 +31,11 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import kasper.kernel.util.Assertion;
+
 import org.apache.log4j.Logger;
 
 import com.google.gson.Gson;
-import com.kleegroup.analytica.core.Assertion;
 import com.kleegroup.analytica.core.KProcess;
 
 /**
@@ -56,7 +57,9 @@ public final class FileLogConnector implements KProcessConnector {
 
 	@Inject
 	public FileLogConnector(@Named("fileName") final String fileName) {
-		Assertion.notEmpty(fileName, "fileName to spool process is mandatory");
+		if (fileName == null || fileName.trim().isEmpty()) {
+			throw new IllegalArgumentException("fileName to spool process is required");
+		}
 		//---------------------------------------------------------------------	
 		this.fileName = fileName;
 	}

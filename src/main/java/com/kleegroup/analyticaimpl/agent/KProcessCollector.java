@@ -21,7 +21,8 @@ import java.util.Stack;
 
 import javax.inject.Inject;
 
-import com.kleegroup.analytica.core.Assertion;
+import kasper.kernel.util.Assertion;
+
 import com.kleegroup.analytica.core.KProcess;
 import com.kleegroup.analytica.core.KProcessBuilder;
 import com.kleegroup.analyticaimpl.agent.net.KProcessConnector;
@@ -42,8 +43,9 @@ public final class KProcessCollector {
 	 */
 	@Inject
 	public KProcessCollector(final KProcessConnector processConnector) {
-		super();
-		Assertion.notNull(processConnector);
+		if (processConnector == null) {
+			throw new NullPointerException("processConnector is required");
+		}
 		//-----------------------------------------------------------------
 		this.processConnector = processConnector;
 	}

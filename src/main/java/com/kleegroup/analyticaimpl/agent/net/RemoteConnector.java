@@ -34,7 +34,6 @@ import net.sf.ehcache.Element;
 import org.apache.log4j.Logger;
 
 import com.google.gson.Gson;
-import com.kleegroup.analytica.core.Assertion;
 import com.kleegroup.analytica.core.KProcess;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
@@ -139,7 +138,9 @@ public final class RemoteConnector implements KProcessConnector {
 		SendProcessThread(final RemoteConnector remoteConnector) {
 			super("AnalyticaSendProcessThread");
 			setDaemon(false); //ce n'est pas un démon car on veux envoyer les derniers process
-			Assertion.notNull(remoteConnector);
+			if (remoteConnector == null) {
+				throw new NullPointerException("remoteConnector is required");
+			}
 			//-----------------------------------------------------------------
 			this.remoteConnector = remoteConnector;
 		}

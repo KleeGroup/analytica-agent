@@ -26,6 +26,7 @@ import com.kleegroup.analytica.hcube.cube.HMetricKey;
 import com.kleegroup.analytica.hcube.dimension.HCategory;
 import com.kleegroup.analytica.hcube.dimension.HTimeDimension;
 import com.kleegroup.analytica.hcube.query.HQuery;
+import com.kleegroup.analytica.hcube.query.HQueryBuilder;
 import com.kleegroup.analytica.server.ServerManager;
 
 /**
@@ -183,7 +184,7 @@ public final class AnalyticaLogSpyTest extends AbstractTestCaseJU4 {
 	}
 
 	private HMetric getMetricInDateCube(final Date date, final String metricName, final String type, final String... subTypes) {
-		final HQuery query = serverManager.createQueryBuilder() //
+		final HQuery query = new HQueryBuilder() //
 				.on(HTimeDimension.Day).from(date).to(new Date(date.getTime() + 24 * 60 * 60 * 1000)) //
 				.with(type, subTypes) //
 				.build();
