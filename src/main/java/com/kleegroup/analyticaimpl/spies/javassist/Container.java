@@ -20,13 +20,13 @@ public final class Container {
 	private static KProcessConnector PROCESS_CONNECTOR_INSTANCE;
 
 	public static void initCollector(final AnalyticaSpyConf analyticaSpyConf) {
-		final String pluginName = analyticaSpyConf.getPluginName();
-		final Map<String, String> pluginParams = analyticaSpyConf.getPluginParams();
+		final String collectorName = analyticaSpyConf.getCollectorName();
+		final Map<String, String> collectorParams = analyticaSpyConf.getCollectorParams();
 		final KProcessConnector processConnector;
-		if ("FileLog".equals(pluginName)) {
-			processConnector = new FileLogConnector(pluginParams.get("fileName"));
-		} else if ("Remote".equals(pluginName)) {
-			processConnector = new RemoteConnector(pluginParams.get("serverUrl"), Integer.parseInt(pluginParams.get("sendPaquetSize")), Integer.parseInt(pluginParams.get("sendPaquetFrequencySeconds")));
+		if ("FileLog".equals(collectorName)) {
+			processConnector = new FileLogConnector(collectorParams.get("fileName"));
+		} else if ("Remote".equals(collectorName)) {
+			processConnector = new RemoteConnector(collectorParams.get("serverUrl"), Integer.parseInt(collectorParams.get("sendPaquetSize")), Integer.parseInt(collectorParams.get("sendPaquetFrequencySeconds")));
 		} else {
 			processConnector = new DummyConnector();
 		}

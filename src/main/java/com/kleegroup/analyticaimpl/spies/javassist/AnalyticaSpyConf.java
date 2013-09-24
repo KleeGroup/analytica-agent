@@ -11,8 +11,8 @@ import com.google.gson.Gson;
  * @version $Id: MemoryLeakTransformer.java,v 1.1 2011/05/12 10:16:05 prahmoune Exp $
  */
 public final class AnalyticaSpyConf {
-	private final String pluginName;
-	private final Map<String, String> pluginParams;
+	private final String collectorName;
+	private final Map<String, String> collectorParams;
 	private final List<String> fastExcludedPackages;
 	private final List<String> fastIncludedPackages;
 	private final List<AnalyticaSpyHookPoint> hookPoints;
@@ -36,8 +36,8 @@ public final class AnalyticaSpyConf {
 	 * @param methodFinally Code inséré en finally
 	 */
 	public AnalyticaSpyConf(final String pluginName, final Map<String, String> pluginParams, final List<String> excludedPackages, final List<String> includedPackages, final List<AnalyticaSpyHookPoint> hookPoints, final Map<String, String> localVariables, final List<String> methodBefore, final List<String> methodAfter, final Map<String, List<String>> methodCatchs, final List<String> methodFinally) {
-		this.pluginName = pluginName;
-		this.pluginParams = pluginParams;
+		collectorName = pluginName;
+		collectorParams = pluginParams;
 		fastExcludedPackages = excludedPackages;
 		fastIncludedPackages = includedPackages;
 		this.hookPoints = hookPoints;
@@ -49,17 +49,17 @@ public final class AnalyticaSpyConf {
 	}
 
 	/**
-	 * @return Nom du plugin
+	 * @return Nom du collector
 	 */
-	public String getPluginName() {
-		return pluginName;
+	public String getCollectorName() {
+		return collectorName;
 	}
 
 	/**
-	 * @return Liste des catchs (ExceptionClass => code)
+	 * @return Parametre du collector
 	 */
-	public Map<String, String> getPluginParams() {
-		return pluginParams;
+	public Map<String, String> getCollectorParams() {
+		return collectorParams;
 	}
 
 	/**
