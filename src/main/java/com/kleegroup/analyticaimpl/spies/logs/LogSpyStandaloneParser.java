@@ -39,15 +39,17 @@ public final class LogSpyStandaloneParser {
 
 		final Starter starter = new Starter(managersXmlFileName, propertiesFileName, LogSpyStandaloneParser.class, Option.some(defaultProperties), 0);
 		starter.start();
-
-		final Container container = new DualContainer(Home.getContainer().getRootContainer(), new ParamsContainer((Map) defaultProperties));
-		final LogSpyReader logSpyReader = INJECTOR.newInstance(LogSpyReader.class, container);
-		//new LogSpyReader(agentManager, resourceManager, translateFileName("./catalina.out", getClass()), translateFileName("./sparkLogSpyConf.json", getClass()));
-		logSpyReader.start();
-
-		flushAgentToServer();
-
-		starter.stop();
+		try {
+			final Container container = new DualContainer(Home.getContainer().getRootContainer(), new ParamsContainer((Map) defaultProperties));
+			final LogSpyReader logSpyReader = INJECTOR.newInstance(LogSpyReader.class, container);
+			try {
+				logSpyReader.start();
+			} finally {
+				flushAgentToServer();
+			}
+		} finally {
+			starter.stop();
+		}
 	}
 
 	private static void flushAgentToServer() {
