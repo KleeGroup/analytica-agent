@@ -23,7 +23,8 @@ public final class JsonConfReader {
 		try {
 			final String confJson = readConf(confFileUrl);
 			final String escapedConfJson = escapeComments(confJson);
-			final D conf = new Gson().fromJson(escapedConfJson, confClass);
+			final String cleanConfJson = cleanEmptyElement(escapedConfJson);
+			final D conf = new Gson().fromJson(cleanConfJson, confClass);
 			return conf;
 		} catch (final Exception e) {
 			throw new IllegalArgumentException("Impossible de charger le fichier de configuration : " + confFileUrl, e);
@@ -41,6 +42,11 @@ public final class JsonConfReader {
 	private static String escapeComments(final String confJson) {
 		String escapedConfJson = confJson.replaceAll("//.*", ""); //comment de type //
 		escapedConfJson = escapedConfJson.replaceAll("/\\*(.|[\\r\\n])*?\\*/", ""); //comment de type /* */
+		return escapedConfJson;
+	}
+
+	private static String cleanEmptyElement(final String confJson) {
+		final String escapedConfJson = confJson.replaceAll(",[\\s]*([\\]\\}])", "$1"); //, <spaces> } ou ]
 		return escapedConfJson;
 	}
 
