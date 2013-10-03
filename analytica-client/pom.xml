@@ -84,7 +84,22 @@
 	</dependencies>
 
 	<build>
-		<!-- see parent -->
+		<plugins>
+			<!-- see parent -->
+			<plugin>
+				<!-- On précise que l'on souhaite aussi un jar pour les tests -->
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.2</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>test-jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
 	</build>
 
 </project>

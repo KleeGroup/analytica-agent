@@ -154,5 +154,6 @@
 		<module>analytica-client-core</module>
 		<module>analytica-agent</module>
 		<module>analytica-client</module>
+		<!-- module>analytica-client-embedded</module -->
 	</modules>
 </project>
