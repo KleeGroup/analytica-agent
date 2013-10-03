@@ -49,7 +49,7 @@ public final class AnalyticaSpyAgent {
 	}
 
 	public static void stopAgent() {
-		if (instrumentation != null) {
+		if (instrumentation != null && transformer != null) {
 			instrumentation.removeTransformer(transformer);
 			reloadAll();
 			instrumentation = null;

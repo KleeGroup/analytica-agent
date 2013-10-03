@@ -1,13 +1,25 @@
 {
+//"collectorName" : "FileLog",
+//"collectorParams" : {"fileName" : "d:/logs/analyticaFileLog.log"},
+"collectorName" : "RemoteHTTP",
+"collectorParams" : { 
+ "serverUrl" : "http:\/\/localhost:9998/process",
+ "sendPaquetSize" : "50",
+ "sendPaquetFrequencySeconds" : "1" },
+
 "localVariables" : { },
-"methodBefore": ["com.kleegroup.analytica.agent.AgentManager agentManager = kasper.kernel.Home.getContainer().getManager(com.kleegroup.analytica.agent.AgentManager.class);",
-		"agentManager.startProcess(processType, subTypes);",
-		"agentManager.setMeasure(\"ME_ERROR_PCT\", 0d);"		
-		],
+"methodBefore": [
+	    "System.out.println(\"before \"+$methodName);",	
+		"$collector.startProcess(processType, subTypes);",
+		"$collector.setMeasure(\"ME_ERROR_PCT\", 0d);"
+	],
 "methodAfter": [],
-"methodCatchs" : {"java.lang.Throwable" : "com.kleegroup.analytica.agent.AgentManager agentManager = kasper.kernel.Home.getContainer().getManager(com.kleegroup.analytica.agent.AgentManager.class);agentManager.setMeasure(\"ME_ERROR_PCT\", 100d); agentManager.addMetaData(\"ME_ERROR_HEADER\", String.valueOf($e)); throw $e;" },
-"methodFinally": ["com.kleegroup.analytica.agent.AgentManager agentManager = kasper.kernel.Home.getContainer().getManager(com.kleegroup.analytica.agent.AgentManager.class);",
-	"agentManager.stopProcess();"],
+"methodCatchs" : {"java.lang.Throwable" : [
+		"$collector.setMeasure(\"ME_ERROR_PCT\", 100d);", 
+		"$collector.addMetaData(\"ME_ERROR_HEADER\", String.valueOf($e));", 
+
+		"throw $e;"] },
+"methodFinally": [ "$collector.stopProcess();"],
 
 "fastExcludedPackages" : [ 
 	  "sun.*",
@@ -20,12 +32,7 @@
    "fastIncludedPackages" : [ 
     ],
   "hookPoints" : [ 
-      { "className" : "*.oracle.*",
-        "inherits" : "java.sql.Statement",
-        "methods" : ["executeQuery"],
-        "processType" : "SQL",
-        "subTypes" : ["$methodName","$class.getName()","$1"]
-      },
+      
       { "className" : "com.kleegroup.analyticaimpl.spies.javassist.*",
         "inherits" : "com.kleegroup.analyticaimpl.spies.javassist.ParentTestAnalyse",
         "methods" :  ["workParent*"],

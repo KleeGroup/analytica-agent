@@ -2,8 +2,6 @@ package com.kleegroup.analyticaimpl.spies.javassist.agentloader;
 
 import java.lang.management.ManagementFactory;
 
-import kasper.kernel.exception.KRuntimeException;
-
 import org.apache.log4j.Logger;
 
 /**
@@ -37,11 +35,11 @@ public final class VirtualMachineAgentLoader {
 			throw new RuntimeException("La class " + VIRTUAL_MACHINE_CLASS_NAME + " est utilisée pour ajout l'agent à la VM. Ajouter le tools.jar du jdk 1.6+ dans le classpath", e);
 		}
 		try {
-					final com.sun.tools.attach.VirtualMachine vm = com.sun.tools.attach.VirtualMachine.attach(pid);
-						vm.loadAgent(agentPath, option);
-						vm.detach();
+			final com.sun.tools.attach.VirtualMachine vm = com.sun.tools.attach.VirtualMachine.attach(pid);
+			vm.loadAgent(agentPath, option);
+			vm.detach();
 		} catch (final Exception e) {
-			throw new KRuntimeException(e);
+			throw new RuntimeException(e);
 		}
 	}
 }

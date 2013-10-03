@@ -25,9 +25,10 @@ public final class Container {
 		final KProcessConnector processConnector;
 		if ("FileLog".equals(collectorName)) {
 			processConnector = new FileLogConnector(collectorParams.get("fileName"));
-		} else if ("Remote".equals(collectorName)) {
+		} else if ("RemoteHTTP".equals(collectorName)) {
 			processConnector = new RemoteConnector(collectorParams.get("serverUrl"), Integer.parseInt(collectorParams.get("sendPaquetSize")), Integer.parseInt(collectorParams.get("sendPaquetFrequencySeconds")));
 		} else {
+			System.err.println("Unknown Connector : " + collectorName + " fallback to DummyCollector (use one of : FileLog, RemoteHTTP, Dummy)");
 			processConnector = new DummyConnector();
 		}
 
