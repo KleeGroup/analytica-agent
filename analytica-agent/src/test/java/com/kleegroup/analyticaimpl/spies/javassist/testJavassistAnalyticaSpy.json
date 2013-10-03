@@ -9,7 +9,7 @@
 
 "localVariables" : { },
 "methodBefore": [
-	    "System.out.println(\"before \"+$methodName);",	
+	    //"System.out.println(\"before \"+$methodName);",	
 		"$collector.startProcess(processType, subTypes);",
 		"$collector.setMeasure(\"ME_ERROR_PCT\", 0d);"
 	],

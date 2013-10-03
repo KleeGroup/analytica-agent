@@ -42,7 +42,7 @@ public final class MockServerManager {
 	/**
 	 * @param json json du process recu
 	 */
-	public void push(final String json) {
+	public synchronized void push(final String json) {
 		final KProcess[] processes = new Gson().fromJson(json, KProcess[].class);
 		LOG.info("PUSH " + processes.length + " processes.");
 		//LOG.info("-> " + json);
@@ -72,7 +72,7 @@ public final class MockServerManager {
 	 * @param type Type
 	 * @return Liste des processes de ce type
 	 */
-	public List<KProcess> readProcesses(final String type) {
+	public synchronized List<KProcess> readProcesses(final String type) {
 		return obtainProcesses(type);
 	}
 
@@ -82,7 +82,7 @@ public final class MockServerManager {
 	 * @param subTypes Sous type du process
 	 * @return Liste des measures
 	 */
-	public List<Double> getMeasures(final String metricName, final String type, final String... subTypes) {
+	public synchronized List<Double> getMeasures(final String metricName, final String type, final String... subTypes) {
 		final List<KProcess> processByType = obtainProcesses(type);
 		final List<Double> measures = new ArrayList<Double>();
 		for (final KProcess process : processByType) {
