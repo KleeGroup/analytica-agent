@@ -1,0 +1,19 @@
+<?xml version =	'1.0' encoding = 'ISO-8859-1'?>
+<modules>
+	<module name="kasper-kernel">	    
+		<manager name="ResourceManager" class="kasperimpl.resource.ResourceManagerImpl" >
+			<plugin id="javaRR"  	name="ResourceResolver" class="kasperimpl.resource.plugins.java.ClassPathResourceResolverPlugin"/>
+			<plugin id="urlRR"  	name="ResourceResolver" class="kasperimpl.resource.plugins.url.URLResourceResolverPlugin"/>
+			<plugin id="localRR"  	name="ResourceResolver" class="kasperimpl.resource.plugins.local.LocalResourceResolverPlugin"/>			
+		</manager>
+	</module>
+	<module name="analytica">
+		<manager name="AgentManager" class="com.kleegroup.analyticaimpl.agent.AgentManagerImpl">
+			<plugin name="NetPlugin" class="com.kleegroup.analyticaimpl.agent.plugins.net.remote.RemoteNetPlugin">
+				<param name="serverUrl" value="{serverUrl}" />
+				<param name="sendPaquetSize" value="500" />
+				<param name="sendPaquetFrequencySeconds" value="1" />
+			</plugin>
+		</manager>
+	</module>
+</modules>
