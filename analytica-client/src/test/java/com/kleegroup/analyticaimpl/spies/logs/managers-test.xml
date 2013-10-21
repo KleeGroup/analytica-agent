@@ -1,37 +1,18 @@
 <?xml version =	'1.0' encoding = 'ISO-8859-1'?>
 <modules>
 	<module name="kasper-kernel">	    
-		<component name="ResourceManager" class="kasperimpl.resource.ResourceManagerImpl" >
-			<plugin id="javaRR"  	name="ResourceResolver" class="kasperimpl.resource.plugins.java.ClassPathResourceResolverPlugin"/>
-			<plugin id="urlRR"  	name="ResourceResolver" class="kasperimpl.resource.plugins.url.URLResourceResolverPlugin"/>
+		<component api="ResourceManager" class="vertigoimpl.commons.resource.ResourceManagerImpl" >
+			<plugin class="vertigoimpl.plugins.commons.resource.java.ClassPathResourceResolverPlugin"/>
+			<plugin class="vertigoimpl.plugins.commons.resource.url.URLResourceResolverPlugin"/>
 		</component>
 	</module>
 	<module name="analytica">
-		<!-- <component name="AgentManager" class="com.kleegroup.analyticaimpl.agent.AgentManagerImpl">
-			<plugin name="NetPlugin" class="com.kleegroup.analyticaimpl.agent.plugins.net.direct.DirectNetPlugin" />
-		</component> -->
-		<component name="AgentManager" class="com.kleegroup.analyticaimpl.agent.AgentManagerImpl">
-			<!-- <plugin name="NetPlugin" class="com.kleegroup.analyticaimpl.agent.plugins.net.filelog.FileLogNetPlugin">
-				<param name="logName" value="FILELOG-AGENT" />
-			</plugin> -->
-			<!-- <plugin name="NetPlugin" class="com.kleegroup.analyticaimpl.agent.plugins.net.remote.RemoteNetPlugin">
-				<param name="serverUrl" value="http://localhost:8080/analytica/rest/process" />
-				<param name="sendPaquetSize" value="500" />
+		<component api="AgentManager" class="com.kleegroup.analyticaimpl.agent.AgentManagerImpl">
+			<plugin class="com.kleegroup.analyticaimpl.agent.plugins.net.remote.RemoteNetPlugin">
+				<param name="serverUrl" value="http://localhost:9998/process" />
+				<param name="sendPaquetSize" value="20" />
 				<param name="sendPaquetFrequencySeconds" value="1" />
-			</plugin> -->
-			<plugin name="NetPlugin" class="com.kleegroup.analyticaimpl.agent.plugins.net.direct.DirectNetPlugin" />
-		</component>
-		<component name="ServerManager" class="com.kleegroup.analyticaimpl.server.ServerManagerImpl" >
-	       	<plugin name="ProcessStorePlugin" class="com.kleegroup.analyticaimpl.server.plugins.processstore.memory.MemoryProcessStorePlugin" />
-			<!-- <plugin name="ProcessStorePlugin" class="com.kleegroup.analyticaimpl.server.plugins.processstore.berkeley.BerkeleyProcessStorePlugin">
-	        	<param name="dbPath" value="d:/analytica/db-test" />
-	        </plugin> -->
-	         <!-- <plugin name="ProcessEncoderPlugin" class="com.kleegroup.analyticaimpl.server.plugins.processencoder.standard.StandardProcessEncoderPlugin">
-	        </plugin>  -->       
-	     </component>
-	     <component name="HCubeManager" class="com.kleegroup.analyticaimpl.hcube.HCubeManagerImpl">
-				<plugin name="CubeStorePlugin" class="com.kleegroup.analyticaimpl.hcube.plugins.store.memory.MemoryCubeStorePlugin">
-				</plugin>
+			</plugin>
 		</component>
 	</module>
 </modules>

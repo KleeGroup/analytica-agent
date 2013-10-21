@@ -4,7 +4,7 @@
     ],
   "logPatterns" : [ 
       { "code" : "AGENT-FILELOG",
-        "patternRegExp" : "^.*\\[([a-zA-Z0-9-_]+)\\] INFO  FILELOG-AGENT - (\\[.*\\]) *$",
+        "patternRegExp" : "^.*\\[([a-zA-Z0-9-_]+)\\] - (\\[.*\\]) *$",
         "indexProcessesJson" : 2,
         "indexThreadName" : 1,
         "processRoot" : true

@@ -2,11 +2,13 @@ package com.kleegroup.analyticaimpl.spies.logs;
 
 import java.util.Properties;
 
+import vertigo.commons.resource.ResourceManager;
 import vertigo.kernel.Home;
 import vertigo.kernel.di.injector.Injector;
 import vertigo.kernel.lang.Assertion;
 import vertigo.kernel.lang.Option;
 
+import com.kleegroup.analytica.agent.AgentManager;
 import com.kleegroup.analyticaimpl.Starter;
 
 /**
@@ -39,7 +41,12 @@ public final class LogSpyStandaloneParser {
 		starter.start();
 		try {
 			//final Container container = new DualContainer(Home.getComponentSpace(), new ParamsContainer((Map) defaultProperties));
-			final LogSpyReader logSpyReader = INJECTOR.newInstance(LogSpyReader.class, Home.getComponentSpace());
+			final AgentManager agentManager = Home.getComponentSpace().resolve(AgentManager.class);
+			final ResourceManager resourceManager = Home.getComponentSpace().resolve(ResourceManager.class);
+			final String logFileUrl = defaultProperties.getProperty("logFileUrl");
+			final String confFileUrl = defaultProperties.getProperty("confFileUrl");
+			final LogSpyReader logSpyReader = new LogSpyReader(agentManager, resourceManager, logFileUrl, confFileUrl);
+			//INJECTOR.newInstance(LogSpyReader.class, Home.getComponentSpace());
 			try {
 				logSpyReader.start();
 			} finally {

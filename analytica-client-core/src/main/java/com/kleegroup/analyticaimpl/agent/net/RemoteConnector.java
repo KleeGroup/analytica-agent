@@ -110,6 +110,7 @@ public final class RemoteConnector implements KProcessConnector {
 
 	/** {@inheritDoc} */
 	public void stop() {
+		logger.info("Stopping Analytica RemoteNetPlugin");
 		processSenderThread.interrupt();
 		try {
 			processSenderThread.join(10000);//on attend 10s max
@@ -117,7 +118,7 @@ public final class RemoteConnector implements KProcessConnector {
 			//rien, si interrupt on continu l'arret
 		}
 		processSenderThread = null;
-		flushProcessQueue();
+		flushAllProcessQueue();
 
 		locatorClient = null;
 		remoteWebResource = null;
@@ -145,6 +146,7 @@ public final class RemoteConnector implements KProcessConnector {
 		@Override
 		public void run() {
 			while (!isInterrupted()) {
+				//System.out.println("WHILE processSenderThread isInterrupted() :" + isInterrupted());
 				try {
 					remoteConnector.waitToSendPacket();
 				} catch (final InterruptedException e) {
@@ -158,7 +160,11 @@ public final class RemoteConnector implements KProcessConnector {
 				// - un interrupt (arret du serveur)
 				remoteConnector.retrySendProcesses();
 				remoteConnector.flushProcessQueue();
+				//System.out.println("WHILE processSenderThread isInterrupted() :" + isInterrupted());
+
 			}
+			//System.out.println("END processSenderThread isInterrupted() :" + isInterrupted());
+
 		}
 	}
 
@@ -184,9 +190,24 @@ public final class RemoteConnector implements KProcessConnector {
 	}
 
 	/**
-	 * Effectue le flush de la queue des processes à envoyer.
+	 * Flush la queue des process (au max sendPaquetSize * 2).
 	 */
 	void flushProcessQueue() {
+		flushProcessQueue(sendPaquetSize * 2); //si besoin on va jusqu'a un sur-booking x2 des paquets
+	}
+
+	/**
+	 * Flush toute la queue des processes (utilisée lors de l'arret de l'agent)
+	 */
+	void flushAllProcessQueue() {
+		flushProcessQueue(Long.MAX_VALUE);
+	}
+
+	/**
+	 * Effectue le flush de la queue des processes à envoyer.
+	 */
+	private void flushProcessQueue(final long maxPaquetSize) {
+		long sendPaquet = 0;
 		final Collection<KProcess> processes = new ArrayList<KProcess>();
 		KProcess head;
 		do {
@@ -196,9 +217,10 @@ public final class RemoteConnector implements KProcessConnector {
 			}
 			if (processes.size() >= sendPaquetSize * 2) { //si besoin on va jusqu'a un sur-booking x2 des paquets
 				doSendProcesses(processes);
+				sendPaquet += processes.size();
 				processes.clear();
 			}
-		} while (head != null); //On depile tout : car lors de l'arret du serveur on aura pas d'autre flush
+		} while (head != null && sendPaquet < maxPaquetSize);
 		doSendProcesses(processes);
 
 		//On n'utilise pas le MediaType.APPLICATION_JSON, car jackson a besoin de modifications sur KProcess
@@ -210,7 +232,7 @@ public final class RemoteConnector implements KProcessConnector {
 			final String json = new Gson().toJson(processes);
 			try {
 				doSendJson(remoteWebResource, json);
-				logger.info("Send " + processes.size() + " processes to " + serverUrl);
+				logger.info("Send " + processes.size() + " processes to " + serverUrl + "(" + processQueue.size() + " remaining)");
 			} catch (final Exception e) {
 				logSendError(false, e);
 				doStoreJson(json);

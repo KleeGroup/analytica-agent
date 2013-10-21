@@ -1,5 +1,6 @@
 package com.kleegroup.analyticaimpl.spies.logs;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -86,6 +87,16 @@ public final class AnalyticaLogSpyTest extends AbstractTestCaseJU4 {
 	@Test
 	public void testLog130829FromJson() throws ParseException {
 		final LogSpyReader logSpyReader = new LogSpyReader(agentManager, resourceManager, "file:///d:\\logs\\spark130829FileLog.log", "file:///d:\\@GitHub\\analytica-agent/src/test/java/com/kleegroup/analyticaimpl/spies/logs/logSpyConf.json");
+		logSpyReader.start();
+
+		flushAgentToServer();
+		checkMetricCount("duration", 510, "REQUETE");
+	}
+
+	@Test
+	public void testLog131017FromJson() throws ParseException, IOException {
+		startServer();
+		final LogSpyReader logSpyReader = new LogSpyReader(agentManager, resourceManager, "file:///d:\\@GitHub\\analytica-agent-spark\\spark-131017\\analyticaFileLog.log", "file:///d:\\@GitHub/analytica-agent/analytica-client/src/test/java/com/kleegroup/analyticaimpl/spies/logs/logSpyConf.json");
 		logSpyReader.start();
 
 		flushAgentToServer();
