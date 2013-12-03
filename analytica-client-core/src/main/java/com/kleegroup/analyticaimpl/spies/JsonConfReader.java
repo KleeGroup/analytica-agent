@@ -12,13 +12,17 @@ import java.net.URL;
 import com.google.gson.Gson;
 
 /**
- * Implémentation de ClassFileTransformer pour instrumenter les méthodes.
- * Necessite d'être placé dans un jar <b>avec</b> les class de Javassist, car il n'y a pas de gestion de classpath dans le javaagent
+ * Utilitaire de lecture de fichier de conf JSon.
  * @author npiedeloup
- * @version $Id: MemoryLeakTransformer.java,v 1.1 2011/05/12 10:16:05 prahmoune Exp $
  */
 public final class JsonConfReader {
 
+	/**
+	 * Chargement d'une configuration.
+	 * @param confFileUrl URL du fichier de conf
+	 * @param confClass Class de l'objet portant la conf
+	 * @return Instance de la configuration chargée à partir du fichier
+	 */
 	public static <D extends Object> D loadJsonConf(final URL confFileUrl, final Class<D> confClass) {
 		try {
 			final String confJson = readConf(confFileUrl);
@@ -31,6 +35,12 @@ public final class JsonConfReader {
 		}
 	}
 
+	/**
+	 * Chargement d'une configuration.
+	 * @param configurationFileName Chemin du fichier de conf
+	 * @param confClass Class de l'objet portant la conf
+	 * @return Instance de la configuration chargée à partir du fichier
+	 */
 	public static final <D extends Object> D loadJsonConf(final String configurationFileName, final Class<D> confClass) {
 		try {
 			return JsonConfReader.loadJsonConf(new File(configurationFileName).toURI().toURL(), confClass);
