@@ -77,6 +77,9 @@ public final class KProcess {
 		if (!measures.containsKey(DURATION)) {
 			throw new IllegalArgumentException("measures must contain DURATION");
 		}
+		if (measures.containsKey(SUB_DURATION) && measures.get(SUB_DURATION) > measures.get(DURATION)) {
+			throw new IllegalArgumentException("measures SUB-DURATION must be lower than DURATION (duration:" + measures.get(DURATION) + " < sub-duration:" + measures.get(SUB_DURATION) + ")");
+		}
 		//---------------------------------------------------------------------
 		this.type = type;
 		this.subTypes = subTypes;
