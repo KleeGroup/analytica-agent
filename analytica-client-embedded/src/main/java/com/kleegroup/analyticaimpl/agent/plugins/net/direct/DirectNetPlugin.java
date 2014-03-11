@@ -1,8 +1,8 @@
 package com.kleegroup.analyticaimpl.agent.plugins.net.direct;
 
-import javax.inject.Inject;
+import io.vertigo.kernel.lang.Assertion;
 
-import vertigo.kernel.lang.Assertion;
+import javax.inject.Inject;
 
 import com.kleegroup.analytica.core.KProcess;
 import com.kleegroup.analytica.server.ServerManager;
