@@ -34,7 +34,7 @@
 		</dependency>
 		<dependency>
 			<groupId>io.analytica</groupId>
-			<artifactId>analytica-server</artifactId>
+			<artifactId>analytica-server-core</artifactId>
 			<version>${server.version}</version>
 		</dependency>
 	</dependencies>
