@@ -15,9 +15,8 @@ import javax.inject.Inject;
 
 import org.junit.Test;
 
-import vertigo.AbstractTestCaseJU4;
-
 import com.google.gson.Gson;
+import com.kleegroup.analytica.AbstractTestCaseJU4;
 import com.kleegroup.analytica.agent.AgentManager;
 
 /**

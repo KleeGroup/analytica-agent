@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package vertigo;
+package com.kleegroup.analytica;
 
 import io.vertigo.kernel.Home;
 import io.vertigo.kernel.component.Container;
@@ -30,7 +30,6 @@ import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
-import com.kleegroup.analytica.AbstractAnalyticaTestCaseJU4;
 import com.kleegroup.analyticaimpl.Starter;
 
 /**

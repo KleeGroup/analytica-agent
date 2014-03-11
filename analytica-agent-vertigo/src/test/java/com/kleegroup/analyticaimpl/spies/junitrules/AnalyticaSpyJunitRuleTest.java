@@ -3,7 +3,7 @@ package com.kleegroup.analyticaimpl.spies.junitrules;
 import org.junit.Rule;
 import org.junit.Test;
 
-import vertigo.AbstractTestCaseJU4;
+import com.kleegroup.analytica.AbstractTestCaseJU4;
 
 /**
  * Implementation d'un agent de jvm.

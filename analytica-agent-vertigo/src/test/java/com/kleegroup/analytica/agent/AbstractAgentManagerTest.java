@@ -29,7 +29,7 @@ import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
 
-import vertigo.AbstractTestCaseJU4;
+import com.kleegroup.analytica.AbstractTestCaseJU4;
 
 /**
  * Cas de Test JUNIT de l'API Analytics.
