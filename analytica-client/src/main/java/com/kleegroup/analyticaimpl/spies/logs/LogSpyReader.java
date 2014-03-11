@@ -1,5 +1,11 @@
 package com.kleegroup.analyticaimpl.spies.logs;
 
+import io.vertigo.commons.resource.ResourceManager;
+import io.vertigo.kernel.exception.VRuntimeException;
+import io.vertigo.kernel.lang.Activeable;
+import io.vertigo.kernel.lang.Assertion;
+import io.vertigo.kernel.lang.Option;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,12 +32,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.log4j.Logger;
-
-import vertigo.commons.resource.ResourceManager;
-import vertigo.kernel.exception.VRuntimeException;
-import vertigo.kernel.lang.Activeable;
-import vertigo.kernel.lang.Assertion;
-import vertigo.kernel.lang.Option;
 
 import com.google.gson.Gson;
 import com.kleegroup.analytica.agent.AgentManager;

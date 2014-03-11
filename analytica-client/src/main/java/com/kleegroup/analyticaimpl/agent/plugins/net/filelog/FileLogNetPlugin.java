@@ -17,10 +17,10 @@
  */
 package com.kleegroup.analyticaimpl.agent.plugins.net.filelog;
 
+import io.vertigo.kernel.lang.Activeable;
+
 import javax.inject.Inject;
 import javax.inject.Named;
-
-import vertigo.kernel.lang.Activeable;
 
 import com.kleegroup.analytica.core.KProcess;
 import com.kleegroup.analyticaimpl.agent.net.FileLogConnector;

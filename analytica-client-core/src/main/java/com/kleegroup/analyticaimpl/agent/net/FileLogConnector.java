@@ -51,7 +51,7 @@ public final class FileLogConnector implements KProcessConnector {
 	private final String fileName;
 
 	public FileLogConnector(final String fileName) {
-		if (fileName == null || fileName.trim().isEmpty()) {
+		if (fileName == null || fileName.trim().length() == 0) {
 			throw new IllegalArgumentException("fileName to spool process is required");
 		}
 		//---------------------------------------------------------------------	

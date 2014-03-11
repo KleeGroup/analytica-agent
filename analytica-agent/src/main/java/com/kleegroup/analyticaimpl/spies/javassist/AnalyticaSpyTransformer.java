@@ -57,7 +57,7 @@ final class AnalyticaSpyTransformer implements ClassFileTransformer {
 	 */
 	AnalyticaSpyTransformer(final String agentArgs) {
 		//Assertion.notEmpty(agentArgs); //pas Asssertion pour eviter une dépendance
-		if (agentArgs == null || agentArgs.isEmpty()) {
+		if (agentArgs == null || agentArgs.length() == 0) {
 			throw new IllegalArgumentException("Usage : -javaagent:analyticaAgent.jar=analyticaPlugs.json");
 		}
 		analyticaSpyConf = JsonConfReader.loadJsonConf(agentArgs, AnalyticaSpyConf.class);
@@ -321,7 +321,7 @@ final class AnalyticaSpyTransformer implements ClassFileTransformer {
 		final StringBuilder sbBefore = new StringBuilder();
 		appendPredefinedVariable(sbBefore, hookPoint, className, methodName);
 		for (final String line : methodBefore) {
-			if (!line.isEmpty()) {
+			if (line.length() != 0) {
 				sbBefore.append(line).append("\n");
 			}
 		}
@@ -332,7 +332,7 @@ final class AnalyticaSpyTransformer implements ClassFileTransformer {
 
 		final StringBuilder sbAfter = new StringBuilder();
 		for (final String line : methodAfter) {
-			if (!line.isEmpty()) {
+			if (line.length() != 0) {
 				sbAfter.append(line).append("\n");
 			}
 		}
@@ -344,7 +344,7 @@ final class AnalyticaSpyTransformer implements ClassFileTransformer {
 		for (final Map.Entry<CtClass, List<String>> entry : methodCatchs.entrySet()) {
 			final StringBuilder sbCatch = new StringBuilder();
 			for (final String line : entry.getValue()) {
-				if (!line.isEmpty()) {
+				if (line.length() != 0) {
 					sbCatch.append(line).append("\n");
 				}
 			}
@@ -354,7 +354,7 @@ final class AnalyticaSpyTransformer implements ClassFileTransformer {
 
 		final StringBuilder sbFinally = new StringBuilder();
 		for (final String line : methodFinally) {
-			if (!line.isEmpty()) {
+			if (line.length() != 0) {
 				sbFinally.append(line).append("\n");
 			}
 		}

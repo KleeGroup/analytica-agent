@@ -1,5 +1,8 @@
 package com.kleegroup.analyticaimpl.spies.httprequest;
 
+import io.vertigo.kernel.Home;
+import io.vertigo.kernel.exception.VUserException;
+
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadMXBean;
@@ -14,9 +17,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
-
-import vertigo.kernel.Home;
-import vertigo.kernel.exception.VUserException;
 
 import com.kleegroup.analytica.agent.AgentManager;
 

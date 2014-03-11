@@ -1,12 +1,12 @@
 package com.kleegroup.analyticaimpl.spies.logs;
 
-import java.util.Properties;
+import io.vertigo.commons.resource.ResourceManager;
+import io.vertigo.kernel.Home;
+import io.vertigo.kernel.di.injector.Injector;
+import io.vertigo.kernel.lang.Assertion;
+import io.vertigo.kernel.lang.Option;
 
-import vertigo.commons.resource.ResourceManager;
-import vertigo.kernel.Home;
-import vertigo.kernel.di.injector.Injector;
-import vertigo.kernel.lang.Assertion;
-import vertigo.kernel.lang.Option;
+import java.util.Properties;
 
 import com.kleegroup.analytica.agent.AgentManager;
 import com.kleegroup.analyticaimpl.Starter;

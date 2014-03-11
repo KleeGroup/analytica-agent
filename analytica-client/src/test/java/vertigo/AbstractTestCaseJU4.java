@@ -18,17 +18,17 @@
  */
 package vertigo;
 
+import io.vertigo.kernel.Home;
+import io.vertigo.kernel.component.Container;
+import io.vertigo.kernel.di.injector.Injector;
+import io.vertigo.kernel.lang.Option;
+
 import java.util.Properties;
 
 import org.junit.Rule;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
-
-import vertigo.kernel.Home;
-import vertigo.kernel.component.Container;
-import vertigo.kernel.di.injector.Injector;
-import vertigo.kernel.lang.Option;
 
 import com.kleegroup.analytica.AbstractAnalyticaTestCaseJU4;
 import com.kleegroup.analyticaimpl.Starter;

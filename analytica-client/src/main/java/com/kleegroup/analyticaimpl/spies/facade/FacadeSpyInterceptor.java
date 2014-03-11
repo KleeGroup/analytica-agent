@@ -1,11 +1,11 @@
 package com.kleegroup.analyticaimpl.spies.facade;
 
+import io.vertigo.kernel.lang.Assertion;
+
 import javax.inject.Inject;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
-
-import vertigo.kernel.lang.Assertion;
 
 import com.kleegroup.analytica.agent.AgentManager;
 

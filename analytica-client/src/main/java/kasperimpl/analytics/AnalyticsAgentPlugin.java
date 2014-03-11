@@ -17,8 +17,8 @@
  */
 package kasperimpl.analytics;
 
+import io.vertigo.kernel.component.Plugin;
 import kasper.analytics.AnalyticsAgent;
-import vertigo.kernel.component.Plugin;
 
 /**
  * Agent de collecte.

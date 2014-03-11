@@ -1,9 +1,9 @@
 package com.kleegroup.analyticaimpl.spies.logs;
 
+import io.vertigo.kernel.lang.Assertion;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import vertigo.kernel.lang.Assertion;
 
 /**
  * Info sur le log lu.

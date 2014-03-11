@@ -17,9 +17,9 @@
  */
 package com.kleegroup.analyticaimpl.agent;
 
-import javax.inject.Inject;
+import io.vertigo.kernel.lang.Assertion;
 
-import vertigo.kernel.lang.Assertion;
+import javax.inject.Inject;
 
 import com.kleegroup.analytica.agent.AgentManager;
 import com.kleegroup.analytica.core.KProcess;

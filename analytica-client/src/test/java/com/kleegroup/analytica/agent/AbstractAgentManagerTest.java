@@ -17,6 +17,8 @@
  */
 package com.kleegroup.analytica.agent;
 
+import io.vertigo.kernel.lang.Assertion;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -28,7 +30,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import vertigo.AbstractTestCaseJU4;
-import vertigo.kernel.lang.Assertion;
 
 /**
  * Cas de Test JUNIT de l'API Analytics.

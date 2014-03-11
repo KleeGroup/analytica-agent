@@ -1,5 +1,8 @@
 package com.kleegroup.analyticaimpl.spies.logs;
 
+import io.vertigo.commons.resource.ResourceManager;
+import io.vertigo.kernel.lang.Assertion;
+
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -13,8 +16,6 @@ import javax.inject.Inject;
 import org.junit.Test;
 
 import vertigo.AbstractTestCaseJU4;
-import vertigo.commons.resource.ResourceManager;
-import vertigo.kernel.lang.Assertion;
 
 import com.google.gson.Gson;
 import com.kleegroup.analytica.agent.AgentManager;

@@ -17,7 +17,7 @@
  */
 package com.kleegroup.analytica.agent;
 
-import vertigo.kernel.component.Manager;
+import io.vertigo.kernel.component.Manager;
 
 import com.kleegroup.analytica.core.KProcess;
 

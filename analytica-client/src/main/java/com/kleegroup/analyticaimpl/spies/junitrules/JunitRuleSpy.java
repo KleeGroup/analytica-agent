@@ -1,10 +1,10 @@
 package com.kleegroup.analyticaimpl.spies.junitrules;
 
+import io.vertigo.kernel.Home;
+
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
-
-import vertigo.kernel.Home;
 
 import com.kleegroup.analytica.agent.AgentManager;
 

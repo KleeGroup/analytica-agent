@@ -17,10 +17,11 @@
  */
 package kasperimpl.analytics.plugins.analytica;
 
+import io.vertigo.kernel.lang.Assertion;
+
 import javax.inject.Inject;
 
 import kasperimpl.analytics.AnalyticsAgentPlugin;
-import vertigo.kernel.lang.Assertion;
 
 import com.kleegroup.analytica.agent.AgentManager;
 

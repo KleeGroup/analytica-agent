@@ -1,14 +1,14 @@
 package com.kleegroup.analyticaimpl.spies.facade;
 
+import io.vertigo.kernel.lang.Assertion;
+import io.vertigo.kernel.util.ClassUtil;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-
-import vertigo.kernel.lang.Assertion;
-import vertigo.kernel.util.ClassUtil;
 
 import com.kleegroup.analytica.agent.AgentManager;
 
