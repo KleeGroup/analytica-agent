@@ -29,11 +29,11 @@
         <javaElement handleIdentifier="=kasper-analytica-agent/src\/main\/java&lt;com.kleegroup.analyticaimpl.agent.net"/>
         <folder path="/kasper-analytica-agent/javassist"/>
         <javaElement handleIdentifier="=kasper-analytica-agent/src\/main\/java&lt;com.kleegroup.analyticaimpl.spies.junitrules"/>
-        <javaElement handleIdentifier="=kasper-analytica-agent/src\/main\/java&lt;com.kleegroup.analyticaimpl.spies.javassist"/>
+        <javaElement handleIdentifier="=kasper-analytica-agent/src\/main\/java&lt;io.analytica.spies.impl.javassist"/>
         <javaElement handleIdentifier="=kasper-analytica-agent/src\/main\/java&lt;kasperimpl.resource.plugins.local"/>
         <javaElement handleIdentifier="=kasper-analytica-agent/src\/main\/java&lt;com.kleegroup.analyticaimpl.spies.httprequest"/>
-        <javaElement handleIdentifier="=kasper-analytica-agent/src\/main\/java&lt;com.kleegroup.analyticaimpl.spies.javassist.agentloader"/>
-        <javaElement handleIdentifier="=kasper-analytica-agent/src\/main\/java&lt;com.kleegroup.analyticaimpl.spies.javassist.matcher"/>
+        <javaElement handleIdentifier="=kasper-analytica-agent/src\/main\/java&lt;io.analytica.spies.impl.javassist.agentloader"/>
+        <javaElement handleIdentifier="=kasper-analytica-agent/src\/main\/java&lt;io.analytica.spies.impl.javassist.matcher"/>
         <javaElement handleIdentifier="=kasper-analytica-agent/src\/main\/java&lt;com.kleegroup.analyticaimpl"/>
     </selectedElements>
 </jardesc>

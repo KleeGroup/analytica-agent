@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License along with this program;
  * if not, see <http://www.gnu.org/licenses>
  */
-package com.kleegroup.analytica.core;
+package io.analytica.api;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -29,7 +29,7 @@ import java.util.Map;
  *  - live (La date de début et celle de la création , la durée s'obtient lors de la création du process
  *  - différé (la date de débute et la durée sont renseignée ensembles )
  * 
- * @author pchretien
+ * @author pchretien, npiedeloup
  * @version $Id: KProcessBuilder.java,v 1.18 2012/11/08 17:06:27 pchretien Exp $
  */
 public final class KProcessBuilder {

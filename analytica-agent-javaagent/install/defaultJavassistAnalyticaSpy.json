@@ -33,19 +33,19 @@
     ],
   "hookPoints" : [ 
       
-      { "className" : "com.kleegroup.analyticaimpl.spies.javassist.*",
-        "inherits" : "com.kleegroup.analyticaimpl.spies.javassist.ParentTestAnalyse",
+      { "className" : "io.analytica.spies.impl.javassist.*",
+        "inherits" : "io.analytica.spies.impl.javassist.ParentTestAnalyse",
         "methods" :  ["workParent*"],
         "processType" : "JAVASSIST",
         "subTypes" : ["$0.getClass().getName()","$methodName"]
       },
-      { "className" : "com.kleegroup.analyticaimpl.spies.javassist.*",
-        "inherits" : "com.kleegroup.analyticaimpl.spies.javassist.InterfaceTestAnalyse",
+      { "className" : "io.analytica.spies.impl.javassist.*",
+        "inherits" : "io.analytica.spies.impl.javassist.InterfaceTestAnalyse",
         "methods" :  ["workInterface"],
         "processType" : "JAVASSIST",
         "subTypes" : ["$class.getName()","$methodName"]
       },
-      { "className" : "com.kleegroup.analyticaimpl.spies.javassist.TestAnalyse",
+      { "className" : "io.analytica.spies.impl.javassist.TestAnalyse",
         "methods" :  ["work1s","workRandom", "workError", "workResult", "workReentrant", "workStatic", "workFastest"],
         "processType" : "JAVASSIST",
         "subTypes" : ["$class.getName()","$methodName"]

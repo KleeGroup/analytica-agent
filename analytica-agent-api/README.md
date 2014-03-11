@@ -1,8 +1,8 @@
-﻿# Project Analytica made by Klee Group.
+﻿# Project Analytica - System Monitoring Tool.
 
 ## API CLient/Server 
 
-Analytica clietn and server communicate via an event object called Process.
+Analytica client and server communicate via an event object called KProcess.
 
 A process is an event with
  - a category defined by 

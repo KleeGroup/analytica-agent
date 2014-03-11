@@ -1,0 +1,20 @@
+<?xml version =	'1.0' encoding = 'ISO-8859-1'?>
+<modules>
+	<module name="anlaytica">
+		<component name="AgentManager" class="io.analytica.agent.impl.AgentManagerImpl">
+			<plugin name="NetPlugin" class="io.analytica.agent.impl.plugins.net.direct.DirectNetPlugin" />
+		</component>
+		
+		<component name="ServerManager" class="com.kleegroup.analyticaimpl.server.ServerManagerImpl" >
+	       <plugin name="ProcessStorePlugin" class="com.kleegroup.analyticaimpl.server.plugins.processstore.berkeley.BerkeleyProcessStorePlugin">
+	        	<param name="dbPath" value="d:/analytica/db-test" />
+	        </plugin>
+	         <!-- <plugin name="ProcessEncoderPlugin" class="com.kleegroup.analyticaimpl.server.plugins.processencoder.standard.StandardProcessEncoderPlugin">
+	        </plugin>  -->       
+	     </component>
+	     <component name="HCubeManager" class="com.kleegroup.analyticaimpl.hcube.HCubeManagerImpl">
+				<plugin name="CubeStorePlugin" class="com.kleegroup.analyticaimpl.hcube.plugins.store.memory.MemoryCubeStorePlugin">
+				</plugin>
+		</component>
+	</module>
+</modules>

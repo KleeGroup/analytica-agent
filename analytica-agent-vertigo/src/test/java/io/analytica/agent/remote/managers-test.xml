@@ -1,0 +1,12 @@
+<?xml version =	'1.0' encoding = 'ISO-8859-1'?>
+<modules>
+	<module name="anlaytica">
+		<component api="AgentManager" class="io.analytica.agent.impl.AgentManagerImpl">
+			<plugin class="io.analytica.agent.impl.plugins.net.remote.RemoteNetPlugin">
+				<param name="serverUrl" value="http://localhost:9998/process" />
+				<param name="sendPaquetSize" value="20" />
+				<param name="sendPaquetFrequencySeconds" value="1" />
+			</plugin>
+		</component>
+	</module>
+</modules>

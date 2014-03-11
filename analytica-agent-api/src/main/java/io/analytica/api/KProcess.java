@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License along with this program;
  * if not, see <http://www.gnu.org/licenses>
  */
-package com.kleegroup.analytica.core;
+package io.analytica.api;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -36,7 +36,7 @@ import java.util.regex.Pattern;
  * - a list of measures  with a DURATION  measure 
  * - a list of metadatas
  * 
- * @author pchretien
+ * @author pchretien, npiedeloup
  * @version $Id: KProcess.java,v 1.8 2012/10/16 17:18:26 pchretien Exp $
  */
 public final class KProcess {

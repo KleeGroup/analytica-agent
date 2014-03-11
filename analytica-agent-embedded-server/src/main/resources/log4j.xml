@@ -35,7 +35,7 @@
 		<level value="DEBUG" />
 		<appender-ref ref="FILELOG" />
 	</logger>
-	<logger name="com.kleegroup.analyticaimpl.spies.logs.LogSpyReader" additivity="false">
+	<logger name="io.analytica.spies.impl.logs.LogSpyReader" additivity="false">
 		<level value="INFO" />
 		<appender-ref ref="STDOUT" />
 	</logger>
