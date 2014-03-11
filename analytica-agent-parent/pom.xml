@@ -7,7 +7,7 @@
 	<version>1.2.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Analytica-Agent-parent</name>
-	<description>Analytica-Agent manage to collect and send Buisiness Application's measures to Analytica-Server</description>
+	<description>Analytica-Agent manage to collect and send Business Application's measures to Analytica-Server</description>
 	<url>http://vertigo.io</url>
 
 	<licenses>
