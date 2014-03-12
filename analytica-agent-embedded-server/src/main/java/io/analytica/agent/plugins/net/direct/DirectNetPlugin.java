@@ -2,11 +2,10 @@ package io.analytica.agent.plugins.net.direct;
 
 import io.analytica.agent.impl.plugins.net.NetPlugin;
 import io.analytica.api.KProcess;
+import io.analytica.server.ServerManager;
 import io.vertigo.kernel.lang.Assertion;
 
 import javax.inject.Inject;
-
-import com.kleegroup.analytica.server.ServerManager;
 
 /**
  * Direct call to Analytica Server.
