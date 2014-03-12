@@ -19,7 +19,7 @@ package io.analytica.agent.impl;
 
 import io.analytica.agent.AgentManager;
 import io.analytica.agent.impl.KProcessCollector;
-import io.analytica.agent.impl.plugins.net.NetPlugin;
+import io.analytica.agent.plugins.net.NetPlugin;
 import io.analytica.api.KProcess;
 import io.vertigo.kernel.lang.Assertion;
 

@@ -15,10 +15,10 @@
  * You should have received a copy of the GNU General Public License along with this program;
  * if not, see <http://www.gnu.org/licenses>
  */
-package io.analytica.agent.impl.plugins.net.filelog;
+package io.analytica.agent.plugins.net.remote;
 
-import io.analytica.agent.impl.net.FileLogConnector;
-import io.analytica.agent.impl.plugins.net.NetPlugin;
+import io.analytica.agent.impl.net.RemoteConnector;
+import io.analytica.agent.plugins.net.NetPlugin;
 import io.analytica.api.KProcess;
 import io.vertigo.kernel.lang.Activeable;
 
@@ -27,32 +27,33 @@ import javax.inject.Named;
 
 /**
  * @author npiedeloup
- * @version $Id: FileLogNetPlugin.java,v 1.4 2012/06/14 13:49:17 npiedeloup Exp $
+ * @version $Id: RemoteNetPlugin.java,v 1.4 2012/06/14 13:49:17 npiedeloup Exp $
  */
-public final class FileLogNetPlugin implements NetPlugin, Activeable {
-	private final FileLogConnector fileLogConnector;
+public final class RemoteNetPlugin implements NetPlugin, Activeable {
+	private final RemoteConnector remoteConnector;
 
 	/**
-	 * Constructeur.
-	 * @param fileName Chemin du fichier de log
+	 * @param serverUrl Url du serveur Analytica
+	 * @param sendPaquetSize Taille des paquets déclenchant l'envoi anticipé
+	 * @param sendPaquetFrequencySeconds Frequence normal d'envoi des paquets (en seconde)
 	 */
 	@Inject
-	public FileLogNetPlugin(@Named("fileName") final String fileName) {
-		fileLogConnector = new FileLogConnector(fileName);
+	public RemoteNetPlugin(@Named("serverUrl") final String serverUrl, @Named("sendPaquetSize") final int sendPaquetSize, @Named("sendPaquetFrequencySeconds") final int sendPaquetFrequencySeconds) {
+		remoteConnector = new RemoteConnector(serverUrl, sendPaquetSize, sendPaquetFrequencySeconds);
 	}
 
 	/** {@inheritDoc} */
 	public void add(final KProcess process) {
-		fileLogConnector.add(process);
+		remoteConnector.add(process);
 	}
 
 	/** {@inheritDoc} */
 	public void start() {
-		fileLogConnector.start();
+		remoteConnector.start();
 	}
 
 	/** {@inheritDoc} */
 	public void stop() {
-		fileLogConnector.stop();
+		remoteConnector.stop();
 	}
 }

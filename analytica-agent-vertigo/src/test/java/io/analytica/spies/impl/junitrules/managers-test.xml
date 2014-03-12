@@ -1,8 +1,8 @@
 <?xml version =	'1.0' encoding = 'ISO-8859-1'?>
 <modules>
-	<module name="anlaytica">
+	<module name="analytica">
 		<component name="AgentManager" class="io.analytica.agent.impl.AgentManagerImpl">
-			<plugin name="NetPlugin" class="io.analytica.agent.impl.plugins.net.direct.DirectNetPlugin" />
+			<plugin name="NetPlugin" class="io.analytica.agent.plugins.net.direct.DirectNetPlugin" />
 		</component>
 		
 		<component name="ServerManager" class="com.kleegroup.analyticaimpl.server.ServerManagerImpl" >

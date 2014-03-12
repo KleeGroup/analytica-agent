@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License along with this program;
  * if not, see <http://www.gnu.org/licenses>
  */
-package io.analytica.agent.impl.plugins.net;
+package io.analytica.agent.plugins.net;
 
 import io.analytica.agent.impl.net.KProcessConnector;
 import io.analytica.api.KProcess;
