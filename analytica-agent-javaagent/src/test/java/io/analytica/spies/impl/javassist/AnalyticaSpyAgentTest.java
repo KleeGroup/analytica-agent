@@ -1,8 +1,8 @@
 package io.analytica.spies.impl.javassist;
 
 import io.analytica.AbstractAnalyticaTestCaseJU4;
-import io.analytical.spies.imp.javassist.AnalyticaSpyAgent;
-import io.analytical.spies.imp.javassist.agentloader.VirtualMachineAgentLoader;
+import io.analytica.spies.imp.javassist.AnalyticaSpyAgent;
+import io.analytica.spies.imp.javassist.agentloader.VirtualMachineAgentLoader;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -16,7 +16,7 @@ import org.junit.Test;
  * Celui ci doit etre inclus dans un jar et passé en parametre à la jvm :
  * <code>-javaagent:"monjar.jar"=option</code>
  * Ce jar doit avoir un manifest qui contient la ligne suivante :
- * <code>Premain-Class: com.kleegroup.analyticaimpl.spies.javassist.AnalyticaSpyAgent</code>
+ * <code>Premain-Class: io.analytica.spies.imp.javassist.AnalyticaSpyAgent</code>
  *
  * Cet agent ajoute un ClassFileTransformer spécifique qui a pour but d'instrumenter
  * les méthodes selon un paramétrage externe.
@@ -27,11 +27,11 @@ import org.junit.Test;
  */
 public final class AnalyticaSpyAgentTest extends AbstractAnalyticaTestCaseJU4 {
 
-	private static final String TEST1_CLASS_NAME = "com.kleegroup.analyticaimpl.spies.javassist.TestAnalyse";
-	private static final String TEST2_CLASS_NAME = "com.kleegroup.analyticaimpl.spies.javassist.TestAnalyse2";
-	private static final String TEST3_CLASS_NAME = "com.kleegroup.analyticaimpl.spies.javassist.TestAnalyse3";
+	private static final String TEST1_CLASS_NAME = "io.analytica.spies.impl.javassist.TestAnalyse";
+	private static final String TEST2_CLASS_NAME = "io.analytica.spies.impl.javassist.TestAnalyse2";
+	private static final String TEST3_CLASS_NAME = "io.analytica.spies.impl.javassist.TestAnalyse3";
 
-	//private static final String TEST3_PARENT_CLASS_NAME = "com.kleegroup.analyticaimpl.spies.javassist.ParentTestAnalyse";
+	//private static final String TEST3_PARENT_CLASS_NAME = "io.analytica.spies.impl.javassist.ParentTestAnalyse";
 
 	/**
 	 * Demarre l'agent de supervision des création d'instances.

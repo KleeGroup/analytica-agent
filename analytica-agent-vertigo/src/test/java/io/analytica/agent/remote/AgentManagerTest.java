@@ -35,14 +35,4 @@ public final class AgentManagerTest extends AbstractAgentManagerTest {
 	protected void doSetUp() throws Exception {
 		startServer();
 	}
-
-	/** {@inheritDoc} */
-	@Override
-	protected void flushAgentToServer() {
-		try {
-			Thread.sleep(2000);//on attend 2s que le process soit envoyé au serveur.
-		} catch (final InterruptedException e) {
-			//rien on stop juste l'attente
-		}
-	}
 }

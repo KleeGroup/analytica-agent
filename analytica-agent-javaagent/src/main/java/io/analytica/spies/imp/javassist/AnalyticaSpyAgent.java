@@ -1,4 +1,4 @@
-package io.analytical.spies.imp.javassist;
+package io.analytica.spies.imp.javassist;
 
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.Instrumentation;
@@ -11,7 +11,7 @@ import java.util.List;
  * Celui ci doit etre inclus dans un jar et passé en parametre à la jvm :
  * <code>-javaagent:"monjar.jar"=option</code>
  * Ce jar doit avoir un manifest qui contient la ligne suivante :
- * <code>Premain-Class: com.kleegroup.analyticaimpl.spies.asm.AnalyticaSpyAgent</code>
+ * <code>Premain-Class: io.analytica.spies.imp.javassist.AnalyticaSpyAgent</code>
  *
  * Cet agent ajoute un ClassFileTransformer spécifique qui a pour but d'instrumenter
  * les méthodes selon un paramétrage externe.

@@ -17,6 +17,7 @@
  */
 package io.analytica.api;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -54,12 +55,12 @@ public final class KProcess {
 	public static final Pattern TYPE_REGEX = Pattern.compile("[A-Z][A-Z0-9_]*");
 
 	private final String type;
-	private final String[] subTypes;
+	private String[] subTypes = new String[0];
 	private final Date startDate;
 
-	private final Map<String, Double> measures;
-	private final Map<String, String> metaDatas;
-	private final List<KProcess> subProcesses;
+	private Map<String, Double> measures = new HashMap<String, Double>();
+	private Map<String, String> metaDatas = new HashMap<String, String>();
+	private List<KProcess> subProcesses = new ArrayList<KProcess>();
 
 	/*
 	 * Le constructeur est package car il faut passer par le builder.
@@ -100,7 +101,7 @@ public final class KProcess {
 	 * @return Sous-types du processus
 	 */
 	public String[] getSubTypes() {
-		return subTypes;
+		return subTypes!=null?subTypes:new String[0]; //TODO force subTypes notNull
 	}
 
 	/**@return Process duration */
@@ -126,6 +127,6 @@ public final class KProcess {
 
 	@Override
 	public String toString() {
-		return "process:{category:{ type:" + type + ", subTypes:" + Arrays.asList(subTypes) + "}; startDate:" + startDate + "}";
+		return "process:{category:{ type:" + type + ", subTypes:" + Arrays.asList(getSubTypes()) + "}; startDate:" + startDate + "}";
 	}
 }

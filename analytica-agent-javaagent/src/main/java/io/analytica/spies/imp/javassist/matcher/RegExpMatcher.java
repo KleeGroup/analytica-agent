@@ -1,4 +1,4 @@
-package io.analytical.spies.imp.javassist.matcher;
+package io.analytica.spies.imp.javassist.matcher;
 
 import java.util.StringTokenizer;
 

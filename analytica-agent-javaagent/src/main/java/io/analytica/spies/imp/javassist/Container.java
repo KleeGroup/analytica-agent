@@ -1,4 +1,4 @@
-package io.analytical.spies.imp.javassist;
+package io.analytica.spies.imp.javassist;
 
 import io.analytica.agent.impl.KProcessCollector;
 import io.analytica.agent.impl.net.DummyConnector;

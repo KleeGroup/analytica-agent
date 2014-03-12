@@ -18,7 +18,8 @@ import com.sun.jersey.api.core.PackagesResourceConfig;
 import com.sun.jersey.api.core.ResourceConfig;
 
 /**
- * Charge l'environnement de test par defaut.
+ * Abstract Test class for Analytica.
+ * Start a MockAnalyticaServer to receive and check process send.
  * @author pchretien, npiedeloup
  */
 public abstract class AbstractAnalyticaTestCaseJU4 {
@@ -35,7 +36,7 @@ public abstract class AbstractAnalyticaTestCaseJU4 {
 	protected final void startServer() throws IOException {
 		System.out.println("Starting grizzly...");
 		mockServerManager = new MockServerManager();
-		final ResourceConfig rc = new PackagesResourceConfig("com.kleegroup.analyticamock");
+		final ResourceConfig rc = new PackagesResourceConfig("io.analytica.mock");
 		rc.getProperties().put(ResourceConfig.PROPERTY_CONTAINER_REQUEST_FILTERS, com.sun.jersey.api.container.filter.GZIPContentEncodingFilter.class.getName());
 		rc.getProperties().put(ResourceConfig.PROPERTY_CONTAINER_RESPONSE_FILTERS, com.sun.jersey.api.container.filter.GZIPContentEncodingFilter.class.getName());
 		httpServer = GrizzlyServerFactory.createHttpServer(baseUri, rc);
@@ -45,7 +46,7 @@ public abstract class AbstractAnalyticaTestCaseJU4 {
 
 	protected void flushAgentToServer() {
 		try {
-			Thread.sleep(5000);//on attend 2s que le process soit envoyé au serveur.
+			Thread.sleep(2000);//on attend 2s que le process soit envoyé au serveur.
 		} catch (final InterruptedException e) {
 			//rien on stop juste l'attente
 		}

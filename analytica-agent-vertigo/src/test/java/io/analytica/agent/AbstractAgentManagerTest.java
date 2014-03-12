@@ -17,7 +17,7 @@
  */
 package io.analytica.agent;
 
-import io.analytica.AbstractTestCaseJU4;
+import io.analytica.AbstractVertigoStartTestCaseJU4;
 import io.analytica.agent.AgentManager;
 import io.vertigo.kernel.lang.Assertion;
 
@@ -37,7 +37,7 @@ import org.junit.Test;
  * @author pchretien, npiedeloup
  * @version $Id: AgentManagerTest.java,v 1.3 2012/03/29 08:48:19 npiedeloup Exp $
  */
-public abstract class AbstractAgentManagerTest extends AbstractTestCaseJU4 {
+public abstract class AbstractAgentManagerTest extends AbstractVertigoStartTestCaseJU4 {
 
 	/** Base de données gérant les articles envoyés dans une commande. */
 	private static final String PROCESS1_TYPE = "ARTICLE";
@@ -51,6 +51,10 @@ public abstract class AbstractAgentManagerTest extends AbstractTestCaseJU4 {
 
 	//-------------------------------------------------------------------------
 
+	protected void doSetUp() throws Exception {
+		startServer();
+	}
+	
 	/**
 	 * Test simple avec un compteur. 
 	 * Test sur l'envoi d'un process 
@@ -135,11 +139,6 @@ public abstract class AbstractAgentManagerTest extends AbstractTestCaseJU4 {
 		checkMetricCount("MONTANT", nbCommandes, PROCESS2_TYPE); //nombre de commande
 		checkMetricCount("MONTANT", nbCommandes * 5, PROCESS1_TYPE); //nombre d'article
 	}
-
-	/**
-	 * Flush des données conservées par l'agent vers le server.
-	 */
-	protected abstract void flushAgentToServer();
 
 	/**
 	 * Passe N commandes.

@@ -36,7 +36,7 @@ import org.junit.runners.model.Statement;
  * Charge l'environnement de test par defaut.
  * @author pchretien
  */
-public abstract class AbstractTestCaseJU4 extends AbstractAnalyticaTestCaseJU4 {
+public abstract class AbstractVertigoStartTestCaseJU4 extends AbstractAnalyticaTestCaseJU4 {
 
 	@Rule
 	public ContainerResource resource = new ContainerResource(this);
@@ -62,13 +62,13 @@ public abstract class AbstractTestCaseJU4 extends AbstractAnalyticaTestCaseJU4 {
 	 */
 	static class ContainerResource implements TestRule {
 
-		private final AbstractTestCaseJU4 testCaseInstance;
+		private final AbstractVertigoStartTestCaseJU4 testCaseInstance;
 
 		/**
 		 * Constructeur.
 		 * @param testCaseInstance instance du testCase
 		 */
-		ContainerResource(final AbstractTestCaseJU4 testCaseInstance) {
+		ContainerResource(final AbstractVertigoStartTestCaseJU4 testCaseInstance) {
 			this.testCaseInstance = testCaseInstance;
 		}
 
@@ -84,7 +84,7 @@ public abstract class AbstractTestCaseJU4 extends AbstractAnalyticaTestCaseJU4 {
 		 * @version $Id: $
 		 */
 		static class ContainerStatement extends Statement {
-			private final AbstractTestCaseJU4 testCaseInstance;
+			private final AbstractVertigoStartTestCaseJU4 testCaseInstance;
 			private final Injector injector = new Injector();
 			private Starter starter;
 
@@ -94,7 +94,7 @@ public abstract class AbstractTestCaseJU4 extends AbstractAnalyticaTestCaseJU4 {
 			 * @param base evaluation du test
 			 * @param testCaseInstance instance du testCase
 			 */
-			public ContainerStatement(final Statement base, final AbstractTestCaseJU4 testCaseInstance) {
+			public ContainerStatement(final Statement base, final AbstractVertigoStartTestCaseJU4 testCaseInstance) {
 				this.base = base;
 				this.testCaseInstance = testCaseInstance;
 			}

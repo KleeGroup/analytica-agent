@@ -1,4 +1,4 @@
-package io.analytical.spies.imp.javassist;
+package io.analytica.spies.imp.javassist;
 
 import java.util.Collections;
 import java.util.List;

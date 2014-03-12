@@ -1,26 +1,17 @@
 package io.analytica.spies.impl.junitrules;
 
-import io.analytica.AbstractTestCaseJU4;
+import io.analytica.AbstractVertigoStartTestCaseJU4;
 import io.analytica.spies.impl.junitrules.JunitRuleSpy;
 
 import org.junit.Rule;
 import org.junit.Test;
 
 /**
- * Implementation d'un agent de jvm.
- * Celui ci doit etre inclus dans un jar et passé en parametre à la jvm :
- * <code>-javaagent:"monjar.jar"=option</code>
- * Ce jar doit avoir un manifest qui contient la ligne suivante :
- * <code>Premain-Class: com.kleegroup.analyticaimpl.spies.javassist.AnalyticaSpyAgent</code>
- *
- * Cet agent ajoute un ClassFileTransformer spécifique qui a pour but d'instrumenter
- * les méthodes selon un paramétrage externe.
- * L'option de l'agent dans la ligne de commande représente le nom du fichier de paramétrage.
- *
+ * Test of JunitRule Agent.
+ * Make a process around all tests (before setUp and after tearDown).
  * @author npiedeloup
- * @version $Id: MemoryLeakAgent.java,v 1.2 2012/09/28 09:30:03 pchretien Exp $
  */
-public final class AnalyticaSpyJunitRuleTest extends AbstractTestCaseJU4 {
+public final class AnalyticaSpyJunitRuleTest extends AbstractVertigoStartTestCaseJU4 {
 
 	@Rule
 	public JunitRuleSpy junitRule = new JunitRuleSpy();
@@ -28,7 +19,7 @@ public final class AnalyticaSpyJunitRuleTest extends AbstractTestCaseJU4 {
 	/** {@inheritDoc} */
 	@Override
 	protected void doSetUp() throws Exception {
-		//
+		startServer();
 	}
 
 	/**
@@ -44,12 +35,8 @@ public final class AnalyticaSpyJunitRuleTest extends AbstractTestCaseJU4 {
 			//rien
 		}
 		flushAgentToServer();
-		checkMetricCount("duration", 1, "JUNIT", "com.kleegroup.analyticaimpl.spies.junitrules.AnalyticaSpyJunitRuleTest", "testJunitRule");
-	}
-
-	@Override
-	protected void flushAgentToServer() {
-		//rien en local pas d'attente
+		//check is useless : process will be close AFTER this test.
+		//checkMetricCount("duration", 1, "JUNIT", "io.analytica.spies.impl.junitrules.AnalyticaSpyJunitRuleTest", "testJunitRule");
 	}
 
 }

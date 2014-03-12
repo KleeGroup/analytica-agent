@@ -1,4 +1,4 @@
-package io.analytical.spies.imp.javassist.agentloader;
+package io.analytica.spies.imp.javassist.agentloader;
 
 import java.lang.management.ManagementFactory;
 

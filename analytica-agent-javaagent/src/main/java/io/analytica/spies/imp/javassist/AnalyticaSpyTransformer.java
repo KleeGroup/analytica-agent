@@ -1,12 +1,12 @@
-package io.analytical.spies.imp.javassist;
+package io.analytica.spies.imp.javassist;
 
+import io.analytica.spies.imp.javassist.matcher.CompositeMatcher;
+import io.analytica.spies.imp.javassist.matcher.CtBehaviorMatcher;
+import io.analytica.spies.imp.javassist.matcher.InheritClassMatcher;
+import io.analytica.spies.imp.javassist.matcher.Matcher;
+import io.analytica.spies.imp.javassist.matcher.RegExpMatcher;
+import io.analytica.spies.imp.javassist.matcher.StaticMatcher;
 import io.analytica.spies.impl.JsonConfReader;
-import io.analytical.spies.imp.javassist.matcher.CompositeMatcher;
-import io.analytical.spies.imp.javassist.matcher.CtBehaviorMatcher;
-import io.analytical.spies.imp.javassist.matcher.InheritClassMatcher;
-import io.analytical.spies.imp.javassist.matcher.Matcher;
-import io.analytical.spies.imp.javassist.matcher.RegExpMatcher;
-import io.analytical.spies.imp.javassist.matcher.StaticMatcher;
 
 import java.io.InvalidClassException;
 import java.lang.instrument.ClassFileTransformer;
@@ -208,7 +208,7 @@ final class AnalyticaSpyTransformer implements ClassFileTransformer {
 				populateMethodCatchs(analyticaSpyConf.getMethodCatchs());
 
 				if (!ctClass.isInterface()) { // on ne peut pas instrumenter les interfaces
-					//final String agentManagerDef = "private final com.kleegroup.analytica.agent.AgentManager agentManager = kasper.kernel.Home.getContainer().getManager(com.kleegroup.analytica.agent.AgentManager.class);";
+					//final String agentManagerDef = "private final io.analytica.agent.AgentManager agentManager = Home.getContainer().getManager(io.analytica.agent.AgentManager.class);";
 					//final CtField agentManagerField = CtField.make(agentManagerDef, cl);
 					//cl.addField(agentManagerField);
 
@@ -388,8 +388,8 @@ final class AnalyticaSpyTransformer implements ClassFileTransformer {
 	private String replaceAlias(final String toReplace, final String className, final String methodName) {
 		String updated = toReplace.replaceAll("\\$methodName", "\"" + methodName + "\"");
 		updated = updated.replaceAll("\\$className", "\"" + className + "\"");
-		//updated = updated.replaceAll("\\$collector", "com.kleegroup.analyticaimpl.agent.KProcessCollector processCollector = com.kleegroup.analyticaimpl.spies.javassist.Container.getProcessCollector();");
-		updated = updated.replaceAll("\\$collector", "com.kleegroup.analyticaimpl.spies.javassist.Container.getProcessCollector()");
+		//updated = updated.replaceAll("\\$collector", "io.analytica.agent.impl.KProcessCollector processCollector = io.analytica.spies.imp.javassist.Container.getProcessCollector();");
+		updated = updated.replaceAll("\\$collector", "io.analytica.spies.imp.javassist.Container.getProcessCollector()");
 		return updated;
 	}
 	//

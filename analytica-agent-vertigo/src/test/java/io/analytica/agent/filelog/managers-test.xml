@@ -1,9 +1,9 @@
 <?xml version =	'1.0' encoding = 'ISO-8859-1'?>
 <modules>
 	<module name="analytica">
-		<component name="AgentManager" class="io.analytica.agent.impl.AgentManagerImpl">
-			<plugin name="NetPlugin" class="io.analytica.agent.plugins.net.filelog.FileLogNetPlugin">
-				<param name="logName" value="FILELOG-AGENT" />
+		<component api="AgentManager" class="io.analytica.agent.impl.AgentManagerImpl">
+			<plugin class="io.analytica.agent.plugins.net.filelog.FileLogNetPlugin">
+				<param name="fileName" value="d:/analytica/testLog.log" />
 			</plugin>
 		</component>
 	</module>

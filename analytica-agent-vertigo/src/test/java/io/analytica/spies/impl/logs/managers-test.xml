@@ -1,9 +1,9 @@
 <?xml version =	'1.0' encoding = 'ISO-8859-1'?>
 <modules>
-	<module name="kasper-kernel">	    
-		<component api="ResourceManager" class="vertigoimpl.commons.resource.ResourceManagerImpl" >
-			<plugin class="vertigoimpl.plugins.commons.resource.java.ClassPathResourceResolverPlugin"/>
-			<plugin class="vertigoimpl.plugins.commons.resource.url.URLResourceResolverPlugin"/>
+	<module name="vertigo-commons">	    
+		<component api="ResourceManager" class="io.vertigo.commons.impl.resource.ResourceManagerImpl" >
+			<plugin class="io.vertigo.commons.plugins.resource.java.ClassPathResourceResolverPlugin"/>
+			<plugin class="io.vertigo.commons.plugins.resource.url.URLResourceResolverPlugin"/>
 		</component>
 	</module>
 	<module name="analytica">

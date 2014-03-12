@@ -1,6 +1,6 @@
 package io.analytica.spies.impl.logs;
 
-import io.analytica.AbstractTestCaseJU4;
+import io.analytica.AbstractVertigoStartTestCaseJU4;
 import io.analytica.agent.AgentManager;
 import io.analytica.spies.impl.logs.LogPattern;
 import io.analytica.spies.impl.logs.LogSpyConf;
@@ -23,26 +23,22 @@ import org.junit.Test;
 import com.google.gson.Gson;
 
 /**
- * Implementation d'un agent de jvm.
- * Celui ci doit etre inclus dans un jar et passé en parametre à la jvm :
- * <code>-javaagent:"monjar.jar"=option</code>
- * Ce jar doit avoir un manifest qui contient la ligne suivante :
- * <code>Premain-Class: com.kleegroup.analyticaimpl.spies.javassist.AnalyticaSpyAgent</code>
- *
- * Cet agent ajoute un ClassFileTransformer spécifique qui a pour but d'instrumenter
- * les méthodes selon un paramétrage externe.
- * L'option de l'agent dans la ligne de commande représente le nom du fichier de paramétrage.
+ * Test LogSpyReader.
+ * Parse a log file, rebuild Processes and send them to AnalyticaServer.
  *
  * @author npiedeloup
- * @version $Id: MemoryLeakAgent.java,v 1.2 2012/09/28 09:30:03 pchretien Exp $
  */
-public final class AnalyticaLogSpyTest extends AbstractTestCaseJU4 {
+public final class AnalyticaLogSpyTest extends AbstractVertigoStartTestCaseJU4 {
 
 	@Inject
 	private AgentManager agentManager;
 	@Inject
 	private ResourceManager resourceManager;
 
+	protected void doSetUp() throws Exception {
+		startServer();
+	}
+	
 	/**
 	 * Test simple avec deux compteurs. 
 	 * Test sur l'envoi de 1000 articles d'un poids de 25 kg. 
@@ -51,7 +47,7 @@ public final class AnalyticaLogSpyTest extends AbstractTestCaseJU4 {
 	 */
 	@Test
 	public void testMiniLog() throws ParseException {
-		final LogSpyReader logSpyReader = new LogSpyReader(agentManager, resourceManager, "file:///d:\\@GitHub\\analytica-agent\\spark-130614\\tomcat7_spark-stdout.2013-06-05.log", "file:///d:/@GitHub/analytica-agent/spark-130614/sparkLogSpyConf-v1.1.json");
+		final LogSpyReader logSpyReader = new LogSpyReader(agentManager, resourceManager, "file:///d:\\@GitHub\\analytica-agent-spark\\spark-130614\\tomcat7_spark-stdout.2013-06-05.log", "file:///d:/@GitHub/analytica-agent/spark-130614/sparkLogSpyConf-v1.1.json");
 		logSpyReader.start();
 
 		flushAgentToServer();
@@ -60,7 +56,7 @@ public final class AnalyticaLogSpyTest extends AbstractTestCaseJU4 {
 
 	@Test
 	public void testLog130809() throws ParseException {
-		final LogSpyReader logSpyReader = new LogSpyReader(agentManager, resourceManager, "file:///d:\\@GitHub\\analytica-agent\\spark-130614\\spark-130809-bis.perf.log ", "file:///d:/@GitHub/analytica-agent/spark-130614/sparkLogSpyConf-v1.2.json");
+		final LogSpyReader logSpyReader = new LogSpyReader(agentManager, resourceManager, "file:///d:\\@GitHub\\analytica-agent-spark\\spark-130614\\spark-130809-bis.perf.log ", "file:///d:/@GitHub/analytica-agent/spark-130614/sparkLogSpyConf-v1.2.json");
 		logSpyReader.start();
 
 		flushAgentToServer();
@@ -70,7 +66,7 @@ public final class AnalyticaLogSpyTest extends AbstractTestCaseJU4 {
 
 	@Test
 	public void testLog130822() throws ParseException {
-		final LogSpyReader logSpyReader = new LogSpyReader(agentManager, resourceManager, "file:///d:\\@GitHub\\analytica-agent\\spark-130614\\spark-130822.perf.log ", "file:///d:/@GitHub/analytica-agent/spark-130614/sparkLogSpyConf-v1.2.json");
+		final LogSpyReader logSpyReader = new LogSpyReader(agentManager, resourceManager, "file:///d:\\@GitHub\\analytica-agent-spark\\spark-130614\\spark-130822.perf.log ", "file:///d:/@GitHub/analytica-agent/spark-130614/sparkLogSpyConf-v1.2.json");
 		logSpyReader.start();
 
 		flushAgentToServer();
@@ -80,7 +76,7 @@ public final class AnalyticaLogSpyTest extends AbstractTestCaseJU4 {
 
 	@Test
 	public void testLog130829() throws ParseException {
-		final LogSpyReader logSpyReader = new LogSpyReader(agentManager, resourceManager, "file:///d:\\@GitHub\\analytica-agent\\spark-130829\\all.log", "file:///d:/@GitHub/analytica-agent/spark-130829/sparkLogSpyConf-v1.3.5.json");
+		final LogSpyReader logSpyReader = new LogSpyReader(agentManager, resourceManager, "file:///d:\\@GitHub\\analytica-agent-spark\\spark-130829\\all.log", "file:///d:/@GitHub/analytica-agent-spark/spark-130829/sparkLogSpyConf-v1.3.5.json");
 		logSpyReader.start();
 
 		flushAgentToServer();
@@ -89,7 +85,7 @@ public final class AnalyticaLogSpyTest extends AbstractTestCaseJU4 {
 
 	@Test
 	public void testLog130829FromJson() throws ParseException {
-		final LogSpyReader logSpyReader = new LogSpyReader(agentManager, resourceManager, "file:///d:\\logs\\spark130829FileLog.log", "file:///d:\\@GitHub\\analytica-agent/src/test/java/com/kleegroup/analyticaimpl/spies/logs/logSpyConf.json");
+		final LogSpyReader logSpyReader = new LogSpyReader(agentManager, resourceManager, "file:///d:\\logs\\spark130829FileLog.log", "io/analytica/spies/impl/logs/logSpyConf.json");
 		logSpyReader.start();
 
 		flushAgentToServer();
@@ -181,15 +177,7 @@ public final class AnalyticaLogSpyTest extends AbstractTestCaseJU4 {
 
 	}
 
-	/**
-	 * Envoi les données vers le serveur.
-	 */
-	@Override
-	protected void flushAgentToServer() {
-		//rien en local pas de flush
-	}
-
-	private static final String translateFileName(final String fileName, final Class<?> relativeRootClass) {
+	/*private static final String translateFileName(final String fileName, final Class<?> relativeRootClass) {
 		Assertion.checkArgNotEmpty(fileName);
 		//---------------------------------------------------------------------
 		if (fileName.startsWith(".")) {
@@ -206,5 +194,5 @@ public final class AnalyticaLogSpyTest extends AbstractTestCaseJU4 {
 
 	private static final String getRelativePath(final Class<?> relativeRootClass) {
 		return relativeRootClass.getPackage().getName().replace('.', '/');
-	}
+	}*/
 }
