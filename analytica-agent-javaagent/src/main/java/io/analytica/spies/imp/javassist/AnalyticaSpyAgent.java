@@ -69,9 +69,10 @@ public final class AnalyticaSpyAgent {
 			instrumentation = inst;
 			System.out.println("AnalyticaAgent prepare at " + new Date());
 			transformer = new AnalyticaSpyTransformer(agentArgs);
-			 
+
+			//code jdk1.6+ inst.addTransformer(transformer, canRetransform);
+			// code jdk1.5 : inst.addTransformer(transformer);
 			inst.addTransformer(transformer, canRetransform);
-			// code < jdk1.6 : inst.addTransformer(transformer);
 			System.out.println("AnalyticaAgent Start at " + new Date());
 			Runtime.getRuntime().addShutdownHook(new Thread() {
 				@Override
@@ -102,7 +103,8 @@ public final class AnalyticaSpyAgent {
 	private static void doReload(final Class<?>... classes) {
 		for (final Class<?> clazz : classes) {
 			try {
-				//code < jdk1.6 : can't reload 
+				//code jdk1.6+ : instrumentation.retransformClasses(clazz);
+				//code jdk1.5 : can't reload
 				instrumentation.retransformClasses(clazz);
 			} catch (final Throwable e) {
 				System.err.println("Erreur retransformClasses " + clazz.getName() + " : (" + e.getClass().getName() + ") " + e.getMessage());

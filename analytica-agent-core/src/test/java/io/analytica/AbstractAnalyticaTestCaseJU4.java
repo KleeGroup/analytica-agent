@@ -63,12 +63,15 @@ public abstract class AbstractAnalyticaTestCaseJU4 {
 
 	@After
 	public final void tearDown() throws Exception {
-		doTearDown();
-		if (httpServer != null) {
-			httpServer.stop();
+		try {
+			doTearDown();
+		} finally {
+			if (httpServer != null) {
+				httpServer.stop();
+			}
+			mockServerManager = null;
+			doAfterTearDown();
 		}
-		mockServerManager = null;
-		doAfterTearDown();
 	}
 
 	/**

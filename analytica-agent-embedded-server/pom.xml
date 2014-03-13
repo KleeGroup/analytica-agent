@@ -13,13 +13,17 @@
 	<name>analytica-agent-embedded-server</name>
 
 	<properties>
-		<compileSource>1.7</compileSource>
 		<maven.compiler.source>1.7</maven.compiler.source>
 		<maven.compiler.target>1.7</maven.compiler.target>
 		<server.version>1.2.0-SNAPSHOT</server.version>
 	</properties>
 
 	<dependencies>
+		<dependency>
+			<groupId>io.analytica</groupId>
+			<artifactId>analytica-agent-vertigo</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>io.analytica</groupId>
 			<artifactId>analytica-agent-core</artifactId>
@@ -31,6 +35,8 @@
 			<groupId>io.analytica</groupId>
 			<artifactId>analytica-agent-vertigo</artifactId>
 			<version>${project.version}</version>
+			<type>test-jar</type>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>io.analytica</groupId>
@@ -40,16 +46,7 @@
 	</dependencies>
 
 	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
-				</configuration>
-			</plugin>
-		</plugins>
+		<!-- see parent -->
 	</build>
 
 </project>

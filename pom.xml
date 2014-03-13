@@ -24,7 +24,7 @@
 		<module>analytica-agent-core</module>
 		<module>analytica-agent-javaagent</module>
 		<module>analytica-agent-vertigo</module>
-		<!-- <module>analytica-client-embedded-server</module> -->
+		<module>analytica-agent-embedded-server</module>
 	</modules>
 
 	<build>
