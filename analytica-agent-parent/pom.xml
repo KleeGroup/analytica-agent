@@ -174,11 +174,14 @@
 			</plugin>
 
 			<plugin>
-				<groupId>com.mycila.maven-license-plugin</groupId>
-				<artifactId>maven-license-plugin</artifactId>
-				<version>2.5</version>
+				<groupId>com.mycila</groupId>
+				<artifactId>license-maven-plugin</artifactId>
+				<version>2.6</version>
 				<configuration>
 					<header>license.txt</header>
+					<includes>
+			            <include>**/*.java</include>
+			        </includes>
 				</configuration>
 			</plugin>
 		</plugins>
