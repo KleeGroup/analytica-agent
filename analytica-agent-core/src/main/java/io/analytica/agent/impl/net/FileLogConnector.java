@@ -18,6 +18,7 @@
 package io.analytica.agent.impl.net;
 
 import io.analytica.api.KProcess;
+import io.analytica.api.KProcessJsonCodec;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -26,13 +27,11 @@ import java.io.IOException;
 import java.io.Writer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.apache.log4j.Logger;
-
-import com.google.gson.Gson;
 
 /**
  * TODO voir http://ghads.wordpress.com/2008/09/24/calling-a-rest-webservice-from-java-without-libs/
@@ -141,7 +140,7 @@ public final class FileLogConnector implements KProcessConnector {
 	 * Effectue le flush de la queue des processes à envoyer.
 	 */
 	void flushProcessQueue() {
-		final Collection<KProcess> processes = new ArrayList<KProcess>();
+		final List<KProcess> processes = new ArrayList<KProcess>();
 		KProcess head;
 		do {
 			head = processQueue.poll();
@@ -150,7 +149,7 @@ public final class FileLogConnector implements KProcessConnector {
 			}
 		} while (head != null); //On depile tout : car lors de l'arret du serveur on aura pas d'autre flush
 		if (!processes.isEmpty()) {
-			final String json = new Gson().toJson(processes);
+			final String json = KProcessJsonCodec.toJson(processes);
 			writeToLogFile(json);
 			//logger.info("Spool " + processes.size() + " processes to " + spoolLogger.getName());
 		}

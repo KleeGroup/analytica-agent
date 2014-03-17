@@ -18,9 +18,9 @@
 package io.analytica.agent.impl.net;
 
 import io.analytica.api.KProcess;
+import io.analytica.api.KProcessJsonCodec;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -32,7 +32,6 @@ import net.sf.ehcache.Element;
 
 import org.apache.log4j.Logger;
 
-import com.google.gson.Gson;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.ClientResponse.Status;
@@ -105,8 +104,8 @@ public final class RemoteConnector implements KProcessConnector {
 		processSenderThread = new SendProcessThread(this);
 		processSenderThread.start();
 
+		checkServerVersion();
 		logger.info("Start Analytica RemoteNetPlugin : connect to " + serverUrl);
-		//checkServerVersion();
 	}
 
 	/** {@inheritDoc} */
@@ -209,7 +208,7 @@ public final class RemoteConnector implements KProcessConnector {
 	 */
 	private void flushProcessQueue(final long maxPaquetSize) {
 		long sendPaquet = 0;
-		final Collection<KProcess> processes = new ArrayList<KProcess>();
+		final List<KProcess> processes = new ArrayList<KProcess>();
 		KProcess head;
 		do {
 			head = processQueue.poll();
@@ -228,9 +227,9 @@ public final class RemoteConnector implements KProcessConnector {
 		//final ClientResponse response = remoteWeResource.accept(MediaType.APPLICATION_JSON).put(ClientResponse.class, processes);
 	}
 
-	private void doSendProcesses(final Collection<KProcess> processes) {
+	private void doSendProcesses(final List<KProcess> processes) {
 		if (!processes.isEmpty()) {
-			final String json = new Gson().toJson(processes);
+			final String json = KProcessJsonCodec.toJson(processes);
 			try {
 				doSendJson(remoteWebResource, json);
 				logger.info("Send " + processes.size() + " processes to " + serverUrl + "(" + processQueue.size() + " remaining)");
@@ -290,7 +289,7 @@ public final class RemoteConnector implements KProcessConnector {
 		return response.getEntity(String.class);
 	}
 
-	private void checkResponseStatus(final ClientResponse response) {
+	private static void checkResponseStatus(final ClientResponse response) {
 		final Status status = response.getClientResponseStatus();
 		if (status.getFamily() == Family.SUCCESSFUL) {
 			return;

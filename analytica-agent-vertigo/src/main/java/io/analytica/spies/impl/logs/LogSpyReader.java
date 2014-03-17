@@ -3,6 +3,7 @@ package io.analytica.spies.impl.logs;
 import io.analytica.agent.AgentManager;
 import io.analytica.api.KProcess;
 import io.analytica.api.KProcessBuilder;
+import io.analytica.api.KProcessJsonCodec;
 import io.analytica.spies.impl.JsonConfReader;
 import io.vertigo.commons.resource.ResourceManager;
 import io.vertigo.kernel.exception.VRuntimeException;
@@ -36,8 +37,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.log4j.Logger;
-
-import com.google.gson.Gson;
 
 /**
  * Monitoring de facade par Proxy automatique sur les interfaces.
@@ -299,7 +298,7 @@ public final class LogSpyReader implements Activeable {
 				parsedLineCount++;
 				patternHit(logInfo.getLogPattern());
 				if (logInfo.getLogPattern().isProcessesJson()) {
-					final KProcess[] processes = new Gson().fromJson(logInfo.getJson(), KProcess[].class);
+					final List<KProcess> processes = KProcessJsonCodec.fromJson(logInfo.getJson());
 					for (final KProcess process : processes) {
 						agentManager.add(process);
 					}

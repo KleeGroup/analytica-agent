@@ -2,11 +2,7 @@ package io.analytica.spies.impl.logs;
 
 import io.analytica.AbstractVertigoStartTestCaseJU4;
 import io.analytica.agent.AgentManager;
-import io.analytica.spies.impl.logs.LogPattern;
-import io.analytica.spies.impl.logs.LogSpyConf;
-import io.analytica.spies.impl.logs.LogSpyReader;
 import io.vertigo.commons.resource.ResourceManager;
-import io.vertigo.kernel.lang.Assertion;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -35,10 +31,11 @@ public final class AnalyticaLogSpyTest extends AbstractVertigoStartTestCaseJU4 {
 	@Inject
 	private ResourceManager resourceManager;
 
+	@Override
 	protected void doSetUp() throws Exception {
 		startServer();
 	}
-	
+
 	/**
 	 * Test simple avec deux compteurs. 
 	 * Test sur l'envoi de 1000 articles d'un poids de 25 kg. 
@@ -80,7 +77,7 @@ public final class AnalyticaLogSpyTest extends AbstractVertigoStartTestCaseJU4 {
 		logSpyReader.start();
 
 		flushAgentToServer();
-		checkMetricCount("duration", 510, "REQUETE");
+		checkMetricCount("duration", 518, "REQUETE");
 	}
 
 	@Test
@@ -89,7 +86,7 @@ public final class AnalyticaLogSpyTest extends AbstractVertigoStartTestCaseJU4 {
 		logSpyReader.start();
 
 		flushAgentToServer();
-		checkMetricCount("duration", 510, "REQUETE");
+		checkMetricCount("duration", 518, "REQUETE");
 	}
 
 	@Test

@@ -1,6 +1,7 @@
 package io.analytica.mock;
 
 import io.analytica.api.KProcess;
+import io.analytica.api.KProcessJsonCodec;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -9,8 +10,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-
-import com.google.gson.Gson;
 
 /**
  * ServerManager de test.
@@ -44,8 +43,8 @@ public final class MockServerManager {
 	 * @param json json du process recu
 	 */
 	public synchronized void push(final String json) {
-		final KProcess[] processes = new Gson().fromJson(json, KProcess[].class);
-		LOG.info("PUSH " + processes.length + " processes.");
+		final List<KProcess> processes = KProcessJsonCodec.fromJson(json);
+		LOG.info("PUSH " + processes.size() + " processes.");
 		//LOG.info("-> " + json);
 		for (final KProcess process : processes) {
 			pushProcess(process);

@@ -17,7 +17,6 @@
  */
 package io.analytica.api;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -55,12 +54,12 @@ public final class KProcess {
 	public static final Pattern TYPE_REGEX = Pattern.compile("[A-Z][A-Z0-9_]*");
 
 	private final String type;
-	private String[] subTypes = new String[0];
+	private final String[] subTypes;
 	private final Date startDate;
 
-	private Map<String, Double> measures = new HashMap<String, Double>();
-	private Map<String, String> metaDatas = new HashMap<String, String>();
-	private List<KProcess> subProcesses = new ArrayList<KProcess>();
+	private final Map<String, Double> measures;
+	private final Map<String, String> metaDatas;
+	private final List<KProcess> subProcesses;
 
 	/*
 	 * Le constructeur est package car il faut passer par le builder.
@@ -79,7 +78,7 @@ public final class KProcess {
 			throw new IllegalArgumentException("measures must contain DURATION");
 		}
 		if (measures.containsKey(SUB_DURATION) && measures.get(SUB_DURATION) > measures.get(DURATION)) {
-			throw new IllegalArgumentException("measures SUB-DURATION must be lower than DURATION (duration:" + measures.get(DURATION) + " < sub-duration:" + measures.get(SUB_DURATION) + ")");
+			throw new IllegalArgumentException("measures SUB-DURATION must be lower than DURATION (duration:" + measures.get(DURATION) + " < sub-duration:" + measures.get(SUB_DURATION) + ") in " + type + " : " + Arrays.asList(subTypes) + " at " + startDate);
 		}
 		//---------------------------------------------------------------------
 		this.type = type;
@@ -101,7 +100,7 @@ public final class KProcess {
 	 * @return Sous-types du processus
 	 */
 	public String[] getSubTypes() {
-		return subTypes!=null?subTypes:new String[0]; //TODO force subTypes notNull
+		return subTypes;
 	}
 
 	/**@return Process duration */
