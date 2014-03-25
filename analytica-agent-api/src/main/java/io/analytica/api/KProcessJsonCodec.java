@@ -120,9 +120,8 @@ public final class KProcessJsonCodec {
 		private static <O> O deserialize(final JsonDeserializationContext context, final JsonElement jsonElement, final Type typeOf, final O defaultValue) {
 			if (jsonElement != null) {
 				return context.deserialize(jsonElement, typeOf);
-			} else {
-				return defaultValue;
 			}
+			return defaultValue;
 		}
 	}
 }
