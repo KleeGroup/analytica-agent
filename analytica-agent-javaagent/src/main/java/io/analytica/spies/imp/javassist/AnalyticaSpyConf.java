@@ -42,6 +42,10 @@ import com.google.gson.Gson;
 public final class AnalyticaSpyConf {
 	private final String collectorName;
 	private final Map<String, String> collectorParams;
+
+	private final String systemName;
+	private final String[] systemLocation;
+
 	private final List<String> fastExcludedPackages;
 	private final List<String> fastIncludedPackages;
 	private final List<AnalyticaSpyHookPoint> hookPoints;
@@ -55,6 +59,8 @@ public final class AnalyticaSpyConf {
 	 * Constructeur.
 	 * @param collectorName Nom du plugin a utiliser
 	 * @param collectorParams Paramètres du plugin
+	 * @param systemName Nom du système
+	 * @param systemLocation Emplacement du système support $hostName
 	 * @param excludedPackages Liste de package à exclure
 	 * @param includedPackages Liste de package à inclure
 	 * @param hookPoints Liste de point d'accroche de l'agent
@@ -64,9 +70,11 @@ public final class AnalyticaSpyConf {
 	 * @param methodCatchs Liste des catchs (ExceptionClass => code)
 	 * @param methodFinally Code inséré en finally
 	 */
-	public AnalyticaSpyConf(final String collectorName, final Map<String, String> collectorParams, final List<String> excludedPackages, final List<String> includedPackages, final List<AnalyticaSpyHookPoint> hookPoints, final Map<String, String> localVariables, final List<String> methodBefore, final List<String> methodAfter, final Map<String, List<String>> methodCatchs, final List<String> methodFinally) {
+	public AnalyticaSpyConf(final String collectorName, final Map<String, String> collectorParams, final String systemName, final String[] systemLocation, final List<String> excludedPackages, final List<String> includedPackages, final List<AnalyticaSpyHookPoint> hookPoints, final Map<String, String> localVariables, final List<String> methodBefore, final List<String> methodAfter, final Map<String, List<String>> methodCatchs, final List<String> methodFinally) {
 		this.collectorName = collectorName;
 		this.collectorParams = collectorParams;
+		this.systemName = systemName;
+		this.systemLocation = systemLocation;
 		fastExcludedPackages = excludedPackages;
 		fastIncludedPackages = includedPackages;
 		this.hookPoints = hookPoints;
@@ -75,6 +83,52 @@ public final class AnalyticaSpyConf {
 		this.methodAfter = methodAfter;
 		this.methodCatchs = methodCatchs;
 		this.methodFinally = methodFinally;
+	}
+
+	/**
+	 * Check config file syntax.
+	 * @throws IllegalArgumentException error if config file is incorrect
+	 */
+	public void checkConfig() throws IllegalArgumentException {
+		if ("FileLog".equals(collectorName)) {
+			checkMandatoryConnectorParams("FileLog", "fileName");
+		} else if ("RemoteHTTP".equals(collectorName)) {
+			checkMandatoryConnectorParams("RemoteHTTP", "serverUrl");
+			checkMandatoryIntConnectorParams("RemoteHTTP", "sendPaquetSize", "sendPaquetFrequencySeconds");
+		} else {
+			throw new IllegalArgumentException("Unknown Connector : " + collectorName + " fallback to DummyCollector (use one of : FileLog, RemoteHTTP, Dummy)");
+		}
+		//checkMandatoryParams(systemName, systemLocation, fastExcludedPackages, fastIncludedPackages, )
+	}
+
+	private void checkMandatoryParams(final String... paramNames) {
+		for (final String paramName : paramNames) {
+			if (collectorParams.get(paramName) == null) {
+				throw new IllegalArgumentException(paramName + " params is mandatory");
+			}
+		}
+	}
+
+	private void checkMandatoryConnectorParams(final String connector, final String... paramNames) {
+		for (final String paramName : paramNames) {
+			if (collectorParams.get(paramName) == null) {
+				throw new IllegalArgumentException(paramName + " params is mandatory for " + connector + " Connector");
+			}
+		}
+	}
+
+	private void checkMandatoryIntConnectorParams(final String connector, final String... paramNames) {
+		for (final String paramName : paramNames) {
+			final String value = collectorParams.get(paramName);
+			if (value == null) {
+				throw new IllegalArgumentException(paramName + " params is mandatory for " + connector + " Connector");
+			}
+			try {
+				Integer.parseInt(value);
+			} catch (final NumberFormatException e) {
+				throw new IllegalArgumentException(paramName + " params must be a integer for " + connector + " Connector", e);
+			}
+		}
 	}
 
 	/**
@@ -89,6 +143,20 @@ public final class AnalyticaSpyConf {
 	 */
 	public Map<String, String> getCollectorParams() {
 		return collectorParams;
+	}
+
+	/**
+	 * @return System Name
+	 */
+	public String getSystemName() {
+		return systemName;
+	}
+
+	/**
+	 * @return System Location
+	 */
+	public String[] getSystemLocation() {
+		return systemLocation;
 	}
 
 	/**

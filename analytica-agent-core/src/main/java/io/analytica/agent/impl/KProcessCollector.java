@@ -36,25 +36,37 @@ import io.analytica.api.KProcessBuilder;
 import java.util.Stack;
 
 /**
- * Agent de collecte des données.
- * Collecte automatique des Process (les infos sont portées par le thread courant).
+ * Datas collector agent.
+ * Collect and build Process. Building process are bind to current thread.
  * 
  * @author pchretien, npiedeloup
  * @version $Id: AgentManagerImpl.java,v 1.7 2012/03/29 08:48:19 npiedeloup Exp $
  */
 public final class KProcessCollector {
 	private final KProcessConnector processConnector;
+	private final String systemName;
+	private final String[] systemLocation;
 
 	/**
-	 * Constructeur.
-	 * Devrait-être instancié une seule fois (should be created only once).
-	 * @param processConnector Connecteur de communication
+	 * Constructor.
+	 * Should be created only once.
+	 * @param systemName System name
+	 * @param systemLocation System location
+	 * @param processConnector Collector output connector
 	 */
-	public KProcessCollector(final KProcessConnector processConnector) {
+	public KProcessCollector(final String systemName, final String[] systemLocation, final KProcessConnector processConnector) {
+		if (systemName == null) {
+			throw new NullPointerException("systemName is required");
+		}
+		if (systemLocation == null) {
+			throw new NullPointerException("systemLocation is required");
+		}
 		if (processConnector == null) {
 			throw new NullPointerException("processConnector is required");
 		}
 		//-----------------------------------------------------------------
+		this.systemName = systemName;
+		this.systemLocation = systemLocation;
 		this.processConnector = processConnector;
 	}
 
@@ -109,7 +121,7 @@ public final class KProcessCollector {
 	 * @param names Nom du process
 	 */
 	public void startProcess(final String type, final String... names) {
-		final KProcessBuilder processBuilder = new KProcessBuilder(type, names);
+		final KProcessBuilder processBuilder = new KProcessBuilder(systemName, systemLocation, type, names);
 		push(processBuilder);
 	}
 
@@ -154,7 +166,7 @@ public final class KProcessCollector {
 			return process;
 		}
 		peek().addSubProcess(process);
-		//On n'est pas dans le cas de la racine : selon le contrat on renvoie null
+		//On n'est pas dans le cas de la racine : conformément au contrat on renvoie null
 		return null;
 	}
 

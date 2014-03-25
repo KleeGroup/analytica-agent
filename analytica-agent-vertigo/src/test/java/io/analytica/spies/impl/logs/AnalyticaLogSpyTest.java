@@ -186,7 +186,7 @@ public final class AnalyticaLogSpyTest extends AbstractVertigoStartTestCaseJU4 {
 						false, -1, 1, -1, -1, -1, -1, false, true),//
 		};
 
-		final LogSpyConf conf = new LogSpyConf(Arrays.asList(dateFormats), Arrays.asList(PATTERNS));
+		final LogSpyConf conf = new LogSpyConf("Test", new String[] { "test" }, Arrays.asList(dateFormats), Arrays.asList(PATTERNS));
 		System.out.println(new Gson().toJson(conf));
 
 	}

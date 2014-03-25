@@ -26,17 +26,38 @@ import java.util.List;
  */
 public final class LogSpyConf {
 
+	private final String systemName;
+	private final String[] systemLocation;
+
 	private final List<String> dateFormats;
 	private final List<LogPattern> logPatterns;
 
 	/**
 	 * Constructeur.
+	 * @param systemName System name
+	 * @param systemLocation System location
 	 * @param dateFormats Formats de date reconnu
 	 * @param logPatterns Patterns de lecture du log
 	 */
-	public LogSpyConf(final List<String> dateFormats, final List<LogPattern> logPatterns) {
+	public LogSpyConf(final String systemName, final String[] systemLocation, final List<String> dateFormats, final List<LogPattern> logPatterns) {
+		this.systemName = systemName;
+		this.systemLocation = systemLocation;
 		this.dateFormats = dateFormats;
 		this.logPatterns = logPatterns;
+	}
+
+	/**
+	 * @return System Name
+	 */
+	public String getSystemName() {
+		return systemName;
+	}
+
+	/**
+	 * @return System Location
+	 */
+	public String[] getSystemLocation() {
+		return systemLocation;
 	}
 
 	/**
@@ -52,4 +73,5 @@ public final class LogSpyConf {
 	public List<LogPattern> getLogPatterns() {
 		return logPatterns;
 	}
+
 }

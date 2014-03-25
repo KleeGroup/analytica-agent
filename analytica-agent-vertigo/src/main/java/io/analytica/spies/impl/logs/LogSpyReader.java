@@ -67,6 +67,9 @@ public final class LogSpyReader implements Activeable {
 	private final Logger logger = Logger.getLogger(getClass());
 
 	private final AgentManager agentManager;
+	private final String systemName;
+	private final String[] systemLocation;
+
 	private final URL logFileUrl;
 	private final List<String> dateFormats;
 	private final List<LogPattern> patterns;
@@ -117,6 +120,8 @@ public final class LogSpyReader implements Activeable {
 		final URL confFile = resourceManager.resolve(confFileUrl);
 		final LogSpyConf conf = JsonConfReader.loadJsonConf(confFile, LogSpyConf.class);
 
+		systemName = conf.getSystemName();
+		systemLocation = conf.getSystemLocation();
 		dateFormats = conf.getDateFormats();
 		patterns = conf.getLogPatterns();
 		patternStats = new HashMap<LogPattern, Integer>();
@@ -171,7 +176,7 @@ public final class LogSpyReader implements Activeable {
 		KProcessBuilder processBuilder;
 		//2 - on dépile les lignes de log
 		for (final LogInfo logInfo : logInfos) {
-			processBuilder = new KProcessBuilder(logInfo.getStartDateEvent(), logInfo.getTime(), logInfo.getType(), logInfo.getSubType());
+			processBuilder = new KProcessBuilder(logInfo.getStartDateEvent(), logInfo.getTime(), systemName, systemLocation, logInfo.getType(), logInfo.getSubType());
 			processBuilder.setMeasure(ME_ERROR_PCT, logInfo.getLogPattern().isError() ? 100 : 0);
 			if (stackLogInfo.isEmpty()) {
 				//2a - la premiere ligne crée la racine

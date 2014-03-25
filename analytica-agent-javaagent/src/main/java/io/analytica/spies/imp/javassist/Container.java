@@ -40,14 +40,20 @@ import java.util.Map;
 /**
  * 
  *
- * @author npiedeloup
- * @version $Id: MemoryLeakAgent.java,v 1.2 2012/09/28 09:30:03 pchretien Exp $
+ * @author npiedeloup (2012/09/28 09:30:03)
  */
 public final class Container {
 
 	private static KProcessCollector PROCESS_COLLECTOR_INSTANCE;
-	private static KProcessConnector PROCESS_CONNECTOR_INSTANCE;
+	/**
+	 * KProcessConnector instance.
+	 */
+	static KProcessConnector PROCESS_CONNECTOR_INSTANCE;
 
+	/**
+	 * Initialize KProcessCollector and KProcessConnector.
+	 * @param analyticaSpyConf Configuration file
+	 */
 	public static void initCollector(final AnalyticaSpyConf analyticaSpyConf) {
 		final String collectorName = analyticaSpyConf.getCollectorName();
 		final Map<String, String> collectorParams = analyticaSpyConf.getCollectorParams();
@@ -61,7 +67,7 @@ public final class Container {
 			processConnector = new DummyConnector();
 		}
 
-		PROCESS_COLLECTOR_INSTANCE = new KProcessCollector(processConnector);
+		PROCESS_COLLECTOR_INSTANCE = new KProcessCollector(analyticaSpyConf.getSystemName(), analyticaSpyConf.getSystemLocation(), processConnector);
 		processConnector.start();
 
 		Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -76,7 +82,7 @@ public final class Container {
 
 	public static KProcessCollector getProcessCollector() {
 		if (PROCESS_COLLECTOR_INSTANCE == null) {
-			throw new NullPointerException("Le ProcessCollector n'a pas été configurer. Choisir le KProcessConnector : FileLog ou Remote");
+			throw new NullPointerException("Le ProcessCollector n'a pas été configuré. Choisir le KProcessConnector : FileLog ou Remote");
 		}
 		return PROCESS_COLLECTOR_INSTANCE;
 	}

@@ -18,12 +18,12 @@
 package io.analytica.agent.impl;
 
 import io.analytica.agent.AgentManager;
-import io.analytica.agent.impl.KProcessCollector;
 import io.analytica.agent.plugins.net.NetPlugin;
 import io.analytica.api.KProcess;
 import io.vertigo.kernel.lang.Assertion;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * Agent de collecte des données.
@@ -37,14 +37,16 @@ public final class AgentManagerImpl implements AgentManager {
 
 	/**
 	 * Constructeur.
+	 * @param systemName System name
+	 * @param systemLocation System location (Environment, Server, Jvm, ..)
 	 * @param netPlugin Plugin de communication
 	 */
 	@Inject
-	public AgentManagerImpl(final NetPlugin netPlugin) {
+	public AgentManagerImpl(@Named("systemName") final String systemName, @Named("systemLocation") final String systemLocation, final NetPlugin netPlugin) {
 		super();
 		Assertion.checkNotNull(netPlugin);
 		//-----------------------------------------------------------------
-		processCollector = new KProcessCollector(netPlugin);
+		processCollector = new KProcessCollector(systemName, systemLocation.split(";"), netPlugin);
 	}
 
 	/** {@inheritDoc} */

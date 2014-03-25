@@ -39,13 +39,16 @@ import java.util.regex.Pattern;
 
 /**
  * A process is an event with
+ * - a location defined by 
+ * 		--a system name 
+ * 		--a system location	
  * - a category defined by 
  * 		--a type 
  * 		--an array of subTypes	
  * - a start date
  * - a list of sub processes
  * - a duration (cf.measures)
- * - a list of measures  with a DURATION  measure 
+ * - a list of measures with a DURATION measure 
  * - a list of metadatas
  * 
  * @author pchretien, npiedeloup
@@ -65,6 +68,9 @@ public final class KProcess {
 	 */
 	public static final Pattern TYPE_REGEX = Pattern.compile("[A-Z][A-Z0-9_]*");
 
+	private final String systemName; //application name
+	private final String[] systemLocation; //environment, server, JVM id
+
 	private final String type;
 	private final String[] subTypes;
 	private final Date startDate;
@@ -73,10 +79,24 @@ public final class KProcess {
 	private final Map<String, String> metaDatas;
 	private final List<KProcess> subProcesses;
 
-	/*
+	/**
 	 * Le constructeur est package car il faut passer par le builder.
+	 * @param systemName Nom du system
+	 * @param systemLocation Emplacement du system
+	 * @param type Type du processus
+	 * @param subTypes Sous processus
+	 * @param startDate Date du processus
+	 * @param measures Mesures du processus
+	 * @param metaDatas Metadonnées du processus
+	 * @param subProcesses Liste des sous processus
 	 */
-	KProcess(final String type, final String[] subTypes, final Date startDate, final Map<String, Double> measures, final Map<String, String> metaDatas, final List<KProcess> subProcesses) {
+	KProcess(final String systemName, final String[] systemLocation, final String type, final String[] subTypes, final Date startDate, final Map<String, Double> measures, final Map<String, String> metaDatas, final List<KProcess> subProcesses) {
+		if (systemName == null) {
+			throw new NullPointerException("systemName of process is required");
+		}
+		if (systemLocation == null) {
+			throw new NullPointerException("systemLocation of process are required");
+		}
 		if (type == null) {
 			throw new NullPointerException("type of process is required");
 		}
@@ -93,12 +113,28 @@ public final class KProcess {
 			throw new IllegalArgumentException("measures SUB-DURATION must be lower than DURATION (duration:" + measures.get(DURATION) + " < sub-duration:" + measures.get(SUB_DURATION) + ") in " + type + " : " + Arrays.asList(subTypes) + " at " + startDate);
 		}
 		//---------------------------------------------------------------------
+		this.systemName = systemName;
+		this.systemLocation = systemLocation;
 		this.type = type;
 		this.subTypes = subTypes;
 		this.startDate = startDate;
 		this.measures = Collections.unmodifiableMap(new HashMap<String, Double>(measures));
 		this.metaDatas = Collections.unmodifiableMap(new HashMap<String, String>(metaDatas));
 		this.subProcesses = subProcesses;
+	}
+
+	/**
+	 * @return SystemName du processus
+	 */
+	public String getSystemName() {
+		return systemName;
+	}
+
+	/**
+	 * @return SystemLocation du processus
+	 */
+	public String[] getSystemLocation() {
+		return systemLocation;
 	}
 
 	/**
@@ -120,22 +156,35 @@ public final class KProcess {
 		return measures.get(DURATION);
 	}
 
+	/**
+	 * @return Date processus
+	 */
 	public Date getStartDate() {
 		return startDate;
 	}
 
+	/**
+	 * @return Mesures du processus
+	 */
 	public Map<String, Double> getMeasures() {
 		return measures;
 	}
 
+	/**
+	 * @return Metadonnées du processus
+	 */
 	public Map<String, String> getMetaDatas() {
 		return metaDatas;
 	}
 
+	/**
+	 * @return Liste des sous-processus
+	 */
 	public List<KProcess> getSubProcesses() {
 		return subProcesses;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public String toString() {
 		return "process:{category:{ type:" + type + ", subTypes:" + Arrays.asList(getSubTypes()) + "}; startDate:" + startDate + "}";

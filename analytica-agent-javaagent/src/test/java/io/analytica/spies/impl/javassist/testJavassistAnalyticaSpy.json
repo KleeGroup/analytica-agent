@@ -7,6 +7,9 @@
  "sendPaquetSize" : "50",
  "sendPaquetFrequencySeconds" : "1" },
 
+"systemName" : "testJavassist",
+"systemLocation" : ["test", "$hostName"],
+
 "localVariables" : { },
 "methodBefore": [
 	    //"System.out.println(\"before \"+$methodName);",	

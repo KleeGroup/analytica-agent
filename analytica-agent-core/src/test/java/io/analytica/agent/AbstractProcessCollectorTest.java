@@ -34,6 +34,7 @@ import io.analytica.agent.impl.KProcessCollector;
 import io.analytica.agent.impl.net.RemoteConnector;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -65,7 +66,7 @@ public abstract class AbstractProcessCollectorTest extends AbstractAnalyticaTest
 	@Override
 	protected final void doSetUp() throws Exception {
 		remoteConnector = new RemoteConnector("http://localhost:9998/process", 20, 1);
-		processCollector = new KProcessCollector(remoteConnector);
+		processCollector = new KProcessCollector(this.getClass().getSimpleName(), new String[] { "test", InetAddress.getLocalHost().getHostName() }, remoteConnector);
 		remoteConnector.start();
 		afterSetUp();
 	}
