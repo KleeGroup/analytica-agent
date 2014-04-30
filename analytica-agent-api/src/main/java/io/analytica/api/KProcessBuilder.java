@@ -45,8 +45,7 @@ import java.util.Map;
  * @version $Id: KProcessBuilder.java,v 1.18 2012/11/08 17:06:27 pchretien Exp $
  */
 public final class KProcessBuilder {
-	private final String systemName;
-	private final String[] systemLocation;
+	private final String appName;
 
 	private final String type;
 	private final String[] subTypes;
@@ -70,8 +69,8 @@ public final class KProcessBuilder {
 	 * @param type Type du processus
 	 * @param names sous noms du processus
 	 */
-	public KProcessBuilder(final String systemName, final String[] systemLocation, final String type, final String... names) {
-		this(null, systemName, systemLocation, new Date(), type, names);
+	public KProcessBuilder(final String appName, final String type, final String... names) {
+		this(appName, null, new Date(), type, names);
 	}
 
 	/**
@@ -83,18 +82,15 @@ public final class KProcessBuilder {
 	 * @param startDate Date de début processus
 	 * @param durationMs Durée du processus (Millisecondes)
 	 */
-	public KProcessBuilder(final Date startDate, final double durationMs, final String systemName, final String[] systemLocation, final String type, final String... names) {
-		this(null, systemName, systemLocation, startDate, type, names);
+	public KProcessBuilder(final String appName, final Date startDate, final double durationMs, final String type, final String... names) {
+		this(appName, null, startDate, type, names);
 		//---------------------------------------------------------------------
 		this.durationMs = durationMs;
 	}
 
-	private KProcessBuilder(final KProcessBuilder parent, final String systemName, final String[] systemLocation, final Date startDate, final String type, final String[] subTypes) {
-		if (systemName == null) {
-			throw new NullPointerException("systemName of process is required");
-		}
-		if (systemLocation == null) {
-			throw new NullPointerException("systemLocation of process is required");
+	private KProcessBuilder(final String appName, final KProcessBuilder parent, final Date startDate, final String type, final String[] subTypes) {
+		if (appName == null) {
+			throw new NullPointerException("appName of process is required");
 		}
 		if (type == null) {
 			throw new NullPointerException("type of process is required");
@@ -109,11 +105,10 @@ public final class KProcessBuilder {
 			throw new IllegalArgumentException("process type must match regex :" + KProcess.TYPE_REGEX);
 		}
 		//---------------------------------------------------------------------
+		this.appName = appName;
 		measures = new HashMap<String, Double>();
 		metaDatas = new HashMap<String, String>();
 		subProcesses = new ArrayList<KProcess>();
-		this.systemName = systemName;
-		this.systemLocation = systemLocation;
 		this.startDate = startDate;
 		start = startDate.getTime();
 		this.type = type;
@@ -128,8 +123,8 @@ public final class KProcessBuilder {
 	 * @param startDate Date de début processus
 	 * @param duration Durée du processus (Millisecondes)
 	 */
-	private KProcessBuilder(final KProcessBuilder parent, final String systemName, final String[] systemLocation, final Date startDate, final double durationMs, final String type, final String... names) {
-		this(parent, systemName, systemLocation, startDate, type, names);
+	private KProcessBuilder(final String appName, final KProcessBuilder parent, final Date startDate, final double durationMs, final String type, final String... subTypes) {
+		this(appName, parent, startDate, type, subTypes);
 		//---------------------------------------------------------------------
 		this.durationMs = durationMs;
 	}
@@ -193,7 +188,7 @@ public final class KProcessBuilder {
 	 * @return Builder
 	 */
 	public KProcessBuilder beginSubProcess(final Date subStartDate, final double subDurationMs, final String subType, final String... subNames) {
-		return new KProcessBuilder(this, systemName, systemLocation, subStartDate, subDurationMs, subType, subNames);
+		return new KProcessBuilder(this.appName, this, subStartDate, subDurationMs, subType, subNames);
 	}
 
 	/**
@@ -236,6 +231,6 @@ public final class KProcessBuilder {
 		}
 		//On ajoute la mesure obligatoire : durée
 		setMeasure(KProcess.DURATION, durationMs);
-		return new KProcess(systemName, systemLocation, type, subTypes, startDate, measures, metaDatas, subProcesses);
+		return new KProcess(appName, type, subTypes, startDate, measures, metaDatas, subProcesses);
 	}
 }

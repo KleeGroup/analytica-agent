@@ -96,12 +96,9 @@ public final class KProcessJsonCodec {
 			// "measures":{"sub-duration":3.0,"duration":4.0},"metaDatas":{},"subProcesses":[]}
 			final JsonObject jsonObject = json.getAsJsonObject();
 
-			final JsonPrimitive jsonSystemName = jsonObject.getAsJsonPrimitive("systemName");
+			final JsonPrimitive jsonAppName = jsonObject.getAsJsonPrimitive("appName");
 			//check nullity for compatibility
-			final String systemName = jsonSystemName != null ? jsonSystemName.getAsString() : "UnknownApp";
-
-			final JsonArray jsonSystemLocation = jsonObject.getAsJsonArray("systemLocation");
-			final String[] systemLocation = deserialize(context, jsonSystemLocation, String[].class, EMPTY_STRING_ARRAY);
+			final String appName = jsonAppName != null ? jsonAppName.getAsString() : "UnknownApp";
 
 			final JsonPrimitive jsonType = jsonObject.getAsJsonPrimitive("type");
 			final String type = jsonType.getAsString();
@@ -121,7 +118,7 @@ public final class KProcessJsonCodec {
 			final JsonArray jsonSubProcesses = jsonObject.getAsJsonArray("subProcesses");
 			final List<KProcess> processes = deserialize(context, jsonSubProcesses, LIST_PROCESS_TYPE, Collections.<KProcess> emptyList());
 
-			return new KProcess(systemName, systemLocation, type, subTypes, startDate, measures, metaDatas, processes);
+			return new KProcess(appName, type, subTypes, startDate, measures, metaDatas, processes);
 		}
 
 		private static <O> O deserialize(final JsonDeserializationContext context, final JsonElement jsonElement, final Type typeOf, final O defaultValue) {

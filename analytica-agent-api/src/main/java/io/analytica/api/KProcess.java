@@ -68,8 +68,8 @@ public final class KProcess {
 	 */
 	public static final Pattern TYPE_REGEX = Pattern.compile("[A-Z][A-Z0-9_]*");
 
-	private final String systemName; //application name
-	private final String[] systemLocation; //environment, server, JVM id
+	private final String appName; //application name
+	//private final String[] systemLocation; //environment, server, JVM id
 
 	private final String type;
 	private final String[] subTypes;
@@ -90,12 +90,9 @@ public final class KProcess {
 	 * @param metaDatas Metadonnées du processus
 	 * @param subProcesses Liste des sous processus
 	 */
-	KProcess(final String systemName, final String[] systemLocation, final String type, final String[] subTypes, final Date startDate, final Map<String, Double> measures, final Map<String, String> metaDatas, final List<KProcess> subProcesses) {
-		if (systemName == null) {
-			throw new NullPointerException("systemName of process is required");
-		}
-		if (systemLocation == null) {
-			throw new NullPointerException("systemLocation of process are required");
+	KProcess(final String appName, final String type, final String[] subTypes, final Date startDate, final Map<String, Double> measures, final Map<String, String> metaDatas, final List<KProcess> subProcesses) {
+		if (appName == null) {
+			throw new NullPointerException("appName is required");
 		}
 		if (type == null) {
 			throw new NullPointerException("type of process is required");
@@ -113,8 +110,7 @@ public final class KProcess {
 			throw new IllegalArgumentException("measures SUB-DURATION must be lower than DURATION (duration:" + measures.get(DURATION) + " < sub-duration:" + measures.get(SUB_DURATION) + ") in " + type + " : " + Arrays.asList(subTypes) + " at " + startDate);
 		}
 		//---------------------------------------------------------------------
-		this.systemName = systemName;
-		this.systemLocation = systemLocation;
+		this.appName = appName;
 		this.type = type;
 		this.subTypes = subTypes;
 		this.startDate = startDate;
@@ -124,18 +120,18 @@ public final class KProcess {
 	}
 
 	/**
-	 * @return SystemName du processus
+	 * @return AppName du processus
 	 */
-	public String getSystemName() {
-		return systemName;
+	public String getAppName() {
+		return appName;
 	}
 
-	/**
-	 * @return SystemLocation du processus
-	 */
-	public String[] getSystemLocation() {
-		return systemLocation;
-	}
+	//	/**
+	//	 * @return SystemLocation du processus
+	//	 */
+	//	public String[] getSystemLocation() {
+	//		return systemLocation;
+	//	}
 
 	/**
 	 * @return Type du processus
