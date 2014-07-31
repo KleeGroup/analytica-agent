@@ -71,9 +71,9 @@ public final class TestAnalyse {
 	}
 
 	public void workReentrant() {
-		final int i = 1;
+		//final int i = 1;
 		work1s();
-		final int j = 2;
+		//final int j = 2;
 	}
 
 	public static void workStatic() {

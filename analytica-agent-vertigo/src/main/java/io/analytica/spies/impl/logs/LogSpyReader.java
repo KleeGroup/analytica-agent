@@ -23,7 +23,6 @@ import io.analytica.api.KProcessBuilder;
 import io.analytica.api.KProcessJsonCodec;
 import io.analytica.spies.impl.JsonConfReader;
 import io.vertigo.commons.resource.ResourceManager;
-import io.vertigo.kernel.exception.VRuntimeException;
 import io.vertigo.kernel.lang.Activeable;
 import io.vertigo.kernel.lang.Assertion;
 import io.vertigo.kernel.lang.Option;
@@ -75,7 +74,7 @@ public final class LogSpyReader implements Activeable {
 	private final List<LogPattern> patterns;
 	private final Map<LogPattern, Integer> patternStats;
 
-	private final Map<String, List<LogInfo>> logInfoMap = new HashMap<String, List<LogInfo>>();
+	private final Map<String, List<LogInfo>> logInfoMap = new HashMap<>();
 	private Date lastDateRead = new Date(0);
 
 	private static final Comparator<? super LogInfo> LOG_INFO_COMPARATOR = new Comparator<LogInfo>() {
@@ -124,7 +123,7 @@ public final class LogSpyReader implements Activeable {
 		systemLocation = conf.getSystemLocation();
 		dateFormats = conf.getDateFormats();
 		patterns = conf.getLogPatterns();
-		patternStats = new HashMap<LogPattern, Integer>();
+		patternStats = new HashMap<>();
 		for (final LogPattern pattern : patterns) {
 			patternStats.put(pattern, 0);
 		}
@@ -133,7 +132,7 @@ public final class LogSpyReader implements Activeable {
 	private List<LogInfo> getLogInfos(final String threadName) {
 		List<LogInfo> logInfos = logInfoMap.get(threadName);
 		if (logInfos == null) {
-			logInfos = new ArrayList<LogInfo>();
+			logInfos = new ArrayList<>();
 			logInfoMap.put(threadName, logInfos);
 		}
 		return logInfos;
@@ -171,12 +170,16 @@ public final class LogSpyReader implements Activeable {
 		}
 		logger.info("extract sort <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
 
-		final Stack<KProcessBuilder> stackProcessBuilder = new Stack<KProcessBuilder>();
-		final Stack<LogInfo> stackLogInfo = new Stack<LogInfo>();
+		final Stack<KProcessBuilder> stackProcessBuilder = new Stack<>();
+		final Stack<LogInfo> stackLogInfo = new Stack<>();
 		KProcessBuilder processBuilder;
 		//2 - on dépile les lignes de log
 		for (final LogInfo logInfo : logInfos) {
-			processBuilder = new KProcessBuilder(logInfo.getStartDateEvent(), logInfo.getTime(), systemName, systemLocation, logInfo.getType(), logInfo.getSubType());
+			processBuilder = new KProcessBuilder(//
+					systemName + "@" + systemLocation, //systemLocation is not use as an axe yet
+					//systemLocation, //systemLocation is not use as an axe yet
+					logInfo.getStartDateEvent(), logInfo.getTime(),//
+					logInfo.getType(), logInfo.getSubType());
 			processBuilder.setMeasure(ME_ERROR_PCT, logInfo.getLogPattern().isError() ? 100 : 0);
 			if (stackLogInfo.isEmpty()) {
 				//2a - la premiere ligne crée la racine
@@ -230,13 +233,13 @@ public final class LogSpyReader implements Activeable {
 	}
 
 	private void push(final LogInfo logInfo, final KProcessBuilder processBuilder, final Stack<LogInfo> stackLogInfo, final Stack<KProcessBuilder> stackProcessBuilder) {
-		final SimpleDateFormat sdfDate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.SSS");
+		//final SimpleDateFormat sdfDate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.SSS");
 
 		final LogInfo logInfoPrevious = stackLogInfo.peek();
 		final boolean sameType = logInfo.getType().equals(logInfoPrevious.getType());
 		//final Date dateEvent = logInfo.getDateEvent();
 		final boolean dateIncluded;
-		final long timeD1 = logInfoPrevious.getStartDateEvent().getTime();
+		//final long timeD1 = logInfoPrevious.getStartDateEvent().getTime();
 		final long timeF1 = logInfoPrevious.getDateEvent().getTime();
 		final long timeD2 = logInfo.getStartDateEvent().getTime();
 		final long timeF2 = logInfo.getDateEvent().getTime();
@@ -303,7 +306,7 @@ public final class LogSpyReader implements Activeable {
 				in.close();
 			}
 		} catch (final IOException e) {
-			throw new VRuntimeException(e, "Erreur de lecture du log");
+			throw new RuntimeException("Erreur de lecture du log", e);
 		}
 	}
 
@@ -370,14 +373,13 @@ public final class LogSpyReader implements Activeable {
 					final String json = startMatch.group(logPattern.getIndexProcessesJson());
 					final String threadName = logPattern.getIndexThreadName() > 0 ? startMatch.group(logPattern.getIndexThreadName()) : "none";
 					return Option.some(new LogInfo(threadName, json, logPattern));
-				} else {
-					final String date = startMatch.group(logPattern.getIndexDate());
-					final String threadName = logPattern.getIndexThreadName() > 0 ? startMatch.group(logPattern.getIndexThreadName()) : "none";
-					final String type = logPattern.getIndexType() > 0 ? startMatch.group(logPattern.getIndexType()) : logPattern.getCode();
-					final String subType = logPattern.getIndexSubType() > 0 ? startMatch.group(logPattern.getIndexSubType()) : "";
-					final String time = logPattern.getIndexTime() > 0 ? startMatch.group(logPattern.getIndexTime()) : null;
-					return Option.some(new LogInfo(readDate(date), threadName, type, subType, readTime(time), logPattern));
 				}
+				final String date = startMatch.group(logPattern.getIndexDate());
+				final String threadName = logPattern.getIndexThreadName() > 0 ? startMatch.group(logPattern.getIndexThreadName()) : "none";
+				final String type = logPattern.getIndexType() > 0 ? startMatch.group(logPattern.getIndexType()) : logPattern.getCode();
+				final String subType = logPattern.getIndexSubType() > 0 ? startMatch.group(logPattern.getIndexSubType()) : "";
+				final String time = logPattern.getIndexTime() > 0 ? startMatch.group(logPattern.getIndexTime()) : null;
+				return Option.some(new LogInfo(readDate(date), threadName, type, subType, readTime(time), logPattern));
 			}
 		}
 		return Option.none();
@@ -402,7 +404,7 @@ public final class LogSpyReader implements Activeable {
 			}
 		}
 		if (dateTime == null) {
-			throw new VRuntimeException("Date non reconnue : " + date);
+			throw new RuntimeException("Date non reconnue : " + date);
 		}
 		lastDateRead = dateTime;
 		return dateTime;
@@ -431,11 +433,9 @@ public final class LogSpyReader implements Activeable {
 		//		lastDateReadCal.set(Calendar.MILLISECOND, dateToAdjustCal.get(Calendar.MILLISECOND));
 		if (dateToAdjustCal.getTimeInMillis() >= lastDateReadCal.getTimeInMillis() - ONE_DAY_MILLIS / 24) { //au moins 1h d'écart (ce point est util pour les changements de jour donc on passe de 22h à 7h par exemple)
 			return dateToAdjustCal.getTime();
-		} else {
-			dateToAdjustCal.add(Calendar.DAY_OF_MONTH, 1);
-			return dateToAdjustCal.getTime();
 		}
-
+		dateToAdjustCal.add(Calendar.DAY_OF_MONTH, 1);
+		return dateToAdjustCal.getTime();
 	}
 
 	/** {@inheritDoc} */

@@ -121,7 +121,9 @@ public final class KProcessCollector {
 	 * @param names Nom du process
 	 */
 	public void startProcess(final String type, final String... names) {
-		final KProcessBuilder processBuilder = new KProcessBuilder(systemName, systemLocation, type, names);
+		final KProcessBuilder processBuilder = new KProcessBuilder(systemName + "@" + systemLocation, //
+				//systemLocation, //systemLocation is not use as a axe yet
+				type, names);
 		push(processBuilder);
 	}
 

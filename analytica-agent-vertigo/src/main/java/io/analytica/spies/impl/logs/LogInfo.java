@@ -29,7 +29,7 @@ import java.util.Date;
  */
 final class LogInfo {
 	private static final long ROOT_DECAL_MS = 0;
-	private LogInfo startLogInfo = null;
+	private LogInfo myStartLogInfo = null;
 	private final Date dateEvent;
 	private final Date startDateEvent;
 	private final String json;
@@ -98,15 +98,15 @@ final class LogInfo {
 		Assertion.checkArgument(startLogInfo.getType().equals(type), "Ce LogInfo n''est pas du même type : {0} != {1}", type, startLogInfo);
 		Assertion.checkArgument(startLogInfo.getSubType().equals(subType), "Ce LogInfo n''est pas du même sous-type : {0} != {1}", subType, startLogInfo);
 		//---------------------------------------------------------------------
-		this.startLogInfo = startLogInfo;
+		this.myStartLogInfo = startLogInfo;
 	}
 
 	/**
 	 * @return Date de début du process
 	 */
 	public Date getStartDateEvent() {
-		if (startLogInfo != null) {
-			return startLogInfo.getStartDateEvent();
+		if (myStartLogInfo != null) {
+			return myStartLogInfo.getStartDateEvent();
 		}
 		return startDateEvent;
 	}
@@ -150,7 +150,7 @@ final class LogInfo {
 	 * @return Durée du process
 	 */
 	public long getTime() {
-		if (time == -1 && startLogInfo != null) {
+		if (time == -1 && myStartLogInfo != null) {
 			return getDateEvent().getTime() - getStartDateEvent().getTime();
 		}
 		return time;
@@ -168,7 +168,7 @@ final class LogInfo {
 	public String toString() {
 		final SimpleDateFormat sdfDate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.SSS");
 		final SimpleDateFormat sdfHour = new SimpleDateFormat("HH:mm:ss.SSS ");
-		return sdfDate.format(getStartDateEvent()) + (startLogInfo != null ? "(link)" : "") + ">" + sdfHour.format(getDateEvent()) + threadName + " " + type + " " + subType + " " + getTime() + " " + logPattern.getCode();
+		return sdfDate.format(getStartDateEvent()) + (myStartLogInfo != null ? "(link)" : "") + ">" + sdfHour.format(getDateEvent()) + threadName + " " + type + " " + subType + " " + getTime() + " " + logPattern.getCode();
 	}
 
 }

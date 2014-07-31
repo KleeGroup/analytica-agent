@@ -98,6 +98,7 @@ public abstract class AbstractAnalyticaTestCaseJU4 {
 			if (httpServer != null) {
 				httpServer.stop();
 			}
+			mockServerManager.stop();
 			mockServerManager = null;
 			doAfterTearDown();
 		}

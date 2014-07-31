@@ -90,7 +90,7 @@ public final class FileLogConnector implements KProcessConnector {
 		if (!(spoolFile.exists() && spoolFile.canWrite())) {
 			throw new IllegalArgumentException("Can't write " + fileName);
 		}
-		logger.info("Start Analytica FileLogNetPlugin : log to " + fileName);
+		logger.info("Start Analytica FileLogNetPlugin " + VERSION + " : log to " + fileName);
 	}
 
 	/** {@inheritDoc} */

@@ -66,6 +66,7 @@ public final class KProcessBuilder {
 	 * Constructeur.
 	 * La date de début du processus est implicitement la date actuelle
 	 * La durée du processus sera obtenue lors de l'appel à la méthode build().
+	 * @param appName Nom de l'application
 	 * @param type Type du processus
 	 * @param names sous noms du processus
 	 */
@@ -75,9 +76,8 @@ public final class KProcessBuilder {
 
 	/**
 	 * Constructeur pour deserialization.
-	 * @param systemName Nom de l'application
-	 * @param systemLocation Emplacement du processus
-	 * @param type Type du processus
+	 * @param appName Nom de l'application
+	 *  @param type Type du processus
 	 * @param names Nom du processus
 	 * @param startDate Date de début processus
 	 * @param durationMs Durée du processus (Millisecondes)
@@ -188,7 +188,7 @@ public final class KProcessBuilder {
 	 * @return Builder
 	 */
 	public KProcessBuilder beginSubProcess(final Date subStartDate, final double subDurationMs, final String subType, final String... subNames) {
-		return new KProcessBuilder(this.appName, this, subStartDate, subDurationMs, subType, subNames);
+		return new KProcessBuilder(appName, this, subStartDate, subDurationMs, subType, subNames);
 	}
 
 	/**

@@ -101,13 +101,13 @@ public final class AnalyticaSpyConf {
 		//checkMandatoryParams(systemName, systemLocation, fastExcludedPackages, fastIncludedPackages, )
 	}
 
-	private void checkMandatoryParams(final String... paramNames) {
-		for (final String paramName : paramNames) {
-			if (collectorParams.get(paramName) == null) {
-				throw new IllegalArgumentException(paramName + " params is mandatory");
-			}
-		}
-	}
+	//	private void checkMandatoryParams(final String... paramNames) {
+	//		for (final String paramName : paramNames) {
+	//			if (collectorParams.get(paramName) == null) {
+	//				throw new IllegalArgumentException(paramName + " params is mandatory");
+	//			}
+	//		}
+	//	}
 
 	private void checkMandatoryConnectorParams(final String connector, final String... paramNames) {
 		for (final String paramName : paramNames) {

@@ -133,4 +133,8 @@ public final class MockServerManager {
 		}
 		return sb.toString();
 	}
+
+	public void stop() {
+		//nothing
+	}
 }
