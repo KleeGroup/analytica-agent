@@ -17,6 +17,10 @@
  */
 package io.analytica.agent.filelog;
 
+import io.analytica.AbstractVertigoStartTestCaseJU4;
+import io.analytica.agent.AgentManager;
+import io.vertigo.kernel.lang.Assertion;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -27,17 +31,13 @@ import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.analytica.AbstractVertigoStartTestCaseJU4;
-import io.analytica.agent.AgentManager;
-import io.vertigo.kernel.lang.Assertion;
-
 /**
  * Cas de Test JUNIT de l'agent FileLog.
  * 
  * @author npiedeloup
  * @version $Id: AgentManagerTest.java,v 1.3 2012/03/29 08:48:19 npiedeloup Exp $
  */
-public final class FileLogAgentManagerTest  extends AbstractVertigoStartTestCaseJU4 {
+public final class FileLogAgentManagerTest extends AbstractVertigoStartTestCaseJU4 {
 
 	/** Base de données gérant les articles envoyés dans une commande. */
 	private static final String PROCESS1_TYPE = "ARTICLE";
@@ -51,10 +51,11 @@ public final class FileLogAgentManagerTest  extends AbstractVertigoStartTestCase
 
 	//-------------------------------------------------------------------------
 
-	protected void doSetUp() throws Exception {
+	@Override
+	protected void doSetUp() {
 		//startServer(); //Server is useless, log isn't read
 	}
-	
+
 	/**
 	 * Test simple avec un compteur. 
 	 * Test sur l'envoi d'un process 

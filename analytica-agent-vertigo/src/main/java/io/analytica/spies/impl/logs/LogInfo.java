@@ -89,16 +89,16 @@ final class LogInfo {
 
 	/**
 	 * Associe un log de début à ce log de fin.
-	 * @param startLogInfo Log de début
+	 * @param logInfo Log de début
 	 */
-	public void linkStartLogInfo(final LogInfo startLogInfo) {
-		Assertion.checkNotNull(startLogInfo);
-		Assertion.checkArgument(startLogInfo != this, "Cycle");
-		Assertion.checkArgument(startLogInfo.getLogPattern().isStartLog(), "Ce LogInfo n''est pas un log de début : {0}", startLogInfo);
-		Assertion.checkArgument(startLogInfo.getType().equals(type), "Ce LogInfo n''est pas du même type : {0} != {1}", type, startLogInfo);
-		Assertion.checkArgument(startLogInfo.getSubType().equals(subType), "Ce LogInfo n''est pas du même sous-type : {0} != {1}", subType, startLogInfo);
+	public void linkStartLogInfo(final LogInfo logInfo) {
+		Assertion.checkNotNull(logInfo);
+		Assertion.checkArgument(logInfo != this, "Cycle");
+		Assertion.checkArgument(logInfo.getLogPattern().isStartLog(), "Ce LogInfo n''est pas un log de début : {0}", logInfo);
+		Assertion.checkArgument(logInfo.getType().equals(type), "Ce LogInfo n''est pas du même type : {0} != {1}", type, logInfo);
+		Assertion.checkArgument(logInfo.getSubType().equals(subType), "Ce LogInfo n''est pas du même sous-type : {0} != {1}", subType, logInfo);
 		//---------------------------------------------------------------------
-		this.startLogInfo = startLogInfo;
+		this.startLogInfo = logInfo;
 	}
 
 	/**
