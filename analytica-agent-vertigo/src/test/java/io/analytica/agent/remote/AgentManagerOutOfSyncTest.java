@@ -21,8 +21,6 @@ import io.analytica.agent.AbstractAgentManagerTest;
 
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
-
 /**
  * Cas de Test JUNIT de l'API Analytics.
  * Dans le cas ou le serveur n'est pas toujours joignable.
@@ -32,14 +30,14 @@ import org.apache.log4j.Logger;
  */
 public final class AgentManagerOutOfSyncTest extends AbstractAgentManagerTest {
 	/** Logger. */
-	private final Logger log = Logger.getLogger(getClass());
+	//	private final Logger log = Logger.getLogger(getClass());
 
 	/**
 	 * Initialisation du test pour implé spécifique.
 	 * @throws Exception Erreur
 	 */
 	@Override
-	protected void doSetUp() throws Exception {
+	protected void doSetUp() {
 		//on ne démarre pas le serveur
 	}
 

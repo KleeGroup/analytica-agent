@@ -84,7 +84,8 @@ public final class KProcessJsonCodec {
 		 */
 		public static final Type LIST_PROCESS_TYPE = new TypeToken<List<KProcess>>() { //empty
 		}.getType();
-		private static final Type MAP_STRING_DOUBLE_TYPE = new TypeToken<Map<String, Double>>() { //empty
+		private static final Type MAP_STRING_DOUBLE_TYPE = new TypeToken<Map<String, Double>>() {
+			//empty
 		}.getType();
 		private static final Type MAP_STRING_STRING_TYPE = new TypeToken<Map<String, String>>() { //empty
 		}.getType();

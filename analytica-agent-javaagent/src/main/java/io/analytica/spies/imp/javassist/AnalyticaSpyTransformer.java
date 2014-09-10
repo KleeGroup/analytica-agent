@@ -257,9 +257,8 @@ final class AnalyticaSpyTransformer implements ClassFileTransformer {
 						}
 					}
 					return ctClass.toBytecode();
-				} else {
-					throw new InvalidClassException("Can't instrument interfaces");
 				}
+				throw new InvalidClassException("Can't instrument interfaces");
 			} catch (final Exception e) {
 				System.err.println("Can't instrument " + adaptedclassName + ",  exception " + e.getClass().getName() + " : " + e.getMessage());
 				e.printStackTrace();

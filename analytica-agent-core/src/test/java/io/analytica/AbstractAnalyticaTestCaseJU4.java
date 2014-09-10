@@ -53,7 +53,7 @@ import com.sun.jersey.api.core.ResourceConfig;
  */
 public abstract class AbstractAnalyticaTestCaseJU4 {
 
-	private MockServerManager mockServerManager;
+	//	private MockServerManager mockServerManager;
 	private HttpServer httpServer;
 
 	private final URI getBaseURI() {
@@ -64,7 +64,7 @@ public abstract class AbstractAnalyticaTestCaseJU4 {
 
 	protected final void startServer() throws IOException {
 		System.out.println("Starting grizzly...");
-		mockServerManager = new MockServerManager();
+		//mockServerManager = new MockServerManager();
 		final ResourceConfig rc = new PackagesResourceConfig("io.analytica.mock");
 		rc.getProperties().put(ResourceConfig.PROPERTY_CONTAINER_REQUEST_FILTERS, com.sun.jersey.api.container.filter.GZIPContentEncodingFilter.class.getName());
 		rc.getProperties().put(ResourceConfig.PROPERTY_CONTAINER_RESPONSE_FILTERS, com.sun.jersey.api.container.filter.GZIPContentEncodingFilter.class.getName());
@@ -98,7 +98,7 @@ public abstract class AbstractAnalyticaTestCaseJU4 {
 			if (httpServer != null) {
 				httpServer.stop();
 			}
-			mockServerManager = null;
+			//	mockServerManager = null;
 			doAfterTearDown();
 		}
 	}

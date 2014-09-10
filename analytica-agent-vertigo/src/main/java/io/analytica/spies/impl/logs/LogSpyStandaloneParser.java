@@ -21,7 +21,6 @@ import io.analytica.agent.AgentManager;
 import io.analytica.agent.Starter;
 import io.vertigo.commons.resource.ResourceManager;
 import io.vertigo.kernel.Home;
-import io.vertigo.kernel.di.injector.Injector;
 import io.vertigo.kernel.lang.Assertion;
 import io.vertigo.kernel.lang.Option;
 
@@ -34,7 +33,7 @@ import java.util.Properties;
  */
 public final class LogSpyStandaloneParser {
 
-	private static final Injector INJECTOR = new Injector();
+	//private static final Injector INJECTOR = new Injector();
 
 	/**
 	 * Lance l'environnement et attend indéfiniment.
