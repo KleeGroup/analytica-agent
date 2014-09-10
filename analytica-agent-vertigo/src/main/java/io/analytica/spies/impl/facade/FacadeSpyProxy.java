@@ -103,7 +103,7 @@ public final class FacadeSpyProxy implements InvocationHandler {
 	 * @return Class[] Tableau des interfaces de cette classe (il peut y avoir des doublons)
 	 */
 	private static Class[] getAllInterfaces(final Class myClass) {
-		final Set<Class> interfaces = new HashSet<>();
+		final Set<Class> interfaces = new HashSet<Class>();
 		Class<?> superClass = myClass;
 		while (superClass != null) {
 			interfaces.addAll(Arrays.asList(superClass.getInterfaces()));

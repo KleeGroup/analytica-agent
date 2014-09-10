@@ -51,9 +51,9 @@ import org.apache.log4j.Logger;
  * @version $Id: RemoteNetPlugin.java,v 1.4 2012/06/14 13:49:17 npiedeloup Exp $
  */
 public final class FileLogConnector implements KProcessConnector {
-	//	private static final String VERSION_MAJOR = "1.0"; //definit la compatibilité
-	//	private static final String VERSION_MINOR = "0";
-	//	private static final String VERSION = VERSION_MAJOR + "." + VERSION_MINOR;
+	private static final String VERSION_MAJOR = "1.0"; //definit la compatibilité
+	private static final String VERSION_MINOR = "0";
+	private static final String VERSION = VERSION_MAJOR + "." + VERSION_MINOR;
 	private static final String DATE_FORMAT = "yyyyMMdd HH:mm:ss";
 
 	private final Logger logger = Logger.getLogger(FileLogConnector.class);

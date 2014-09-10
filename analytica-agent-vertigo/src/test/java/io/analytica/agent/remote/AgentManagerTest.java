@@ -19,8 +19,6 @@ package io.analytica.agent.remote;
 
 import io.analytica.agent.AbstractAgentManagerTest;
 
-import java.io.IOException;
-
 /**
  * Cas de Test JUNIT de l'API Analytics.
  * 
@@ -31,9 +29,10 @@ public final class AgentManagerTest extends AbstractAgentManagerTest {
 
 	/**
 	 * Initialisation du test pour implé spécifique.
+	 * @throws Exception Erreur
 	 */
 	@Override
-	protected void doSetUp() throws IOException {
+	protected void doSetUp() throws Exception {
 		startServer();
 	}
 }

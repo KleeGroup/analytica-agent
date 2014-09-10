@@ -18,9 +18,9 @@
 package io.analytica.agent;
 
 import io.analytica.AbstractVertigoStartTestCaseJU4;
+import io.analytica.agent.AgentManager;
 import io.vertigo.kernel.lang.Assertion;
 
-import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -51,11 +51,10 @@ public abstract class AbstractAgentManagerTest extends AbstractVertigoStartTestC
 
 	//-------------------------------------------------------------------------
 
-	@Override
-	protected void doSetUp() throws IOException {
+	protected void doSetUp() throws Exception {
 		startServer();
 	}
-
+	
 	/**
 	 * Test simple avec un compteur. 
 	 * Test sur l'envoi d'un process 
