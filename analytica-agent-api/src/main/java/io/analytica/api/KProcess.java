@@ -40,16 +40,16 @@ import java.util.regex.Pattern;
 /**
  * A process is an event with
  * - a location defined by 
- * 		--a system name 
- * 		--a system location	
+ * 		--an app name 
  * - a category defined by 
- * 		--a type 
+ * 		--a type [ex : pages, services ... ]
  * 		--an array of subTypes	
  * - a start date
- * - a list of sub processes
- * - a duration (cf.measures)
  * - a list of measures with a DURATION measure 
  * - a list of metadatas
+ * 
+ * - a list of sub processes (0..*)
+ * - a duration (cf.measures)
  * 
  * @author pchretien, npiedeloup
  * @version $Id: KProcess.java,v 1.8 2012/10/16 17:18:26 pchretien Exp $
