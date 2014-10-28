@@ -39,28 +39,28 @@ import java.util.regex.Pattern;
 
 /**
  * A process is an event with
- * - a location defined by 
- * 		--an app name 
- * - a category defined by 
+ * - a location defined by
+ * 		--an app name
+ * - a category defined by
  * 		--a type [ex : pages, services ... ]
- * 		--an array of subTypes	
+ * 		--an array of subTypes
  * - a start date
- * - a list of measures with a DURATION measure 
+ * - a list of measures with a DURATION measure
  * - a list of metadatas
- * 
+ *
  * - a list of sub processes (0..*)
  * - a duration (cf.measures)
- * 
+ *
  * @author pchretien, npiedeloup
  * @version $Id: KProcess.java,v 1.8 2012/10/16 17:18:26 pchretien Exp $
  */
 public final class KProcess {
 	/**
-	 * Mesure de type durée.  
+	 * Mesure de type durée.
 	 */
 	public static final String DURATION = "duration";
 	/**
-	 * Mesure de type durée.  
+	 * Mesure de type durée.
 	 */
 	public static final String SUB_DURATION = "sub-duration";
 	/**
@@ -81,8 +81,6 @@ public final class KProcess {
 
 	/**
 	 * Le constructeur est package car il faut passer par le builder.
-	 * @param systemName Nom du system
-	 * @param systemLocation Emplacement du system
 	 * @param type Type du processus
 	 * @param subTypes Sous processus
 	 * @param startDate Date du processus
