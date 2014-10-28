@@ -40,7 +40,7 @@ import java.util.Map;
  * Il y a deux modes de création.
  *  - live (La date de début et celle de la création , la durée s'obtient lors de la création du process
  *  - différé (la date de débute et la durée sont renseignée ensembles )
- * 
+ *
  * @author pchretien, npiedeloup
  * @version $Id: KProcessBuilder.java,v 1.18 2012/11/08 17:06:27 pchretien Exp $
  */
@@ -51,10 +51,10 @@ public final class KProcessBuilder {
 	private final String[] subTypes;
 	private final Date startDate;
 
-	//Tableau des mesures identifiées par leur nom. 
+	//Tableau des mesures identifiées par leur nom.
 	private final Map<String, Double> measures;
 
-	//Tableau des métadonnées identifiées par leur nom. 
+	//Tableau des métadonnées identifiées par leur nom.
 	private final Map<String, String> metaDatas;
 
 	private final long start;
@@ -75,8 +75,6 @@ public final class KProcessBuilder {
 
 	/**
 	 * Constructeur pour deserialization.
-	 * @param systemName Nom de l'application
-	 * @param systemLocation Emplacement du processus
 	 * @param type Type du processus
 	 * @param names Nom du processus
 	 * @param startDate Date de début processus
@@ -119,9 +117,8 @@ public final class KProcessBuilder {
 	/**
 	 * Constructeur pour la construction des sousProcessus.
 	 * @param type Type du processus
-	 * @param names Nom du processus
 	 * @param startDate Date de début processus
-	 * @param duration Durée du processus (Millisecondes)
+	 * @param durationMs Durée du processus (Millisecondes)
 	 */
 	private KProcessBuilder(final String appName, final KProcessBuilder parent, final Date startDate, final double durationMs, final String type, final String... subTypes) {
 		this(appName, parent, startDate, type, subTypes);
@@ -130,7 +127,7 @@ public final class KProcessBuilder {
 	}
 
 	/**
-	 * Incrément d'une mesure. 
+	 * Incrément d'une mesure.
 	 * Si la mesure est nouvelle, elle est automatiquement créée avec la valeur
 	 * @param mName Nom de la mesure
 	 * @param mValue  Valeur à incrémenter
@@ -146,7 +143,7 @@ public final class KProcessBuilder {
 		return this;
 	}
 
-	/** 
+	/**
 	 * Mise à jour d'une mesure.
 	 * @param mName Nom de la mesure
 	 * @param mValue  Valeur à incrémenter
@@ -161,7 +158,7 @@ public final class KProcessBuilder {
 		return this;
 	}
 
-	/** 
+	/**
 	 * Mise à jour d'une metadonnée.
 	 * @param mdName Nom de la métadonnée
 	 * @param mdValue  Valeur de la métadonnée
@@ -220,7 +217,7 @@ public final class KProcessBuilder {
 		return this;
 	}
 
-	/** 
+	/**
 	 * Construction du Processus.
 	 * @return Process
 	 */
