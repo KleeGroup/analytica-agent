@@ -34,7 +34,6 @@ import io.analytica.agent.impl.KProcessCollector;
 import io.analytica.agent.impl.net.RemoteConnector;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -45,7 +44,7 @@ import org.junit.Test;
 
 /**
  * Cas de Test JUNIT de l'API Analytics.
- * 
+ *
  * @author pchretien, npiedeloup
  * @version $Id: AgentManagerTest.java,v 1.3 2012/03/29 08:48:19 npiedeloup Exp $
  */
@@ -66,7 +65,8 @@ public abstract class AbstractProcessCollectorTest extends AbstractAnalyticaTest
 	@Override
 	protected final void doSetUp() throws Exception {
 		remoteConnector = new RemoteConnector("http://localhost:9998/process", 20, 1);
-		processCollector = new KProcessCollector(this.getClass().getSimpleName(), new String[] { "test", InetAddress.getLocalHost().getHostName() }, remoteConnector);
+		//		processCollector = new KProcessCollector(this.getClass().getSimpleName(), new String[] { "test", InetAddress.getLocalHost().getHostName() }, remoteConnector);
+		processCollector = new KProcessCollector(remoteConnector);
 		remoteConnector.start();
 		afterSetUp();
 	}
@@ -81,8 +81,8 @@ public abstract class AbstractProcessCollectorTest extends AbstractAnalyticaTest
 	}
 
 	/**
-	 * Test simple avec un compteur. 
-	 * Test sur l'envoi d'un process 
+	 * Test simple avec un compteur.
+	 * Test sur l'envoi d'un process
 	 * Chaque article coute 10€.
 	 */
 	@Test
@@ -96,8 +96,8 @@ public abstract class AbstractProcessCollectorTest extends AbstractAnalyticaTest
 	}
 
 	/**
-	 * Test simple avec deux compteurs. 
-	 * Test sur l'envoi de 1000 articles d'un poids de 25 kg. 
+	 * Test simple avec deux compteurs.
+	 * Test sur l'envoi de 1000 articles d'un poids de 25 kg.
 	 * Chaque article coute 10€.
 	 */
 	@Test
@@ -123,9 +123,9 @@ public abstract class AbstractProcessCollectorTest extends AbstractAnalyticaTest
 	}
 
 	/**
-	 * Test de récursivité. 
-	 * Test sur l'envoi de 500 commandes contenant chacune 500 articles d'un poids de 25 kg. 
-	 * Chaque article coute 10€. 
+	 * Test de récursivité.
+	 * Test sur l'envoi de 500 commandes contenant chacune 500 articles d'un poids de 25 kg.
+	 * Chaque article coute 10€.
 	 * Les frais d'envoi sont de 5€.
 	 */
 	@Test
@@ -139,10 +139,10 @@ public abstract class AbstractProcessCollectorTest extends AbstractAnalyticaTest
 	}
 
 	/**
-	 * Test de parallélisme. 
+	 * Test de parallélisme.
 	 * Test sur l'envoi de 500 commandes contenant chacune 1000 articles d'un poids de 25 kg.
 	 * L'envoi est simuler avec 20 clients (thread).
-	 * Chaque article coute 10€. 
+	 * Chaque article coute 10€.
 	 * Les frais d'envoi sont de 5€.
 	 * @throws InterruptedException Interruption
 	 */
@@ -155,7 +155,7 @@ public abstract class AbstractProcessCollectorTest extends AbstractAnalyticaTest
 			workersPool.execute(new CommandeTask(String.valueOf(i), 5));
 		}
 		workersPool.shutdown();
-		workersPool.awaitTermination(2 * 60, TimeUnit.SECONDS); //On laisse 2 minute pour vider la pile   
+		workersPool.awaitTermination(2 * 60, TimeUnit.SECONDS); //On laisse 2 minute pour vider la pile
 		if (!workersPool.isTerminated()) {
 			throw new IllegalStateException("Les threads ne sont pas tous stoppés");
 		}

@@ -38,35 +38,26 @@ import java.util.Stack;
 /**
  * Datas collector agent.
  * Collect and build Process. Building process are bind to current thread.
- * 
+ *
  * @author pchretien, npiedeloup
  * @version $Id: AgentManagerImpl.java,v 1.7 2012/03/29 08:48:19 npiedeloup Exp $
  */
 public final class KProcessCollector {
 	private final KProcessConnector processConnector;
-	private final String systemName;
-	private final String[] systemLocation;
 
 	/**
 	 * Constructor.
 	 * Should be created only once.
-	 * @param systemName System name
-	 * @param systemLocation System location
 	 * @param processConnector Collector output connector
 	 */
-	public KProcessCollector(final String systemName, final String[] systemLocation, final KProcessConnector processConnector) {
-		if (systemName == null) {
-			throw new NullPointerException("systemName is required");
-		}
-		if (systemLocation == null) {
-			throw new NullPointerException("systemLocation is required");
-		}
+	public KProcessCollector(/*final String appName,*/final KProcessConnector processConnector) {
+		//		if (systemName == null) {
+		//			throw new NullPointerException("systemName is required");
+		//		}
 		if (processConnector == null) {
 			throw new NullPointerException("processConnector is required");
 		}
 		//-----------------------------------------------------------------
-		this.systemName = systemName;
-		this.systemLocation = systemLocation;
 		this.processConnector = processConnector;
 	}
 
@@ -120,8 +111,8 @@ public final class KProcessCollector {
 	 * @param type Type de process
 	 * @param names Nom du process
 	 */
-	public void startProcess(final String type, final String... names) {
-		final KProcessBuilder processBuilder = new KProcessBuilder(systemName, systemLocation, type, names);
+	public void startProcess(final String appName, final String type, final String... names) {
+		final KProcessBuilder processBuilder = new KProcessBuilder(appName, type, names);
 		push(processBuilder);
 	}
 
