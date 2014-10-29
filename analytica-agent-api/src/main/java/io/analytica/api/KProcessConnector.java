@@ -27,28 +27,31 @@
  * but you are not obliged to do so.
  * If you do not wish to do so, delete this exception statement from your version.
  */
-package io.analytica.agent.impl.net;
+package io.analytica.api;
 
-import io.analytica.api.KProcess;
-import io.analytica.api.KProcessConnector;
 
 /**
- * @author npiedeloup
- * @version $Id: RemoteNetPlugin.java,v 1.4 2012/06/14 13:49:17 npiedeloup Exp $
+ * Connecteur des process.
+ * Les messages sont composés des Processus et envoyés ; un consommateur les traitera.
+ * 
+ * @author pchretien, npiedeloup
+ * @version $Id: NetPlugin.java,v 1.1 2012/03/22 18:20:57 pchretien Exp $
  */
-public final class DummyConnector implements KProcessConnector {
-	/** {@inheritDoc} */
-	public void add(final KProcess process) {
-		//rien
-	}
+public interface KProcessConnector {
+	/**
+	 * Ajout d'un process dans le système.
+	 * Cet ajout peut-être multi-threadé.
+	 * @param process Process à ajouter
+	 */
+	void add(KProcess process);
 
-	/** {@inheritDoc} */
-	public void start() {
-		//rien
-	}
+	/**
+	 * A appeller lors du lancement du connecteur.
+	 */
+	void start();
 
-	/** {@inheritDoc} */
-	public void stop() {
-		//rien
-	}
+	/**
+	 * A appeller lors de l'arret du connecteur.
+	 */
+	void stop();
 }

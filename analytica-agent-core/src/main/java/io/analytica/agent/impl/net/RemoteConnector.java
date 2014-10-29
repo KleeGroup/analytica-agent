@@ -30,6 +30,7 @@
 package io.analytica.agent.impl.net;
 
 import io.analytica.api.KProcess;
+import io.analytica.api.KProcessConnector;
 import io.analytica.api.KProcessJsonCodec;
 
 import java.util.ArrayList;

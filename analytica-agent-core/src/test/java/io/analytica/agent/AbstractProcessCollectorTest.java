@@ -30,8 +30,8 @@
 package io.analytica.agent;
 
 import io.analytica.AbstractAnalyticaTestCaseJU4;
-import io.analytica.agent.impl.KProcessCollector;
 import io.analytica.agent.impl.net.RemoteConnector;
+import io.analytica.api.KProcessCollector;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;

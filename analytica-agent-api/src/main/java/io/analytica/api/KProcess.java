@@ -35,16 +35,28 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
- * A process is an event with
- * - a location defined by
- * 		--an app name
- * - a category defined by
- * 		--a type [ex : pages, services ... ]
- * 		--an array of subTypes
+ * Un processus est un événement
+ *  - déclenché dans une application spécifique
+ *   - relatif à un type d'événement (exemple : métrics des pages, des requêtes sql, des mails envoyés, des services ...)
+ *
+ *	Un évenement est défini selon 3 axes
+ *	 - when, quand et combien de temps a duré l'événement
+ *	 - what, de quoi s'agit-il ? on
+ *	 - where, où s'est passé l'événement  ? sur quel serveur ?
+ *
+ *	[what]
+ * - a category defined an array of string : search/items
+
+ * 	[when]
  * - a start date
+ * - a duration (cf.measures)
+ *
+ * 	[data]
+ *
  * - a list of measures with a DURATION measure
  * - a list of metadatas
  *
@@ -68,36 +80,44 @@ public final class KProcess {
 	 */
 	public static final Pattern TYPE_REGEX = Pattern.compile("[A-Z][A-Z0-9_]*");
 
-	private final String appName; //application name
-	//private final String[] systemLocation; //environment, server, JVM id
+	private final String appName;
+	private final String type; //ex : sql, page....
 
-	private final String type;
-	private final String[] subTypes;
-	private final Date startDate;
+	private final String[] categories; //what ex : search/countries
+	private final String location; //where ex : serverXXX
+
+	private final Date startDate; //when
 
 	private final Map<String, Double> measures;
-	private final Map<String, String> metaDatas;
+	private final Map<String, Set<String>> metaDatas;
 	private final List<KProcess> subProcesses;
 
 	/**
 	 * Le constructeur est package car il faut passer par le builder.
+	 * @param appName Nom de l'application
 	 * @param type Type du processus
-	 * @param subTypes Sous processus
+	 * @param categories Sous processus
 	 * @param startDate Date du processus
 	 * @param measures Mesures du processus
 	 * @param metaDatas Metadonnées du processus
 	 * @param subProcesses Liste des sous processus
 	 */
-	KProcess(final String appName, final String type, final String[] subTypes, final Date startDate, final Map<String, Double> measures, final Map<String, String> metaDatas, final List<KProcess> subProcesses) {
-		if (appName == null) {
-			throw new NullPointerException("appName is required");
-		}
-		if (type == null) {
-			throw new NullPointerException("type of process is required");
-		}
-		if (subTypes == null) {
-			throw new NullPointerException("subTypes of process are required");
-		}
+	KProcess(final String appName, final String type,
+			final String[] categories,
+			final String location,
+			final Date startDate,
+			final Map<String, Double> measures,
+			final Map<String, Set<String>> metaDatas,
+			final List<KProcess> subProcesses) {
+		checkNotNull(appName, "appName is required");
+		checkNotNull(type, "type of process is required");
+		//		checkNotNull(categories, "categories of process are required");
+		//		checkNotNull(location, "location of process is required");
+		checkNotNull(startDate, "startDate is required");
+		checkNotNull(measures, "measures are required");
+		checkNotNull(metaDatas, "metaDatas are required");
+		checkNotNull(subProcesses, "subProcesses are required");
+		//---
 		if (!TYPE_REGEX.matcher(type).matches()) {
 			throw new IllegalArgumentException("process type must match regex :" + TYPE_REGEX);
 		}
@@ -105,16 +125,23 @@ public final class KProcess {
 			throw new IllegalArgumentException("measures must contain DURATION");
 		}
 		if (measures.containsKey(SUB_DURATION) && measures.get(SUB_DURATION) > measures.get(DURATION)) {
-			throw new IllegalArgumentException("measures SUB-DURATION must be lower than DURATION (duration:" + measures.get(DURATION) + " < sub-duration:" + measures.get(SUB_DURATION) + ") in " + type + " : " + Arrays.asList(subTypes) + " at " + startDate);
+			throw new IllegalArgumentException("measures SUB-DURATION must be lower than DURATION (duration:" + measures.get(DURATION) + " < sub-duration:" + measures.get(SUB_DURATION) + ") in " + type + " : " + Arrays.asList(categories) + " at " + startDate);
 		}
 		//---------------------------------------------------------------------
 		this.appName = appName;
 		this.type = type;
-		this.subTypes = subTypes;
+		this.categories = categories;
+		this.location = location;
 		this.startDate = startDate;
-		this.measures = Collections.unmodifiableMap(new HashMap<String, Double>(measures));
-		this.metaDatas = Collections.unmodifiableMap(new HashMap<String, String>(metaDatas));
+		this.measures = Collections.unmodifiableMap(new HashMap<>(measures));
+		this.metaDatas = Collections.unmodifiableMap(new HashMap<>(metaDatas));
 		this.subProcesses = subProcesses;
+	}
+
+	static void checkNotNull(final Object value, final String msg) {
+		if (value == null) {
+			throw new NullPointerException(msg);
+		}
 	}
 
 	/**
@@ -124,13 +151,6 @@ public final class KProcess {
 		return appName;
 	}
 
-	//	/**
-	//	 * @return SystemLocation du processus
-	//	 */
-	//	public String[] getSystemLocation() {
-	//		return systemLocation;
-	//	}
-
 	/**
 	 * @return Type du processus
 	 */
@@ -139,22 +159,33 @@ public final class KProcess {
 	}
 
 	/**
+	 * [what]
 	 * @return Sous-types du processus
 	 */
-	public String[] getSubTypes() {
-		return subTypes;
+	public String[] getCategories() {
+		return categories;
 	}
 
-	/**@return Process duration */
+	/**
+	 * @return Process duration */
 	public double getDuration() {
 		return measures.get(DURATION);
 	}
 
 	/**
+	 * [when]
 	 * @return Date processus
 	 */
 	public Date getStartDate() {
 		return startDate;
+	}
+
+	/**
+	 * [where]
+	 * @return location
+	 */
+	public String getLocation() {
+		return location;
 	}
 
 	/**
@@ -167,7 +198,7 @@ public final class KProcess {
 	/**
 	 * @return Metadonnées du processus
 	 */
-	public Map<String, String> getMetaDatas() {
+	public Map<String, Set<String>> getMetaDatas() {
 		return metaDatas;
 	}
 
@@ -181,6 +212,6 @@ public final class KProcess {
 	/** {@inheritDoc} */
 	@Override
 	public String toString() {
-		return "process:{category:{ type:" + type + ", subTypes:" + Arrays.asList(getSubTypes()) + "}; startDate:" + startDate + "}";
+		return "{appName:" + appName + ",  type:" + type + ", categories :" + Arrays.asList(categories) + ", location:" + location + "}";
 	}
 }
