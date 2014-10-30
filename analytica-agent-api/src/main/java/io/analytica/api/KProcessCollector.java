@@ -108,10 +108,10 @@ public final class KProcessCollector {
 	 * Doit respecter les règles sur le nom d'un process.
 	 * @param type Type de process
 	 */
-	public KProcessCollector startProcess(final String type, final String... categories) {
+	public KProcessCollector startProcess(final String type, final String... categoryTerms) {
 		final KProcessBuilder processBuilder = new KProcessBuilder(appName, type)
 				.withLocation(location)
-				.withCategories(categories);
+				.withCategory(categoryTerms);
 		push(processBuilder);
 		return this;
 	}

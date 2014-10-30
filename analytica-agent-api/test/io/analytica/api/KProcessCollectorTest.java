@@ -35,14 +35,6 @@ import org.junit.Test;
 public final class KProcessCollectorTest {
 	private static KProcessCollector createProcessCollector(final boolean containsSubProcess) {
 		return new KProcessCollector("myPrettyApp", "myServer", new KProcessConnector() {
-			public void stop() {
-				//nada
-			}
-
-			public void start() {
-				//nada
-			}
-
 			public void add(final KProcess process) {
 				checkProcess(process);
 				if (containsSubProcess) {
@@ -99,8 +91,8 @@ public final class KProcessCollectorTest {
 	private static void checkProcess(final KProcess process) {
 		Assert.assertEquals("myPrettyApp", process.getAppName());
 		Assert.assertEquals("pages", process.getType());
-		Assert.assertEquals("search", process.getCategories()[0]);
-		Assert.assertEquals("items", process.getCategories()[1]);
+		Assert.assertEquals("search", process.getCategoryTerms()[0]);
+		Assert.assertEquals("items", process.getCategoryTerms()[1]);
 		Assert.assertEquals("myServer", process.getLocation());
 		Assert.assertEquals(Double.valueOf(16d), process.getMeasures().get("beats"));
 		Assert.assertTrue(process.getMetaDatas().get("tags").contains("fast"));
