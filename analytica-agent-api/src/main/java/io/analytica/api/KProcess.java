@@ -40,28 +40,26 @@ import java.util.regex.Pattern;
 
 /**
  * Un processus est un événement
- *  - déclenché dans une application spécifique
+ *   - déclenché dans une application spécifique
  *   - relatif à un type d'événement (exemple : métrics des pages, des requêtes sql, des mails envoyés, des services ...)
  *
  *	Un évenement est défini selon 3 axes
- *	 - when, quand et combien de temps a duré l'événement
- *	 - what, de quoi s'agit-il ? on
+ *	 - when, quand a eu lieu l'événement
+ *	 - what, de quoi s'agit-il ?
  *	 - where, où s'est passé l'événement  ? sur quel serveur ?
  *
  *	[what]
- * - a category defined an array of string : search/items
+ * - categories defined an array of string : search/items
 
  * 	[when]
  * - a start date
- * - a duration (cf.measures)
  *
  * 	[data]
- *
+ * - a duration (cf.measures)
  * - a list of measures with a DURATION measure
  * - a list of metadatas
  *
  * - a list of sub processes (0..*)
- * - a duration (cf.measures)
  *
  * @author pchretien, npiedeloup
  * @version $Id: KProcess.java,v 1.8 2012/10/16 17:18:26 pchretien Exp $

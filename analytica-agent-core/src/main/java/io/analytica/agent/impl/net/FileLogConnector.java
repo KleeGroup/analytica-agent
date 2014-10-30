@@ -67,7 +67,7 @@ public final class FileLogConnector implements KProcessConnector {
 		if (fileName == null || fileName.trim().length() == 0) {
 			throw new IllegalArgumentException("fileName to spool process is required");
 		}
-		//---------------------------------------------------------------------	
+		//---------------------------------------------------------------------
 		this.fileName = fileName;
 	}
 
@@ -137,10 +137,10 @@ public final class FileLogConnector implements KProcessConnector {
 
 	/**
 	 * On attend la constitution d'un paquet.
-	 * Rend la main après : 
-	 * - le timeout 
+	 * Rend la main après :
+	 * - le timeout
 	 * - un processQueue.notify (taille max de la queue atteinte)
-	 * - un interrupt (arret du serveur) 
+	 * - un interrupt (arret du serveur)
 	 * @throws InterruptedException Si interrupt
 	 */
 	void waitToSendPacket() throws InterruptedException {
@@ -190,7 +190,7 @@ public final class FileLogConnector implements KProcessConnector {
 		}
 	}
 
-	private void doWriteToLogFile(final String json, final SimpleDateFormat sdf, final BufferedWriter out) throws IOException {
+	private static void doWriteToLogFile(final String json, final SimpleDateFormat sdf, final BufferedWriter out) throws IOException {
 		out.write(sdf.format(new Date()));
 		out.write(" [AnalyticaProcess] - ");
 		out.write(json);
