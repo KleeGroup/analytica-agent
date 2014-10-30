@@ -52,7 +52,7 @@ public final class KProcessBuilder {
 	private final Date startDate;
 
 	private String myLocation;
-	private String[] myCategories;
+	private String[] myCategoryTerms;
 
 	//Tableau des mesures identifiées par leur nom.
 	private final Map<String, Double> measures;
@@ -107,8 +107,8 @@ public final class KProcessBuilder {
 		return this;
 	}
 
-	public KProcessBuilder withCategories(final String[] categories) {
-		this.myCategories = categories;
+	public KProcessBuilder withCategory(final String[] categoryTerms) {
+		this.myCategoryTerms = categoryTerms;
 		return this;
 	}
 
@@ -206,6 +206,6 @@ public final class KProcessBuilder {
 		}
 		//On ajoute la mesure obligatoire : durée
 		setMeasure(KProcess.DURATION, durationMs);
-		return new KProcess(appName, myType, myCategories, myLocation, startDate, measures, metaDatas, subProcesses);
+		return new KProcess(appName, myType, myCategoryTerms, myLocation, startDate, measures, metaDatas, subProcesses);
 	}
 }

@@ -81,7 +81,7 @@ public final class KProcess {
 	private final String appName;
 	private final String type; //ex : sql, page....
 
-	private final String[] categories; //what ex : search/countries
+	private final String[] categoryTerms; //what ex : search/countries
 	private final String location; //where ex : serverXXX
 
 	private final Date startDate; //when
@@ -94,14 +94,14 @@ public final class KProcess {
 	 * Le constructeur est package car il faut passer par le builder.
 	 * @param appName Nom de l'application
 	 * @param type Type du processus
-	 * @param categories Sous processus
+	 * @param categoryTerms Category
 	 * @param startDate Date du processus
 	 * @param measures Mesures du processus
 	 * @param metaDatas Metadonnées du processus
 	 * @param subProcesses Liste des sous processus
 	 */
 	KProcess(final String appName, final String type,
-			final String[] categories,
+			final String[] categoryTerms,
 			final String location,
 			final Date startDate,
 			final Map<String, Double> measures,
@@ -122,9 +122,9 @@ public final class KProcess {
 		if (!NAME_REGEX.matcher(type).matches()) {
 			throw new IllegalArgumentException("process type " + type + " must match regex :" + NAME_REGEX);
 		}
-		for (final String category : categories) {
-			if (!NAME_REGEX.matcher(category).matches()) {
-				throw new IllegalArgumentException("category " + category + " must match regex :" + NAME_REGEX);
+		for (final String categoryTerm : categoryTerms) {
+			if (!NAME_REGEX.matcher(categoryTerm).matches()) {
+				throw new IllegalArgumentException("category " + categoryTerm + " must match regex :" + NAME_REGEX);
 			}
 		}
 		for (final String measureName : measures.keySet()) {
@@ -141,12 +141,12 @@ public final class KProcess {
 			throw new IllegalArgumentException("measures must contain DURATION");
 		}
 		if (measures.containsKey(SUB_DURATION) && measures.get(SUB_DURATION) > measures.get(DURATION)) {
-			throw new IllegalArgumentException("measures SUB-DURATION must be lower than DURATION (duration:" + measures.get(DURATION) + " < sub-duration:" + measures.get(SUB_DURATION) + ") in " + type + " : " + Arrays.asList(categories) + " at " + startDate);
+			throw new IllegalArgumentException("measures SUB-DURATION must be lower than DURATION (duration:" + measures.get(DURATION) + " < sub-duration:" + measures.get(SUB_DURATION) + ") in " + type + " : " + Arrays.asList(categoryTerms) + " at " + startDate);
 		}
 		//---------------------------------------------------------------------
 		this.appName = appName;
 		this.type = type;
-		this.categories = categories;
+		this.categoryTerms = categoryTerms;
 		this.location = location;
 		this.startDate = startDate;
 		this.measures = Collections.unmodifiableMap(new HashMap<>(measures));
@@ -170,10 +170,10 @@ public final class KProcess {
 
 	/**
 	 * [what]
-	 * @return Sous-types du processus
+	 * @return Category
 	 */
-	public String[] getCategories() {
-		return categories;
+	public String[] getCategoryTerms() {
+		return categoryTerms;
 	}
 
 	/**
@@ -222,6 +222,6 @@ public final class KProcess {
 	/** {@inheritDoc} */
 	@Override
 	public String toString() {
-		return "{appName:" + appName + ",  type:" + type + ", categories :" + Arrays.asList(categories) + ", location:" + location + "}";
+		return "{appName:" + appName + ",  type:" + type + ", categories :" + Arrays.asList(categoryTerms) + ", location:" + location + "}";
 	}
 }

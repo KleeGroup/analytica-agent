@@ -29,16 +29,16 @@
  */
 package io.analytica.spies.imp.javassist;
 
-import io.analytica.agent.impl.KProcessCollector;
 import io.analytica.agent.impl.net.DummyConnector;
 import io.analytica.agent.impl.net.FileLogConnector;
-import io.analytica.agent.impl.net.KProcessConnector;
 import io.analytica.agent.impl.net.RemoteConnector;
+import io.analytica.api.KProcessCollector;
+import io.analytica.api.KProcessConnector;
 
 import java.util.Map;
 
 /**
- * 
+ *
  *
  * @author npiedeloup (2012/09/28 09:30:03)
  */
