@@ -33,7 +33,8 @@ import java.util.Stack;
 
 /**
  * Datas collector agent.
- * Collect and build Process. Building process are bind to current thread.
+ * Collect and build Process.
+ * Building process are bind to current thread.
  *
  * @author pchretien, npiedeloup
  * @version $Id: AgentManagerImpl.java,v 1.7 2012/03/29 08:48:19 npiedeloup Exp $
@@ -49,9 +50,9 @@ public final class KProcessCollector {
 	 * @param processConnector Collector output connector
 	 */
 	public KProcessCollector(final String appName, final String location, final KProcessConnector processConnector) {
-		KProcess.checkNotNull(appName, "appName is required");
-		KProcess.checkNotNull(location, "location is required");
-		KProcess.checkNotNull(processConnector, "processConnector is required");
+		KProcessUtil.checkNotNull(appName, "appName is required");
+		KProcessUtil.checkNotNull(location, "location is required");
+		KProcessUtil.checkNotNull(processConnector, "processConnector is required");
 		//-----------------------------------------------------------------
 		this.processConnector = processConnector;
 		this.appName = appName;

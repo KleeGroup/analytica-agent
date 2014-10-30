@@ -74,11 +74,11 @@ public final class KProcess {
 	/**
 	 * Mesure de type durée.
 	 */
-	public static final String SUB_DURATION = "sub-duration";
+	public static final String SUB_DURATION = "subDuration";
 	/**
-	 * REGEX décrivant les règles du type de process. (exemples : SQL, MAIL, REQUEST)
+	 * REGEX décrivant les règles sur les noms (type de process, mesures et metadata, . (exemples : sql, mail, services)
 	 */
-	public static final Pattern TYPE_REGEX = Pattern.compile("[A-Z][A-Z0-9_]*");
+	public static final Pattern NAME_REGEX = Pattern.compile("[a-z][a-zA-Z]*");
 
 	private final String appName;
 	private final String type; //ex : sql, page....
@@ -109,17 +109,35 @@ public final class KProcess {
 			final Map<String, Double> measures,
 			final Map<String, Set<String>> metaDatas,
 			final List<KProcess> subProcesses) {
-		checkNotNull(appName, "appName is required");
-		checkNotNull(type, "type of process is required");
+		KProcessUtil.checkNotNull(appName, "appName is required");
+		KProcessUtil.checkNotNull(type, "type of process is required");
 		//		checkNotNull(categories, "categories of process are required");
 		//		checkNotNull(location, "location of process is required");
-		checkNotNull(startDate, "startDate is required");
-		checkNotNull(measures, "measures are required");
-		checkNotNull(metaDatas, "metaDatas are required");
-		checkNotNull(subProcesses, "subProcesses are required");
+		KProcessUtil.checkNotNull(startDate, "startDate is required");
+		KProcessUtil.checkNotNull(measures, "measures are required");
+		KProcessUtil.checkNotNull(metaDatas, "metaDatas are required");
+		KProcessUtil.checkNotNull(subProcesses, "subProcesses are required");
 		//---
-		if (!TYPE_REGEX.matcher(type).matches()) {
-			throw new IllegalArgumentException("process type must match regex :" + TYPE_REGEX);
+		if (!NAME_REGEX.matcher(appName).matches()) {
+			throw new IllegalArgumentException("appName " + appName + " must match regex :" + NAME_REGEX);
+		}
+		if (!NAME_REGEX.matcher(type).matches()) {
+			throw new IllegalArgumentException("process type " + type + " must match regex :" + NAME_REGEX);
+		}
+		for (final String category : categories) {
+			if (!NAME_REGEX.matcher(category).matches()) {
+				throw new IllegalArgumentException("category " + category + " must match regex :" + NAME_REGEX);
+			}
+		}
+		for (final String measureName : measures.keySet()) {
+			if (!NAME_REGEX.matcher(measureName).matches()) {
+				throw new IllegalArgumentException("measure " + measureName + " must match regex :" + NAME_REGEX);
+			}
+		}
+		for (final String metaDataName : metaDatas.keySet()) {
+			if (!NAME_REGEX.matcher(metaDataName).matches()) {
+				throw new IllegalArgumentException("metadata " + metaDataName + " must match regex :" + NAME_REGEX);
+			}
 		}
 		if (!measures.containsKey(DURATION)) {
 			throw new IllegalArgumentException("measures must contain DURATION");
@@ -136,12 +154,6 @@ public final class KProcess {
 		this.measures = Collections.unmodifiableMap(new HashMap<>(measures));
 		this.metaDatas = Collections.unmodifiableMap(new HashMap<>(metaDatas));
 		this.subProcesses = subProcesses;
-	}
-
-	static void checkNotNull(final Object value, final String msg) {
-		if (value == null) {
-			throw new NullPointerException(msg);
-		}
 	}
 
 	/**

@@ -29,11 +29,10 @@
  */
 package io.analytica.api;
 
-
 /**
  * Connecteur des process.
  * Les messages sont composés des Processus et envoyés ; un consommateur les traitera.
- * 
+ *
  * @author pchretien, npiedeloup
  * @version $Id: NetPlugin.java,v 1.1 2012/03/22 18:20:57 pchretien Exp $
  */
@@ -45,13 +44,4 @@ public interface KProcessConnector {
 	 */
 	void add(KProcess process);
 
-	/**
-	 * A appeller lors du lancement du connecteur.
-	 */
-	void start();
-
-	/**
-	 * A appeller lors de l'arret du connecteur.
-	 */
-	void stop();
 }

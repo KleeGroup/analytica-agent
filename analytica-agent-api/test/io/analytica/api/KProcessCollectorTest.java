@@ -44,29 +44,26 @@ public final class KProcessCollectorTest {
 			}
 
 			public void add(final KProcess process) {
-				Assert.assertEquals("myPrettyApp", process.getAppName());
-				Assert.assertEquals("PAGES", process.getType());
-				Assert.assertEquals("search", process.getCategories()[0]);
-				Assert.assertEquals("items", process.getCategories()[1]);
-				Assert.assertEquals("myServer", process.getLocation());
-				Assert.assertEquals(Double.valueOf(16d), process.getMeasures().get("beats"));
-				Assert.assertTrue(process.getMetaDatas().get("tags").contains("fast"));
-				Assert.assertTrue(process.getMetaDatas().get("tags").contains("strong"));
-
+				checkProcess(process);
 				if (containsSubProcess) {
-					final KProcess subProcess = process.getSubProcesses().get(0);
-					Assert.assertEquals("myPrettyApp", subProcess.getAppName());
-					Assert.assertEquals("SERVICES", subProcess.getType());
-					Assert.assertEquals(Double.valueOf(55d), subProcess.getMeasures().get("rows"));
+					checkSubProcess(process);
+				}
+				//on vérifie que l'encodage json fonctionne correctement
+				final String sprocess = KProcessUtil.toJson(process);
+				final KProcess process2 = KProcessUtil.fromJson(sprocess);
+				checkProcess(process2);
+				if (containsSubProcess) {
+					checkSubProcess(process2);
 				}
 			}
+
 		});
 	}
 
 	@Test
 	public void testSimpleProcess() {
 		createProcessCollector(false)
-				.startProcess("PAGES", "search", "items")
+				.startProcess("pages", "search", "items")
 				.incMeasure("beats", 10)
 				.incMeasure("beats", 5)
 				.incMeasure("beats", 1)
@@ -79,17 +76,35 @@ public final class KProcessCollectorTest {
 	@Test
 	public void testComplexProcess() {
 		createProcessCollector(true)
-				.startProcess("PAGES", "search", "items")
+				.startProcess("pages", "search", "items")
 				.incMeasure("beats", 10)
 				.incMeasure("beats", 5)
 				.incMeasure("beats", 1)
-				.startProcess("SERVICES", "getItems")
+				.startProcess("services", "getItems")
 				.incMeasure("rows", 55)//subprocess
 				.stopProcess()
 				.setMeasure("mails", 22)
 				.addMetaData("tags", "fast")
 				.addMetaData("tags", "strong")
 				.stopProcess();
+	}
+
+	private static void checkSubProcess(final KProcess process) {
+		final KProcess subProcess = process.getSubProcesses().get(0);
+		Assert.assertEquals("myPrettyApp", subProcess.getAppName());
+		Assert.assertEquals("services", subProcess.getType());
+		Assert.assertEquals(Double.valueOf(55d), subProcess.getMeasures().get("rows"));
+	}
+
+	private static void checkProcess(final KProcess process) {
+		Assert.assertEquals("myPrettyApp", process.getAppName());
+		Assert.assertEquals("pages", process.getType());
+		Assert.assertEquals("search", process.getCategories()[0]);
+		Assert.assertEquals("items", process.getCategories()[1]);
+		Assert.assertEquals("myServer", process.getLocation());
+		Assert.assertEquals(Double.valueOf(16d), process.getMeasures().get("beats"));
+		Assert.assertTrue(process.getMetaDatas().get("tags").contains("fast"));
+		Assert.assertTrue(process.getMetaDatas().get("tags").contains("strong"));
 	}
 
 }

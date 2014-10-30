@@ -29,8 +29,8 @@
  */
 package io.analytica.mock;
 
+import io.analytica.KProcessJsonCodec;
 import io.analytica.api.KProcess;
-import io.analytica.api.KProcessJsonCodec;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;

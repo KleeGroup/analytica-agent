@@ -29,9 +29,9 @@
  */
 package io.analytica.agent.impl.net;
 
+import io.analytica.KProcessJsonCodec;
 import io.analytica.api.KProcess;
 import io.analytica.api.KProcessConnector;
-import io.analytica.api.KProcessJsonCodec;
 
 import java.io.BufferedWriter;
 import java.io.File;

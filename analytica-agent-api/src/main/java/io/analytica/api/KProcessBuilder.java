@@ -85,9 +85,9 @@ public final class KProcessBuilder {
 	}
 
 	private KProcessBuilder(final String appName, final String type, final KProcessBuilder parent, final Date startDate, final Double durationMs) {
-		KProcess.checkNotNull(appName, "appName is required");
-		KProcess.checkNotNull(type, "type of process is required");
-		KProcess.checkNotNull(startDate, "start of process is required");
+		KProcessUtil.checkNotNull(appName, "appName is required");
+		KProcessUtil.checkNotNull(type, "type of process is required");
+		KProcessUtil.checkNotNull(startDate, "start of process is required");
 		//---
 		this.appName = appName;
 		this.myType = type;
@@ -120,7 +120,7 @@ public final class KProcessBuilder {
 	 * @return Builder
 	 */
 	public KProcessBuilder incMeasure(final String mName, final double mValue) {
-		KProcess.checkNotNull(mName, "Measure name is required");
+		KProcessUtil.checkNotNull(mName, "Measure name is required");
 		//---------------------------------------------------------------------
 		final Double lastmValue = measures.get(mName);
 		measures.put(mName, lastmValue == null ? mValue : mValue + lastmValue);
@@ -134,7 +134,7 @@ public final class KProcessBuilder {
 	 * @return Builder
 	 */
 	public KProcessBuilder setMeasure(final String mName, final double mValue) {
-		KProcess.checkNotNull(mName, "Measure name is required");
+		KProcessUtil.checkNotNull(mName, "Measure name is required");
 		//---------------------------------------------------------------------
 		measures.put(mName, mValue);
 		return this;
@@ -147,8 +147,8 @@ public final class KProcessBuilder {
 	 * @return Builder
 	 */
 	public KProcessBuilder withMetaData(final String mdName, final String mdValue) {
-		KProcess.checkNotNull(mdName, "Metadata name is required");
-		KProcess.checkNotNull(mdValue, "Metadata value is required");
+		KProcessUtil.checkNotNull(mdName, "Metadata name is required");
+		KProcessUtil.checkNotNull(mdValue, "Metadata value is required");
 		//---------------------------------------------------------------------
 		Set<String> set = metaDatas.get(mdName);
 		if (set == null) {
@@ -176,7 +176,7 @@ public final class KProcessBuilder {
 	 * @return Builder
 	 */
 	public KProcessBuilder endSubProcess() {
-		KProcess.checkNotNull(parent, "parent is required when you close a subprocess");
+		KProcessUtil.checkNotNull(parent, "parent is required when you close a subprocess");
 		//---------------------------------------------------------------------
 		parent.addSubProcess(build());
 		return parent;
@@ -188,7 +188,7 @@ public final class KProcessBuilder {
 	 * @return Builder
 	 */
 	public KProcessBuilder addSubProcess(final KProcess subPocess) {
-		KProcess.checkNotNull(subPocess, "sub process is required ");
+		KProcessUtil.checkNotNull(subPocess, "sub process is required ");
 		//---------------------------------------------------------------------
 		subProcesses.add(subPocess);
 		incMeasure(KProcess.SUB_DURATION, subPocess.getDuration());
