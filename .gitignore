@@ -33,7 +33,7 @@ local.properties
 .classpath
 .settings/
 .loadpath
- 
+sql
 # Locally stored "Eclipse launch configurations"
 *.launch
  
