@@ -17,16 +17,15 @@
  */
 package io.analytica.spies.impl.logs;
 
+import io.analytica.KProcessJsonCodec;
 import io.analytica.agent.AgentManager;
 import io.analytica.api.KProcess;
 import io.analytica.api.KProcessBuilder;
-import io.analytica.api.KProcessJsonCodec;
 import io.analytica.spies.impl.JsonConfReader;
 import io.vertigo.commons.resource.ResourceManager;
-import io.vertigo.kernel.exception.VRuntimeException;
-import io.vertigo.kernel.lang.Activeable;
-import io.vertigo.kernel.lang.Assertion;
-import io.vertigo.kernel.lang.Option;
+import io.vertigo.lang.Activeable;
+import io.vertigo.lang.Assertion;
+import io.vertigo.lang.Option;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -144,7 +143,7 @@ public final class LogSpyReader implements Activeable {
 		if (!logInfo.getLogPattern().isStartLog()) {
 			for (final LogInfo oldLogInfo : logInfos) {
 				if (oldLogInfo.getLogPattern().isStartLog()) {
-					if (oldLogInfo.getType().equals(logInfo.getType()) && oldLogInfo.getSubType().equals(logInfo.getSubType())) {
+					if (oldLogInfo.getType().equals(logInfo.getType()) && oldLogInfo.getCategoryTerms().equals(logInfo.getCategoryTerms())) {
 						logInfo.linkStartLogInfo(oldLogInfo);
 						logInfos.remove(oldLogInfo);
 						break;
@@ -176,7 +175,8 @@ public final class LogSpyReader implements Activeable {
 		KProcessBuilder processBuilder;
 		//2 - on dépile les lignes de log
 		for (final LogInfo logInfo : logInfos) {
-			processBuilder = new KProcessBuilder(logInfo.getStartDateEvent(), logInfo.getTime(), systemName, systemLocation, logInfo.getType(), logInfo.getSubType());
+			processBuilder = new KProcessBuilder(systemName,logInfo.getType(), logInfo.getStartDateEvent(),logInfo.getTime())
+									.withLocation(systemLocation).withCategory(logInfo.getCategoryTerms());
 			processBuilder.setMeasure(ME_ERROR_PCT, logInfo.getLogPattern().isError() ? 100 : 0);
 			if (stackLogInfo.isEmpty()) {
 				//2a - la premiere ligne crée la racine
@@ -214,7 +214,7 @@ public final class LogSpyReader implements Activeable {
 		final SimpleDateFormat sdfHour = new SimpleDateFormat("HH:mm:ss.SSS ");
 
 		sb.append(linePrefix);
-		sb.append("{").append("").append(process.getType()).append(":").append(Arrays.asList(process.getSubTypes())).append("; startDate:").append(sdfHour.format(process.getStartDate())).append("; endDate:").append(sdfHour.format(new Date(process.getStartDate().getTime() + (long) process.getDuration()))).append("; duration:").append(process.getDuration());
+		sb.append("{").append("").append(process.getType()).append(":").append(Arrays.asList(process.getCategoryTerms())).append("; startDate:").append(sdfHour.format(process.getStartDate())).append("; endDate:").append(sdfHour.format(new Date(process.getStartDate().getTime() + (long) process.getDuration()))).append("; duration:").append(process.getDuration());
 		if (!process.getSubProcesses().isEmpty()) {
 			sb.append("\n").append(linePrefix).append("subprocess:{");
 			for (final KProcess subProcess : process.getSubProcesses()) {
@@ -244,7 +244,7 @@ public final class LogSpyReader implements Activeable {
 		final long timeExclude = timeF2 - timeF1;
 		dateIncluded = !(timeInclude == 0 && sameType) && timeInclude >= timeExclude;
 		if (dateIncluded) {
-			logger.info(logInfo.getSubType() + " in " + logInfoPrevious.getSubType() + " " + dateIncluded + "=" + timeInclude + ">=" + timeExclude);
+			logger.info(logInfo.getCategoryTerms() + " in " + logInfoPrevious.getCategoryTerms() + " " + dateIncluded + "=" + timeInclude + ">=" + timeExclude);
 			//
 			//		if (sameType) {
 			//			dateIncluded = logInfo.getStartDateEvent().before(logInfoPrevious.getDateEvent()) && logInfo.getDateEvent().after(logInfoPrevious.getStartDateEvent());
@@ -303,7 +303,7 @@ public final class LogSpyReader implements Activeable {
 				in.close();
 			}
 		} catch (final IOException e) {
-			throw new VRuntimeException(e, "Erreur de lecture du log");
+			throw new RuntimeException("Erreur de lecture du log", e);
 		}
 	}
 
@@ -374,9 +374,10 @@ public final class LogSpyReader implements Activeable {
 				final String date = startMatch.group(logPattern.getIndexDate());
 				final String threadName = logPattern.getIndexThreadName() > 0 ? startMatch.group(logPattern.getIndexThreadName()) : "none";
 				final String type = logPattern.getIndexType() > 0 ? startMatch.group(logPattern.getIndexType()) : logPattern.getCode();
-				final String subType = logPattern.getIndexSubType() > 0 ? startMatch.group(logPattern.getIndexSubType()) : "";
+				// TODO reimplement for an array of categories
+				final String[] categoryTerms ={ logPattern.getIndexCategoryTerms() > 0 ? startMatch.group(logPattern.getIndexCategoryTerms()) : ""};
 				final String time = logPattern.getIndexTime() > 0 ? startMatch.group(logPattern.getIndexTime()) : null;
-				return Option.some(new LogInfo(readDate(date), threadName, type, subType, readTime(time), logPattern));
+				return Option.some(new LogInfo(readDate(date), threadName, type, categoryTerms, readTime(time), logPattern));
 			}
 		}
 		return Option.none();
@@ -401,7 +402,7 @@ public final class LogSpyReader implements Activeable {
 			}
 		}
 		if (dateTime == null) {
-			throw new VRuntimeException("Date non reconnue : " + date);
+			throw new RuntimeException("Date non reconnue : " + date);
 		}
 		lastDateRead = dateTime;
 		return dateTime;

@@ -17,9 +17,9 @@
  */
 package io.analytica.agent.plugins.net;
 
-import io.analytica.agent.impl.net.KProcessConnector;
 import io.analytica.api.KProcess;
-import io.vertigo.kernel.component.Plugin;
+import io.analytica.api.KProcessConnector;
+import io.vertigo.lang.Plugin;
 
 /**
  * Producteur des messages.

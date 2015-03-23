@@ -34,7 +34,8 @@ import org.junit.Test;
 
 public final class KProcessCollectorTest {
 	private static KProcessCollector createProcessCollector(final boolean containsSubProcess) {
-		return new KProcessCollector("myPrettyApp", "myServer", new KProcessConnector() {
+		String [] location = {"myServer"};
+		return new KProcessCollector("myPrettyApp",location , new KProcessConnector() {
 			public void add(final KProcess process) {
 				checkProcess(process);
 				if (containsSubProcess) {
@@ -47,6 +48,18 @@ public final class KProcessCollectorTest {
 				if (containsSubProcess) {
 					checkSubProcess(process2);
 				}
+			}
+
+			@Override
+			public void start() {
+				// NA
+				
+			}
+
+			@Override
+			public void stop() {
+				// NA
+				
 			}
 
 		});

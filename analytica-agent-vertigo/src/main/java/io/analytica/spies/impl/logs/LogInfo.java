@@ -17,7 +17,7 @@
  */
 package io.analytica.spies.impl.logs;
 
-import io.vertigo.kernel.lang.Assertion;
+import io.vertigo.lang.Assertion;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -35,7 +35,7 @@ final class LogInfo {
 	private final String json;
 	private final String threadName;
 	private final String type;
-	private final String subType;
+	private final String[] categoryTerms;
 	private final long time;
 	private final LogPattern logPattern;
 
@@ -44,14 +44,14 @@ final class LogInfo {
 	 * @param dateEvent Date du log
 	 * @param threadName Nom du thread
 	 * @param type Type associé
-	 * @param subType Sous catégorie
+	 * @param categoryTerms Sous catégorie
 	 * @param time Temps d'execution du traitement loggé
 	 * @param logPattern Pattern de lecture du log
 	 */
-	public LogInfo(final Date dateEvent, final String threadName, final String type, final String subType, final long time, final LogPattern logPattern) {
+	public LogInfo(final Date dateEvent, final String threadName, final String type, final String[] categoryTerms, final long time, final LogPattern logPattern) {
 		this.threadName = threadName;
 		this.type = type.toUpperCase();
-		this.subType = subType;
+		this.categoryTerms = categoryTerms;
 		this.logPattern = logPattern;
 		if (logPattern.isStartLog()) {
 			this.time = time;
@@ -81,7 +81,7 @@ final class LogInfo {
 		this.json = json;
 		this.logPattern = logPattern;
 		type = null;
-		subType = null;
+		categoryTerms = null;
 		time = -1;
 		dateEvent = null;
 		startDateEvent = null;
@@ -96,7 +96,7 @@ final class LogInfo {
 		Assertion.checkArgument(logInfo != this, "Cycle");
 		Assertion.checkArgument(logInfo.getLogPattern().isStartLog(), "Ce LogInfo n''est pas un log de début : {0}", logInfo);
 		Assertion.checkArgument(logInfo.getType().equals(type), "Ce LogInfo n''est pas du même type : {0} != {1}", type, logInfo);
-		Assertion.checkArgument(logInfo.getSubType().equals(subType), "Ce LogInfo n''est pas du même sous-type : {0} != {1}", subType, logInfo);
+		Assertion.checkArgument(logInfo.getCategoryTerms().equals(categoryTerms), "Ce LogInfo n''est pas du même sous-type : {0} != {1}", categoryTerms, logInfo);
 		//---------------------------------------------------------------------
 		this.startLogInfo = logInfo;
 	}
@@ -142,8 +142,8 @@ final class LogInfo {
 	/**
 	 * @return Sous catégories du process
 	 */
-	public String getSubType() {
-		return subType;
+	public String[] getCategoryTerms() {
+		return categoryTerms;
 	}
 
 	/**
@@ -168,7 +168,7 @@ final class LogInfo {
 	public String toString() {
 		final SimpleDateFormat sdfDate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.SSS");
 		final SimpleDateFormat sdfHour = new SimpleDateFormat("HH:mm:ss.SSS ");
-		return sdfDate.format(getStartDateEvent()) + (startLogInfo != null ? "(link)" : "") + ">" + sdfHour.format(getDateEvent()) + threadName + " " + type + " " + subType + " " + getTime() + " " + logPattern.getCode();
+		return sdfDate.format(getStartDateEvent()) + (startLogInfo != null ? "(link)" : "") + ">" + sdfHour.format(getDateEvent()) + threadName + " " + type + " " + categoryTerms + " " + getTime() + " " + logPattern.getCode();
 	}
 
 }

@@ -18,7 +18,7 @@
 package io.analytica.agent;
 
 import io.analytica.api.KProcess;
-import io.vertigo.kernel.component.Manager;
+import io.vertigo.lang.Component;
 
 /**
  * Agent de collecte des données.
@@ -27,7 +27,7 @@ import io.vertigo.kernel.component.Manager;
  * @author pchretien, npiedeloup
  * @version $Id: AgentManager.java,v 1.2 2012/03/19 09:03:31 npiedeloup Exp $
  */
-public interface AgentManager extends Manager {
+public interface AgentManager extends Component {
 	/**
 	 * Enregistre dans le thread courant le démarrage d'un process.
 	 * Doit respecter les règles sur le nom d'un process.

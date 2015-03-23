@@ -20,7 +20,8 @@ package io.analytica.agent.impl;
 import io.analytica.agent.AgentManager;
 import io.analytica.agent.plugins.net.NetPlugin;
 import io.analytica.api.KProcess;
-import io.vertigo.kernel.lang.Assertion;
+import io.analytica.api.KProcessCollector;
+import io.vertigo.lang.Assertion;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -76,6 +77,6 @@ public final class AgentManagerImpl implements AgentManager {
 
 	/** {@inheritDoc} */
 	public void add(final KProcess process) {
-		processCollector.add(process);
+		processCollector.  add(process);
 	}
 }

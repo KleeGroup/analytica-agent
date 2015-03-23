@@ -20,9 +20,9 @@ package io.analytica.spies.impl.logs;
 import io.analytica.agent.AgentManager;
 import io.analytica.agent.Starter;
 import io.vertigo.commons.resource.ResourceManager;
-import io.vertigo.kernel.Home;
-import io.vertigo.kernel.lang.Assertion;
-import io.vertigo.kernel.lang.Option;
+import io.vertigo.core.Home;
+import io.vertigo.lang.Assertion;
+import io.vertigo.lang.Option;
 
 import java.util.Properties;
 

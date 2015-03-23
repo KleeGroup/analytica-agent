@@ -51,8 +51,8 @@ public final class KProcessBuilder {
 	private final String myType;
 	private final Date startDate;
 
-	private String myLocation;
-	private String[] myCategoryTerms;
+	private String[] myLocation;
+	private String[] myCategoryTerms = new String[0];
 
 	//Tableau des mesures identifiées par leur nom.
 	private final Map<String, Double> measures;
@@ -92,9 +92,9 @@ public final class KProcessBuilder {
 		this.appName = appName;
 		this.myType = type;
 
-		measures = new HashMap<>();
-		metaDatas = new HashMap<>();
-		subProcesses = new ArrayList<>();
+		measures = new HashMap<String, Double>();
+		metaDatas = new HashMap<String, Set<String>>();
+		subProcesses = new ArrayList<KProcess>();
 		this.startDate = startDate;
 		start = startDate.getTime();
 		this.parent = parent;
@@ -102,7 +102,7 @@ public final class KProcessBuilder {
 		this.durationMs = durationMs;
 	}
 
-	public KProcessBuilder withLocation(final String location) {
+	public KProcessBuilder withLocation(final String[] location) {
 		this.myLocation = location;
 		return this;
 	}
@@ -152,13 +152,33 @@ public final class KProcessBuilder {
 		//---------------------------------------------------------------------
 		Set<String> set = metaDatas.get(mdName);
 		if (set == null) {
-			set = new HashSet<>();
+			set = new HashSet<String>();
 			metaDatas.put(mdName, set);
 		}
 		set.add(mdValue);
 		return this;
 	}
-
+	
+	/**
+	 * Mise à jour d'une metadonnée.
+	 * @param mdName Nom de la métadonnée
+	 * @param mdValue  Valeur de la métadonnée
+	 * @return Builder
+	 */
+	public KProcessBuilder withMetaData(final String mdName, final Set<String> mdDetails) {
+		KProcessUtil.checkNotNull(mdName, "Metadata name is required");
+		KProcessUtil.ckeckNotEmpty(mdDetails, "Metadata value is required");
+		
+		//---------------------------------------------------------------------
+		Set<String> set = metaDatas.get(mdName);
+		if (set == null) {
+			set = new HashSet<String>();
+			metaDatas.put(mdName, set);
+		}
+		set.addAll(mdDetails);
+		return this;
+	}
+	
 	/**
 	 * Ajout d'un sous processus.
 	 * @param subStartDate Date de début

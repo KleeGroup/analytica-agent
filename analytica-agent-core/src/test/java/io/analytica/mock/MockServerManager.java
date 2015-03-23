@@ -115,7 +115,7 @@ public final class MockServerManager {
 		final List<KProcess> processByType = obtainProcesses(type);
 		final List<Double> measures = new ArrayList<Double>();
 		for (final KProcess process : processByType) {
-			if (toTree(process.getCategories()).startsWith(toTree(subTypes))) {
+			if (toTree(process.getCategoryTerms()).startsWith(toTree(subTypes))) {
 				final Double measure = process.getMeasures().get(metricName);
 				if (measure != null) {
 					measures.add(measure);

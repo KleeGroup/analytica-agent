@@ -19,7 +19,7 @@ package io.vertigo.commons.plugins.analytics.analytica;
 
 import io.analytica.agent.AgentManager;
 import io.vertigo.commons.impl.analytics.AnalyticsAgentPlugin;
-import io.vertigo.kernel.lang.Assertion;
+import io.vertigo.lang.Assertion;
 
 import javax.inject.Inject;
 

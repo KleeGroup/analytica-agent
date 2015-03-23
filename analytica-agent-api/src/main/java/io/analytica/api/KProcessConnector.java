@@ -43,5 +43,13 @@ public interface KProcessConnector {
 	 * @param process Process à ajouter
 	 */
 	void add(KProcess process);
+	/**
+	 * A appeller lors du lancement du connecteur.
+	 */
+	void start();
 
+	/**
+	 * A appeller lors de l'arret du connecteur.
+	 */
+	void stop();
 }

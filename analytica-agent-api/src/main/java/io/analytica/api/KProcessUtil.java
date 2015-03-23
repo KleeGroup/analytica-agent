@@ -18,6 +18,8 @@
  */
 package io.analytica.api;
 
+import java.util.Collection;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -32,7 +34,14 @@ public final class KProcessUtil {
 			throw new NullPointerException(msg);
 		}
 	}
-
+	static void ckeckNotEmpty(final Collection collection, final String msg){
+		if(collection == null){
+			throw new NullPointerException(msg);
+		}
+		if(collection.isEmpty()){
+			throw new NullPointerException(msg);
+		}
+	}
 	public static KProcess fromJson(final String json) {
 		return gson.fromJson(json, KProcess.class);
 	}

@@ -134,7 +134,7 @@ public final class AnalyticaSpyAgentTest extends AbstractAnalyticaTestCaseJU4 {
 	public void testJavassistWork1s() {
 		new TestAnalyse().work1s();
 		flushAgentToServer();
-		checkMetricCount("duration", 1, "JAVASSIST", TEST1_CLASS_NAME, "work1s");
+		checkMetricCount("HMDURATION", 1, "JAVASSIST", TEST1_CLASS_NAME, "work1s");
 	}
 
 	/**
@@ -150,7 +150,7 @@ public final class AnalyticaSpyAgentTest extends AbstractAnalyticaTestCaseJU4 {
 			//on veut vérifier que le process est renseigné après l'exception
 		}
 		flushAgentToServer();
-		checkMetricCount("duration", 1, "JAVASSIST", TEST1_CLASS_NAME, "workError");
+		checkMetricCount("HMDURATION", 1, "JAVASSIST", TEST1_CLASS_NAME, "workError");
 		checkMetricMean("ME_ERROR_PCT", 100, "JAVASSIST", TEST1_CLASS_NAME, "workError");
 	}
 
@@ -159,36 +159,36 @@ public final class AnalyticaSpyAgentTest extends AbstractAnalyticaTestCaseJU4 {
 		final int result = new TestAnalyse().workResult();
 		Assert.assertEquals(1, result);
 		flushAgentToServer();
-		checkMetricCount("duration", 1, "JAVASSIST", TEST1_CLASS_NAME, "workResult");
+		checkMetricCount("HMDURATION", 1, "JAVASSIST", TEST1_CLASS_NAME, "workResult");
 	}
 
 	@Test
 	public void testJavassistWorkReentrant() {
 		new TestAnalyse().workReentrant();
 		flushAgentToServer();
-		checkMetricCount("duration", 1, "JAVASSIST", TEST1_CLASS_NAME, "workReentrant");
-		checkMetricCount("duration", 1, "JAVASSIST", TEST1_CLASS_NAME, "work1s");
+		checkMetricCount("HMDURATION", 1, "JAVASSIST", TEST1_CLASS_NAME, "workReentrant");
+		checkMetricCount("HMDURATION", 1, "JAVASSIST", TEST1_CLASS_NAME, "work1s");
 	}
 
 	@Test
 	public void testJavassistWorkInterface() {
 		new TestAnalyse2().workInterface();
 		flushAgentToServer();
-		checkMetricCount("duration", 1, "JAVASSIST", TEST2_CLASS_NAME, "workInterface");
+		checkMetricCount("HMDURATION", 1, "JAVASSIST", TEST2_CLASS_NAME, "workInterface");
 	}
 
 	@Test
 	public void testJavassistWorkParent() {
 		new TestAnalyse3().workParent();
 		flushAgentToServer();
-		checkMetricCount("duration", 1, "JAVASSIST", TEST3_CLASS_NAME, "workParent");
+		checkMetricCount("HMDURATION", 1, "JAVASSIST", TEST3_CLASS_NAME, "workParent");
 	}
 
 	@Test
 	public void testJavassistWorkParentAbstract() {
 		new TestAnalyse3().workParentAbstract();
 		flushAgentToServer();
-		checkMetricCount("duration", 1, "JAVASSIST", TEST3_CLASS_NAME, "workParentAbstract");
+		checkMetricCount("HMDURATION", 1, "JAVASSIST", TEST3_CLASS_NAME, "workParentAbstract");
 	}
 
 	/**
@@ -200,7 +200,7 @@ public final class AnalyticaSpyAgentTest extends AbstractAnalyticaTestCaseJU4 {
 	public void testJavassistWorkStatic() {
 		TestAnalyse.workStatic();
 		flushAgentToServer();
-		checkMetricCount("duration", 1, "JAVASSIST", TEST1_CLASS_NAME, "workStatic");
+		checkMetricCount("HMDURATION", 1, "JAVASSIST", TEST1_CLASS_NAME, "workStatic");
 	}
 
 	/**
@@ -231,7 +231,7 @@ public final class AnalyticaSpyAgentTest extends AbstractAnalyticaTestCaseJU4 {
 		final long percent = timeNotInstrumented > 0 ? delta * 100 / timeNotInstrumented : 0;
 		System.out.println("Time Instrumentation : " + delta + " ms pour " + nbLoop + " soit " + percent + "% de " + timeNotInstrumented + " ms (" + delta * 1000 / nbLoop / 1000d + "ms par appel)");
 		flushAgentToServer();
-		checkMetricCount("duration", nbLoop + 10, "JAVASSIST", TEST1_CLASS_NAME, "workFastest");
+		checkMetricCount("HMDURATION", nbLoop + 10, "JAVASSIST", TEST1_CLASS_NAME, "workFastest");
 	}
 
 	/**
@@ -243,17 +243,17 @@ public final class AnalyticaSpyAgentTest extends AbstractAnalyticaTestCaseJU4 {
 	public void testActivateDesactivate() {
 		new TestAnalyse().work1s();
 		flushAgentToServer();
-		checkMetricCount("duration", 1, "JAVASSIST", TEST1_CLASS_NAME, "work1s");
+		checkMetricCount("HMDURATION", 1, "JAVASSIST", TEST1_CLASS_NAME, "work1s");
 
 		AnalyticaSpyAgent.stopAgent();
 		new TestAnalyse().work1s();
 		flushAgentToServer();
-		checkMetricCount("duration", 1, "JAVASSIST", TEST1_CLASS_NAME, "work1s");
+		checkMetricCount("HMDURATION", 1, "JAVASSIST", TEST1_CLASS_NAME, "work1s");
 
 		startAgent();
 		new TestAnalyse().work1s();
 		flushAgentToServer();
-		checkMetricCount("duration", 2, "JAVASSIST", TEST1_CLASS_NAME, "work1s");
+		checkMetricCount("HMDURATION", 2, "JAVASSIST", TEST1_CLASS_NAME, "work1s");
 	}
 
 	/**
@@ -266,17 +266,17 @@ public final class AnalyticaSpyAgentTest extends AbstractAnalyticaTestCaseJU4 {
 		final TestAnalyse testAnalyse = new TestAnalyse();
 		testAnalyse.work1s();
 		flushAgentToServer();
-		checkMetricCount("duration", 1, "JAVASSIST", TEST1_CLASS_NAME, "work1s");
+		checkMetricCount("HMDURATION", 1, "JAVASSIST", TEST1_CLASS_NAME, "work1s");
 
 		AnalyticaSpyAgent.stopAgent();
 		testAnalyse.work1s();
 		flushAgentToServer();
-		checkMetricCount("duration", 1, "JAVASSIST", TEST1_CLASS_NAME, "work1s");
+		checkMetricCount("HMDURATION", 1, "JAVASSIST", TEST1_CLASS_NAME, "work1s");
 
 		startAgent();
 		testAnalyse.work1s();
 		flushAgentToServer();
-		checkMetricCount("duration", 2, "JAVASSIST", TEST1_CLASS_NAME, "work1s");
+		checkMetricCount("HMDURATION", 2, "JAVASSIST", TEST1_CLASS_NAME, "work1s");
 	}
 
 }

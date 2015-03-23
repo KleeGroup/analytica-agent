@@ -66,7 +66,8 @@ public abstract class AbstractProcessCollectorTest extends AbstractAnalyticaTest
 	protected final void doSetUp() throws Exception {
 		remoteConnector = new RemoteConnector("http://localhost:9998/process", 20, 1);
 		//		processCollector = new KProcessCollector(this.getClass().getSimpleName(), new String[] { "test", InetAddress.getLocalHost().getHostName() }, remoteConnector);
-		processCollector = new KProcessCollector(remoteConnector);
+		String [] location = { "myServer"};
+		processCollector = new KProcessCollector("myPrettyApp",location,remoteConnector);
 		remoteConnector.start();
 		afterSetUp();
 	}

@@ -17,12 +17,11 @@
  */
 package io.analytica;
 
-import io.analytica.AbstractAnalyticaTestCaseJU4;
 import io.analytica.agent.Starter;
-import io.vertigo.kernel.Home;
-import io.vertigo.kernel.component.Container;
-import io.vertigo.kernel.di.injector.Injector;
-import io.vertigo.kernel.lang.Option;
+import io.vertigo.core.Home;
+import io.vertigo.core.di.injector.Injector;
+import io.vertigo.lang.Container;
+import io.vertigo.lang.Option;
 
 import java.util.Properties;
 
@@ -84,7 +83,6 @@ public abstract class AbstractVertigoStartTestCaseJU4 extends AbstractAnalyticaT
 		 */
 		static class ContainerStatement extends Statement {
 			private final AbstractVertigoStartTestCaseJU4 testCaseInstance;
-			private final Injector injector = new Injector();
 			private Starter starter;
 
 			private final Statement base;
@@ -105,7 +103,7 @@ public abstract class AbstractVertigoStartTestCaseJU4 extends AbstractAnalyticaT
 				starter.start();
 
 				//On injecte les managers sur la classe de test.
-				injector.injectMembers(testCaseInstance, getContainer());
+				Injector.injectMembers(testCaseInstance, getContainer());
 				try {
 					base.evaluate();
 				} finally {

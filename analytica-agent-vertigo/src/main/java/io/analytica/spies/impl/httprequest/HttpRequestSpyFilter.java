@@ -18,8 +18,8 @@
 package io.analytica.spies.impl.httprequest;
 
 import io.analytica.agent.AgentManager;
-import io.vertigo.kernel.Home;
-import io.vertigo.kernel.exception.VUserException;
+import io.vertigo.core.Home;
+import io.vertigo.lang.VUserException;
 
 import java.io.IOException;
 import java.lang.management.ManagementFactory;

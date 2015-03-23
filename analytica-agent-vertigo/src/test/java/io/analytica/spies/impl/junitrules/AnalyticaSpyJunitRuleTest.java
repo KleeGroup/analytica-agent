@@ -53,7 +53,7 @@ public final class AnalyticaSpyJunitRuleTest extends AbstractVertigoStartTestCas
 		}
 		flushAgentToServer();
 		//check is useless : process will be close AFTER this test.
-		//checkMetricCount("duration", 1, "JUNIT", "io.analytica.spies.impl.junitrules.AnalyticaSpyJunitRuleTest", "testJunitRule");
+		//checkMetricCount("HMDURATION", 1, "JUNIT", "io.analytica.spies.impl.junitrules.AnalyticaSpyJunitRuleTest", "testJunitRule");
 	}
 
 }

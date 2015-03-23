@@ -17,12 +17,13 @@
  */
 package io.analytica.agent;
 
-import io.vertigo.kernel.Home;
-import io.vertigo.kernel.di.configurator.ComponentSpaceConfig;
-import io.vertigo.kernel.di.configurator.ComponentSpaceConfigBuilder;
-import io.vertigo.kernel.lang.Assertion;
-import io.vertigo.kernel.lang.Option;
-import io.vertigo.xml.XMLModulesLoader;
+import io.vertigo.boot.xml.XMLModulesBuilder;
+import io.vertigo.core.Home;
+import io.vertigo.core.Home.App;
+import io.vertigo.core.config.AppConfig;
+import io.vertigo.core.config.AppConfigBuilder;
+import io.vertigo.lang.Assertion;
+import io.vertigo.lang.Option;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,6 +44,8 @@ public final class Starter implements Runnable {
 	private final long timeToWait;
 	private boolean started;
 
+	private App app;
+	
 	/**
 	 * @param managersXmlFileName Fichier managers.xml
 	 * @param propertiesFileName Fichier de propriétés
@@ -109,11 +112,18 @@ public final class Starter implements Runnable {
 			properties.putAll(defaultProperties.get());
 		}
 		appendFileProperties(properties, propertiesFileName, relativeRootClass);
-		final ComponentSpaceConfig componentSpaceConfig = new ComponentSpaceConfigBuilder() //
-				.withSilence(SILENCE) //
-				.withLoader(new XMLModulesLoader(xmlURL, properties)) //
+		
+		final AppConfig appConfig = new AppConfigBuilder()
+				.withSilence(true)
+				.withModules(
+								new XMLModulesBuilder()
+								.withEnvParams(properties)
+								.withXmlFileNames(relativeRootClass, managersXmlFileName)
+								.build()
+							)
 				.build();
-		Home.start(componentSpaceConfig);
+		// Initialisation de l'état de l'application
+		app = new App(appConfig);	
 		started = true;
 	}
 
@@ -122,7 +132,7 @@ public final class Starter implements Runnable {
 	 */
 	public final void stop() {
 		if (started) {
-			Home.stop();
+			app.close();
 			started = false;
 		}
 	}

@@ -78,11 +78,16 @@ public final class KProcess {
 	 */
 	public static final Pattern NAME_REGEX = Pattern.compile("[a-z][a-zA-Z]*");
 
+	public static final Pattern MEASURE_REGEX = Pattern.compile("[a-z][a-zA-Z]*");
+
+	public static final Pattern CATEGORY_REGEX = Pattern.compile("[^\\\\]+");
+
+	
 	private final String appName;
 	private final String type; //ex : sql, page....
 
 	private final String[] categoryTerms; //what ex : search/countries
-	private final String location; //where ex : serverXXX
+	private final String[] location; //where ex : serverXXX
 
 	private final Date startDate; //when
 
@@ -102,7 +107,7 @@ public final class KProcess {
 	 */
 	KProcess(final String appName, final String type,
 			final String[] categoryTerms,
-			final String location,
+			final String[] location,
 			final Date startDate,
 			final Map<String, Double> measures,
 			final Map<String, Set<String>> metaDatas,
@@ -123,18 +128,18 @@ public final class KProcess {
 			throw new IllegalArgumentException("process type " + type + " must match regex :" + NAME_REGEX);
 		}
 		for (final String categoryTerm : categoryTerms) {
-			if (!NAME_REGEX.matcher(categoryTerm).matches()) {
-				throw new IllegalArgumentException("category " + categoryTerm + " must match regex :" + NAME_REGEX);
+			if (!CATEGORY_REGEX.matcher(categoryTerm).matches()) {
+				throw new IllegalArgumentException("category " + categoryTerm + " must match regex :" + CATEGORY_REGEX);
 			}
 		}
 		for (final String measureName : measures.keySet()) {
-			if (!NAME_REGEX.matcher(measureName).matches()) {
-				throw new IllegalArgumentException("measure " + measureName + " must match regex :" + NAME_REGEX);
+			if (!MEASURE_REGEX.matcher(measureName).matches()) {
+				throw new IllegalArgumentException("measure " + measureName + " must match regex :" + MEASURE_REGEX);
 			}
 		}
 		for (final String metaDataName : metaDatas.keySet()) {
-			if (!NAME_REGEX.matcher(metaDataName).matches()) {
-				throw new IllegalArgumentException("metadata " + metaDataName + " must match regex :" + NAME_REGEX);
+			if (!MEASURE_REGEX.matcher(metaDataName).matches()) {
+				throw new IllegalArgumentException("metadata " + metaDataName + " must match regex :" + MEASURE_REGEX);
 			}
 		}
 		if (!measures.containsKey(DURATION)) {
@@ -149,8 +154,8 @@ public final class KProcess {
 		this.categoryTerms = categoryTerms;
 		this.location = location;
 		this.startDate = startDate;
-		this.measures = Collections.unmodifiableMap(new HashMap<>(measures));
-		this.metaDatas = Collections.unmodifiableMap(new HashMap<>(metaDatas));
+		this.measures = Collections.unmodifiableMap(new HashMap<String, Double>(measures));
+		this.metaDatas = Collections.unmodifiableMap(new HashMap<String, Set<String>>(metaDatas));
 		this.subProcesses = subProcesses;
 	}
 
@@ -194,7 +199,7 @@ public final class KProcess {
 	 * [where]
 	 * @return location
 	 */
-	public String getLocation() {
+	public String[] getLocation() {
 		return location;
 	}
 

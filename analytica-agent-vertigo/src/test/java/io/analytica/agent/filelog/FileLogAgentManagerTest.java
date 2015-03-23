@@ -19,7 +19,7 @@ package io.analytica.agent.filelog;
 
 import io.analytica.AbstractVertigoStartTestCaseJU4;
 import io.analytica.agent.AgentManager;
-import io.vertigo.kernel.lang.Assertion;
+import io.vertigo.lang.Assertion;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

@@ -30,12 +30,14 @@
 package io.analytica;
 
 import io.analytica.api.KProcess;
+import io.analytica.api.KProcessBuilder;
 
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -88,14 +90,14 @@ public final class KProcessJsonCodec {
 		}.getType();
 		private static final Type MAP_STRING_DOUBLE_TYPE = new TypeToken<Map<String, Double>>() { //empty
 		}.getType();
-		private static final Type MAP_STRING_STRING_TYPE = new TypeToken<Map<String, String>>() { //empty
+		private static final Type MAP_STRING_SET_STRING_TYPE = new TypeToken<Map<String, Set<String>>>() { //empty
 		}.getType();
 		private static final String[] EMPTY_STRING_ARRAY = new String[0];
 
 		/** {@inheritDoc} */
 		public KProcess deserialize(final JsonElement json, final Type typeOfT, final JsonDeserializationContext context) throws JsonParseException {
 			//{"type":"COMMANDE","subTypes":["5 Commandes"],"startDate":"Mar 12, 2014 2:37:48 PM",
-			// "measures":{"sub-duration":3.0,"duration":4.0},"metaDatas":{},"subProcesses":[]}
+			// "measures":{"sub-duration":3.0,"HMDURATION":4.0},"metaDatas":{},"subProcesses":[]}
 			final JsonObject jsonObject = json.getAsJsonObject();
 
 			final JsonPrimitive jsonAppName = jsonObject.getAsJsonPrimitive("appName");
@@ -105,8 +107,8 @@ public final class KProcessJsonCodec {
 			final JsonPrimitive jsonType = jsonObject.getAsJsonPrimitive("type");
 			final String type = jsonType.getAsString();
 
-			final JsonArray jsonSubTypes = jsonObject.getAsJsonArray("subTypes");
-			final String[] subTypes = deserialize(context, jsonSubTypes, String[].class, EMPTY_STRING_ARRAY);
+			final JsonArray jsonCategoryTerms = jsonObject.getAsJsonArray("categoryTerms");
+			final String[] categoryTerms = deserialize(context, jsonCategoryTerms, String[].class, EMPTY_STRING_ARRAY);
 
 			final JsonPrimitive jsonStartDate = jsonObject.getAsJsonPrimitive("startDate");
 			final Date startDate = context.deserialize(jsonStartDate, Date.class);
@@ -114,13 +116,30 @@ public final class KProcessJsonCodec {
 			final JsonObject jsonMeasures = jsonObject.getAsJsonObject("measures");
 			final Map<String, Double> measures = deserialize(context, jsonMeasures, MAP_STRING_DOUBLE_TYPE, Collections.<String, Double> emptyMap());
 
+			final double durationMs = measures.get(KProcess.DURATION);
+			
 			final JsonObject jsonMetaDatas = jsonObject.getAsJsonObject("metaDatas");
-			final Map<String, String> metaDatas = deserialize(context, jsonMetaDatas, MAP_STRING_STRING_TYPE, Collections.<String, String> emptyMap());
+			final Map<String, Set<String>> metaDatas = deserialize(context, jsonMetaDatas, MAP_STRING_SET_STRING_TYPE, Collections.<String, Set<String>> emptyMap());
 
 			final JsonArray jsonSubProcesses = jsonObject.getAsJsonArray("subProcesses");
 			final List<KProcess> processes = deserialize(context, jsonSubProcesses, LIST_PROCESS_TYPE, Collections.<KProcess> emptyList());
-
-			return new KProcess(appName, type, subTypes, startDate, measures, metaDatas, processes);
+			
+			
+			KProcessBuilder builder = new KProcessBuilder(appName, type, startDate, durationMs);
+			
+			for (KProcess kProcess : processes) {
+				builder.addSubProcess(kProcess);
+			}
+			
+			for (Map.Entry<String, Double> measure : measures.entrySet()) {
+				builder.setMeasure(measure.getKey(), measure.getValue());
+			}
+			for (Map.Entry<String, Set<String>> metaData : metaDatas.entrySet()) {
+				builder.withMetaData(metaData.getKey(),metaData.getValue() );
+			}			
+			
+			builder.withCategory(categoryTerms);
+			return builder.build();
 		}
 
 		private static <O> O deserialize(final JsonDeserializationContext context, final JsonElement jsonElement, final Type typeOf, final O defaultValue) {

@@ -18,8 +18,8 @@
 package io.analytica.spies.impl.facade;
 
 import io.analytica.agent.AgentManager;
-import io.vertigo.kernel.lang.Assertion;
-import io.vertigo.kernel.util.ClassUtil;
+import io.vertigo.lang.Assertion;
+import io.vertigo.util.ClassUtil;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;

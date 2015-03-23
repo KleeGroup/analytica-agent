@@ -18,7 +18,7 @@
 package io.analytica.spies.impl.facade;
 
 import io.analytica.agent.AgentManager;
-import io.vertigo.kernel.lang.Assertion;
+import io.vertigo.lang.Assertion;
 
 import javax.inject.Inject;
 

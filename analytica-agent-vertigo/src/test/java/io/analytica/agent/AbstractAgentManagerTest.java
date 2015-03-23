@@ -18,7 +18,7 @@
 package io.analytica.agent;
 
 import io.analytica.AbstractVertigoStartTestCaseJU4;
-import io.vertigo.kernel.lang.Assertion;
+import io.vertigo.lang.Assertion;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;

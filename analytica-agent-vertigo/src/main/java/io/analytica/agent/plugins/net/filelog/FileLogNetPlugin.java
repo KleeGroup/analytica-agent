@@ -20,7 +20,7 @@ package io.analytica.agent.plugins.net.filelog;
 import io.analytica.agent.impl.net.FileLogConnector;
 import io.analytica.agent.plugins.net.NetPlugin;
 import io.analytica.api.KProcess;
-import io.vertigo.kernel.lang.Activeable;
+import io.vertigo.lang.Activeable;
 
 import javax.inject.Inject;
 import javax.inject.Named;

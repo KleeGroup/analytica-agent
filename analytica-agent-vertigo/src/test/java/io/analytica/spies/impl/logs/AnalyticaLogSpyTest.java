@@ -65,7 +65,7 @@ public final class AnalyticaLogSpyTest extends AbstractVertigoStartTestCaseJU4 {
 		logSpyReader.start();
 
 		flushAgentToServer();
-		checkMetricCount("duration", 7350, "REQUETE");
+		checkMetricCount("HMDURATION", 7350, "REQUETE");
 	}
 
 	@Test
@@ -75,7 +75,7 @@ public final class AnalyticaLogSpyTest extends AbstractVertigoStartTestCaseJU4 {
 
 		flushAgentToServer();
 		//final Date date = new SimpleDateFormat("ddMMyyyy").parse("30052013");
-		//checkMetricCount(date, "duration", 7350, "REQUETE");
+		//checkMetricCount(date, "HMDURATION", 7350, "REQUETE");
 	}
 
 	@Test
@@ -85,7 +85,7 @@ public final class AnalyticaLogSpyTest extends AbstractVertigoStartTestCaseJU4 {
 
 		flushAgentToServer();
 		//final Date date = new SimpleDateFormat("ddMMyyyy").parse("30052013");
-		//checkMetricCount(date, "duration", 7350, "REQUETE");
+		//checkMetricCount(date, "HMDURATION", 7350, "REQUETE");
 	}
 
 	@Test
@@ -94,7 +94,7 @@ public final class AnalyticaLogSpyTest extends AbstractVertigoStartTestCaseJU4 {
 		logSpyReader.start();
 
 		flushAgentToServer();
-		checkMetricCount("duration", 518, "REQUETE");
+		checkMetricCount("HMDURATION", 518, "REQUETE");
 	}
 
 	@Test
@@ -103,7 +103,7 @@ public final class AnalyticaLogSpyTest extends AbstractVertigoStartTestCaseJU4 {
 		logSpyReader.start();
 
 		flushAgentToServer();
-		checkMetricCount("duration", 518, "REQUETE");
+		checkMetricCount("HMDURATION", 518, "REQUETE");
 	}
 
 	@Test
@@ -113,7 +113,7 @@ public final class AnalyticaLogSpyTest extends AbstractVertigoStartTestCaseJU4 {
 		logSpyReader.start();
 
 		flushAgentToServer();
-		checkMetricCount("duration", 510, "REQUETE");
+		checkMetricCount("HMDURATION", 510, "REQUETE");
 	}
 
 	@Test

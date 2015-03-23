@@ -18,7 +18,7 @@
 package io.analytica.spies.impl.junitrules;
 
 import io.analytica.agent.AgentManager;
-import io.vertigo.kernel.Home;
+import io.vertigo.core.Home;
 
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;

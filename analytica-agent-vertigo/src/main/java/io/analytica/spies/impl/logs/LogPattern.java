@@ -34,7 +34,7 @@ final class LogPattern {
 	private final int indexDate;
 	private final int indexThreadName;
 	private final int indexType;
-	private final int indexSubType;
+	private final int indexCategoryTerms;
 	private final int indexTime;
 	private final boolean processRoot;
 	private final boolean cleanStack;
@@ -55,7 +55,7 @@ final class LogPattern {
 	 * @param processRoot Si correspond à une racine de process : généra un process contenant les log encapsulés
 	 * @param cleanStack Si correspond à event réinitialisant les process débutés (ex : reboot serveur)
 	 */
-	public LogPattern(final String code, final String patternRegExp, final boolean error, final int indexProcessesJson, final int indexDate, final int indexThreadName, final int indexType, final int indexSubType, final int indexTime, final boolean processRoot, final boolean cleanStack) {
+	public LogPattern(final String code, final String patternRegExp, final boolean error, final int indexProcessesJson, final int indexDate, final int indexThreadName, final int indexType, final int indexCategoryTerms, final int indexTime, final boolean processRoot, final boolean cleanStack) {
 		this.code = code;
 		this.patternRegExp = patternRegExp;
 		this.error = error;
@@ -64,7 +64,7 @@ final class LogPattern {
 		this.indexDate = indexDate;
 		this.indexThreadName = indexThreadName;
 		this.indexType = indexType;
-		this.indexSubType = indexSubType;
+		this.indexCategoryTerms = indexCategoryTerms;
 		/** TODO : un tableau ? */
 		this.indexTime = indexTime;
 		this.processRoot = processRoot;
@@ -141,8 +141,8 @@ final class LogPattern {
 	/**
 	 * @return Index du sous type dans la regexp (-1 si pas utilisé)
 	 */
-	public int getIndexSubType() {
-		return indexSubType;
+	public int getIndexCategoryTerms() {
+		return indexCategoryTerms;
 	}
 
 	/**
