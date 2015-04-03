@@ -191,6 +191,7 @@ public final class FileLogAgentManagerTest extends AbstractVertigoStartTestCaseJ
 			this.nbArticles = nbArticles;
 		}
 
+		@Override
 		public void run() {
 			doOneCommande(numCommande, nbArticles);
 			System.out.println("Finish commande n°" + numCommande);

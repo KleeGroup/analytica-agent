@@ -283,6 +283,7 @@ public final class LogSpyReader implements Activeable {
 	}
 
 	/** {@inheritDoc} */
+	@Override
 	public void start() {
 		try {
 			//on lit le fichier

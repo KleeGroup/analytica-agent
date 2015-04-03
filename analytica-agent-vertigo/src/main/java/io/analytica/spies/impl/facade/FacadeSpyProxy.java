@@ -62,6 +62,7 @@ public final class FacadeSpyProxy implements InvocationHandler {
 	}
 
 	/** {@inheritDoc} */
+	@Override
 	public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
 		agentManager.startProcess(facadeType, facadeName, method.getName());
 		try {

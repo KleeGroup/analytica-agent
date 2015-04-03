@@ -191,6 +191,7 @@ public abstract class AbstractAgentManagerTest extends AbstractVertigoStartTestC
 			this.nbArticles = nbArticles;
 		}
 
+		@Override
 		public void run() {
 			doOneCommande(numCommande, nbArticles);
 			System.out.println("Finish commande n°" + numCommande);

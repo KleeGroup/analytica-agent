@@ -18,7 +18,6 @@
 package io.analytica.agent;
 
 import io.vertigo.boot.xml.XMLModulesBuilder;
-import io.vertigo.core.Home;
 import io.vertigo.core.Home.App;
 import io.vertigo.core.config.AppConfig;
 import io.vertigo.core.config.AppConfigBuilder;
@@ -36,7 +35,6 @@ import java.util.Properties;
  * @author pchretien, npiedeloup
  */
 public final class Starter implements Runnable {
-	private static boolean SILENCE = true;
 	private final Class<?> relativeRootClass;
 	private final String managersXmlFileName;
 	private final Option<String> propertiesFileName;
@@ -83,6 +81,7 @@ public final class Starter implements Runnable {
 	}
 
 	/** {@inheritDoc} */
+	@Override
 	public void run() {
 		try {
 			start();
@@ -106,7 +105,8 @@ public final class Starter implements Runnable {
 	public final void start() {
 		// Création de l'état de l'application
 		// Initialisation de l'état de l'application
-		final URL xmlURL = createURL(managersXmlFileName, relativeRootClass);
+		//TODO verifier pourquoi xmlURL n'est pas utilisé
+		//final URL xmlURL = createURL(managersXmlFileName, relativeRootClass);
 		final Properties properties = new Properties();
 		if (defaultProperties.isDefined()) {
 			properties.putAll(defaultProperties.get());

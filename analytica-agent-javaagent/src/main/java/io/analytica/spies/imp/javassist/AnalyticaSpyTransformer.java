@@ -113,6 +113,7 @@ final class AnalyticaSpyTransformer implements ClassFileTransformer {
 	}
 
 	/** {@inheritDoc} */
+	@Override
 	public byte[] transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain, final byte[] classfileBuffer) throws IllegalClassFormatException {
 		try {
 			final String adaptedclassName = className.replace('/', '.');

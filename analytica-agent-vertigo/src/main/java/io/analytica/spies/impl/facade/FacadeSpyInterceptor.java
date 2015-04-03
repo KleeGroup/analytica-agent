@@ -49,6 +49,7 @@ public class FacadeSpyInterceptor implements MethodInterceptor {
 	}
 
 	/** {@inheritDoc} */
+	@Override
 	public Object invoke(final MethodInvocation invocation) throws Throwable {
 		agentManager.startProcess(PT_FACADE, invocation.getThis().getClass().getSimpleName(), invocation.getMethod().getName());
 		try {

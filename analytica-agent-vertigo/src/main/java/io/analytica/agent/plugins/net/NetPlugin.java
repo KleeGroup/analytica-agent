@@ -34,5 +34,6 @@ public interface NetPlugin extends Plugin, KProcessConnector {
 	 * Cet ajout peut-être multi-threadé.
 	 * @param process Process à ajouter
 	 */
+	@Override
 	void add(KProcess process);
 }

@@ -46,16 +46,19 @@ public final class DirectNetPlugin implements NetPlugin {
 	}
 
 	/** {@inheritDoc} */
+	@Override
 	public void add(final KProcess process) {
 		serverManager.push(process);
 	}
 
 	/** {@inheritDoc} */
+	@Override
 	public void start() {
 		//rien
 	}
 
 	/** {@inheritDoc} */
+	@Override
 	public void stop() {
 		//rien
 	}

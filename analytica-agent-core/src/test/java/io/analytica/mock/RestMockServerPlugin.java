@@ -63,6 +63,6 @@ public final class RestMockServerPlugin {
 	@Path("/version")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String getVersion() {
-		return "1.0.0";
+		return "1.3.0";
 	}
 }

@@ -42,16 +42,19 @@ public final class FileLogNetPlugin implements NetPlugin, Activeable {
 	}
 
 	/** {@inheritDoc} */
+	@Override
 	public void add(final KProcess process) {
 		fileLogConnector.add(process);
 	}
 
 	/** {@inheritDoc} */
+	@Override
 	public void start() {
 		fileLogConnector.start();
 	}
 
 	/** {@inheritDoc} */
+	@Override
 	public void stop() {
 		fileLogConnector.stop();
 	}

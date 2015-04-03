@@ -43,26 +43,31 @@ public final class AnalyticaAgentPlugin implements AnalyticsAgentPlugin {
 	}
 
 	/** {@inheritDoc} */
+	@Override
 	public void startProcess(final String processType, final String processName) {
 		analyticaManager.startProcess(processType, processName);
 	}
 
 	/** {@inheritDoc} */
+	@Override
 	public void incMeasure(final String measureType, final double value) {
 		analyticaManager.incMeasure(measureType, value);
 	}
 
 	/** {@inheritDoc} */
+	@Override
 	public void setMeasure(final String measureType, final double value) {
 		analyticaManager.setMeasure(measureType, value);
 	}
 
 	/** {@inheritDoc} */
+	@Override
 	public void addMetaData(final String metaDataName, final String value) {
 		analyticaManager.addMetaData(metaDataName, value);
 	}
 
 	/** {@inheritDoc} */
+	@Override
 	public void stopProcess() {
 		analyticaManager.stopProcess();
 	}

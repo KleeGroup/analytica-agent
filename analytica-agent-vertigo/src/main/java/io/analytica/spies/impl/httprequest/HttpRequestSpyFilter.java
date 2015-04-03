@@ -57,11 +57,13 @@ public final class HttpRequestSpyFilter implements Filter {
 	private final Logger generalLog = Logger.getRootLogger();
 
 	/** {@inheritDoc} */
+	@Override
 	public void init(final FilterConfig filterConfig) {
 		//rien
 	}
 
 	/** {@inheritDoc} */
+	@Override
 	public void destroy() {
 		// Rien de spécial
 	}
@@ -84,6 +86,7 @@ public final class HttpRequestSpyFilter implements Filter {
 	 * @throws java.io.IOException Si une erreur d'entrée/sortie survient
 	 * @throws javax.servlet.ServletException Si une erreur de servlet survient
 	 */
+	@Override
 	public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain chain) throws IOException, ServletException {
 		if (request instanceof HttpServletRequest && response instanceof HttpServletResponse) {
 			filter((HttpServletRequest) request, (HttpServletResponse) response, chain);

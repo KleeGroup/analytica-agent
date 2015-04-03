@@ -51,31 +51,37 @@ public final class AgentManagerImpl implements AgentManager {
 	}
 
 	/** {@inheritDoc} */
+	@Override
 	public void startProcess(final String type, final String... names) {
 		processCollector.startProcess(type, names);
 	}
 
 	/** {@inheritDoc} */
+	@Override
 	public void incMeasure(final String measureType, final double value) {
 		processCollector.incMeasure(measureType, value);
 	}
 
 	/** {@inheritDoc} */
+	@Override
 	public void setMeasure(final String measureType, final double value) {
 		processCollector.setMeasure(measureType, value);
 	}
 
 	/** {@inheritDoc} */
+	@Override
 	public void addMetaData(final String metaDataName, final String value) {
 		processCollector.addMetaData(metaDataName, value);
 	}
 
 	/** {@inheritDoc} */
+	@Override
 	public void stopProcess() {
 		processCollector.stopProcess();
 	}
 
 	/** {@inheritDoc} */
+	@Override
 	public void add(final KProcess process) {
 		processCollector.  add(process);
 	}

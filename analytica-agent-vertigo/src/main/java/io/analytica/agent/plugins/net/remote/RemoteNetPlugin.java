@@ -43,16 +43,19 @@ public final class RemoteNetPlugin implements NetPlugin, Activeable {
 	}
 
 	/** {@inheritDoc} */
+	@Override
 	public void add(final KProcess process) {
 		remoteConnector.add(process);
 	}
 
 	/** {@inheritDoc} */
+	@Override
 	public void start() {
 		remoteConnector.start();
 	}
 
 	/** {@inheritDoc} */
+	@Override
 	public void stop() {
 		remoteConnector.stop();
 	}

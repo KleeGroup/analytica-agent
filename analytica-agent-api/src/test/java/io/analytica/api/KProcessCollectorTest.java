@@ -36,6 +36,7 @@ public final class KProcessCollectorTest {
 	private static KProcessCollector createProcessCollector(final boolean containsSubProcess) {
 		String [] location = {"myServer"};
 		return new KProcessCollector("myPrettyApp",location , new KProcessConnector() {
+			@Override
 			public void add(final KProcess process) {
 				checkProcess(process);
 				if (containsSubProcess) {
