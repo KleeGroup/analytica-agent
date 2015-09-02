@@ -45,7 +45,6 @@ public final class TestAnalyse2 implements InterfaceTestAnalyse {
 		}
 	}
 
-	@Override
 	public void workInterface() {
 		try {
 			Thread.sleep(1000);

@@ -59,7 +59,6 @@ public final class RegExpMatcher implements Matcher<String> {
 	}
 
 	/** {@inheritDoc}*/
-	@Override
 	public boolean isMatch(final String inputString) {
 		//Assertion.notNull(inputString);
 		//---------------------------------------------------------------------

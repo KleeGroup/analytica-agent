@@ -87,7 +87,6 @@ public final class RemoteConnector implements KProcessConnector {
 	}
 
 	/** {@inheritDoc} */
-	@Override
 	public void add(final KProcess process) {
 		processQueue.add(process);
 		//		if (processQueue.size() >= sendPaquetSize) {
@@ -99,7 +98,6 @@ public final class RemoteConnector implements KProcessConnector {
 	}
 
 	/** {@inheritDoc} */
-	@Override
 	public void start() {
 		locatorClient = Client.create();
 		locatorClient.addFilter(new com.sun.jersey.api.client.filter.GZIPContentEncodingFilter());
@@ -124,7 +122,6 @@ public final class RemoteConnector implements KProcessConnector {
 	}
 
 	/** {@inheritDoc} */
-	@Override
 	public void stop() {
 		logger.info("Stopping Analytica RemoteNetPlugin");
 		processSenderThread.interrupt();

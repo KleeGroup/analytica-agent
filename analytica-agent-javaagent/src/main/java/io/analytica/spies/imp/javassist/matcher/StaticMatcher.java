@@ -48,7 +48,6 @@ public final class StaticMatcher<O> implements Matcher<O> {
 	}
 
 	/** {@inheritDoc}*/
-	@Override
 	public boolean isMatch(final O inputString) {
 		return result;
 	}

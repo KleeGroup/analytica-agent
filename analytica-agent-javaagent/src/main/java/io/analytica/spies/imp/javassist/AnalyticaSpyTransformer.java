@@ -113,7 +113,6 @@ final class AnalyticaSpyTransformer implements ClassFileTransformer {
 	}
 
 	/** {@inheritDoc} */
-	@Override
 	public byte[] transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain, final byte[] classfileBuffer) throws IllegalClassFormatException {
 		try {
 			final String adaptedclassName = className.replace('/', '.');
@@ -243,14 +242,13 @@ final class AnalyticaSpyTransformer implements ClassFileTransformer {
 					//cl.addField(agentManagerField);
 
 					final CtBehavior[] methods = ctClass.getDeclaredBehaviors();
-					for (int i = 0; i < methods.length; i++) {
-						final CtBehavior method = methods[i];
+					for (final CtBehavior method : methods) {
 						if (method.isEmpty() == false && methodMatcher.isMatch(method)) {
 							if (isAttributsAccepted(hookPoint.getMethodTypes(), method)) {
 								try {
 									instrumentMethod(method, hookPoint);
 								} catch (final Exception e) {
-									System.err.println("Can't instrument " + adaptedclassName + "." + methods[i].getName() + ",  exception " + e.getClass().getName() + " : " + e.getMessage());
+									System.err.println("Can't instrument " + adaptedclassName + "." + method.getName() + ",  exception " + e.getClass().getName() + " : " + e.getMessage());
 									e.printStackTrace();
 									throw new RuntimeException(e);
 								}

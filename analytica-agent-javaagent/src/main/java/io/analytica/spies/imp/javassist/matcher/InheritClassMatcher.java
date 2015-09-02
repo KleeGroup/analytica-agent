@@ -55,7 +55,6 @@ public final class InheritClassMatcher implements Matcher<CtClass> {
 	}
 
 	/** {@inheritDoc}*/
-	@Override
 	public boolean isMatch(final CtClass input) {
 		//Assertion.notNull(input);
 		try {

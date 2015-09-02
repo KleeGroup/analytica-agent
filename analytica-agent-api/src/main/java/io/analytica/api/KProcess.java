@@ -82,7 +82,6 @@ public final class KProcess {
 
 	public static final Pattern CATEGORY_REGEX = Pattern.compile("[^\\\\]+");
 
-	
 	private final String appName;
 	private final String type; //ex : sql, page....
 
@@ -154,8 +153,8 @@ public final class KProcess {
 		this.categoryTerms = categoryTerms;
 		this.location = location;
 		this.startDate = startDate;
-		this.measures = Collections.unmodifiableMap(new HashMap<String, Double>(measures));
-		this.metaDatas = Collections.unmodifiableMap(new HashMap<String, Set<String>>(metaDatas));
+		this.measures = Collections.unmodifiableMap(new HashMap<>(measures));
+		this.metaDatas = Collections.unmodifiableMap(new HashMap<>(metaDatas));
 		this.subProcesses = subProcesses;
 	}
 

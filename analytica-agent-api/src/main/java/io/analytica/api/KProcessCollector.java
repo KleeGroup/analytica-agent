@@ -42,7 +42,7 @@ import java.util.Stack;
 public final class KProcessCollector {
 	private final KProcessConnector processConnector;
 	private final String appName;
-	private final String [] location;
+	private final String[] location;
 
 	/**
 	 * Constructor.
@@ -63,7 +63,7 @@ public final class KProcessCollector {
 	 * Processus bindé sur le thread courant. Le processus , recoit les notifications des sondes placées dans le code de
 	 * l'application pendant le traitement d'une requête (thread).
 	 */
-	private static final ThreadLocal<Stack<KProcessBuilder>> THREAD_LOCAL_PROCESS = new ThreadLocal<Stack<KProcessBuilder>>();
+	private static final ThreadLocal<Stack<KProcessBuilder>> THREAD_LOCAL_PROCESS = new ThreadLocal<>();
 
 	/**
 	 * Retourne le premier élément de la pile (sans le retirer).
@@ -92,7 +92,7 @@ public final class KProcessCollector {
 	private static void push(final KProcessBuilder processBuilder) {
 		Stack<KProcessBuilder> stack = THREAD_LOCAL_PROCESS.get();
 		if (stack == null) {
-			stack = new Stack<KProcessBuilder>();
+			stack = new Stack<>();
 			THREAD_LOCAL_PROCESS.set(stack);
 		}
 		//---------------------------------------------------------------------
@@ -175,20 +175,20 @@ public final class KProcessCollector {
 		//On n'est pas dans le cas de la racine : conformément au contrat on renvoie null
 		return null;
 	}
-	
-		/**
-		 * Ajout d'un process déjà assemblé par une sonde.
-		 * Cet ajout peut-être multi-threadé.
-		 * @param process Process à ajouter
-		 */
-		public void add(final KProcess process) {
-			if (THREAD_LOCAL_PROCESS.get() != null) {
-				throw new IllegalStateException("A process is already have started. You can't add a new full process tree at this time.");
-			}
-			if (process == null) {
-				throw new NullPointerException("process is required");
-			}
-			//---------------------------------------------------------------------
-			processConnector.add(process);
+
+	/**
+	 * Ajout d'un process déjà assemblé par une sonde.
+	 * Cet ajout peut-être multi-threadé.
+	 * @param process Process à ajouter
+	 */
+	public void add(final KProcess process) {
+		if (THREAD_LOCAL_PROCESS.get() != null) {
+			throw new IllegalStateException("A process is already have started. You can't add a new full process tree at this time.");
 		}
+		if (process == null) {
+			throw new NullPointerException("process is required");
+		}
+		//---------------------------------------------------------------------
+		processConnector.add(process);
+	}
 }

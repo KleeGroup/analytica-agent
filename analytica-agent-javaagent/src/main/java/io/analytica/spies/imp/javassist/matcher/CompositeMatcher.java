@@ -51,7 +51,6 @@ public final class CompositeMatcher<O> implements Matcher<O> {
 	}
 
 	/** {@inheritDoc}*/
-	@Override
 	public boolean isMatch(final O input) {
 		for (final Matcher<O> matcher : matchers) {
 			if (matcher.isMatch(input)) {

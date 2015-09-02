@@ -72,13 +72,11 @@ public final class FileLogConnector implements KProcessConnector {
 	}
 
 	/** {@inheritDoc} */
-	@Override
 	public void add(final KProcess process) {
 		processQueue.add(process);
 	}
 
 	/** {@inheritDoc} */
-	@Override
 	public void start() {
 		processSpoolerThread = new SpoolProcessThread(this);
 		processSpoolerThread.start();
@@ -97,7 +95,6 @@ public final class FileLogConnector implements KProcessConnector {
 	}
 
 	/** {@inheritDoc} */
-	@Override
 	public void stop() {
 		processSpoolerThread.interrupt();
 		try {

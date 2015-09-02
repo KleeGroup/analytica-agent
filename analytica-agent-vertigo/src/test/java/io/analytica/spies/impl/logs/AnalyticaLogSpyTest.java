@@ -19,7 +19,7 @@ package io.analytica.spies.impl.logs;
 
 import io.analytica.AbstractVertigoStartTestCaseJU4;
 import io.analytica.agent.AgentManager;
-import io.vertigo.commons.resource.ResourceManager;
+import io.vertigo.core.resource.ResourceManager;
 
 import java.io.IOException;
 import java.text.ParseException;

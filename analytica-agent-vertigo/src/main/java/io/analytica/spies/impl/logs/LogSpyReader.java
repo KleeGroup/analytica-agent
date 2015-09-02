@@ -22,7 +22,7 @@ import io.analytica.agent.AgentManager;
 import io.analytica.api.KProcess;
 import io.analytica.api.KProcessBuilder;
 import io.analytica.spies.impl.JsonConfReader;
-import io.vertigo.commons.resource.ResourceManager;
+import io.vertigo.core.resource.ResourceManager;
 import io.vertigo.lang.Activeable;
 import io.vertigo.lang.Assertion;
 import io.vertigo.lang.Option;
@@ -175,8 +175,8 @@ public final class LogSpyReader implements Activeable {
 		KProcessBuilder processBuilder;
 		//2 - on dépile les lignes de log
 		for (final LogInfo logInfo : logInfos) {
-			processBuilder = new KProcessBuilder(systemName,logInfo.getType(), logInfo.getStartDateEvent(),logInfo.getTime())
-									.withLocation(systemLocation).withCategory(logInfo.getCategoryTerms());
+			processBuilder = new KProcessBuilder(systemName, logInfo.getType(), logInfo.getStartDateEvent(), logInfo.getTime())
+					.withLocation(systemLocation).withCategory(logInfo.getCategoryTerms());
 			processBuilder.setMeasure(ME_ERROR_PCT, logInfo.getLogPattern().isError() ? 100 : 0);
 			if (stackLogInfo.isEmpty()) {
 				//2a - la premiere ligne crée la racine
@@ -376,7 +376,7 @@ public final class LogSpyReader implements Activeable {
 				final String threadName = logPattern.getIndexThreadName() > 0 ? startMatch.group(logPattern.getIndexThreadName()) : "none";
 				final String type = logPattern.getIndexType() > 0 ? startMatch.group(logPattern.getIndexType()) : logPattern.getCode();
 				// TODO reimplement for an array of categories
-				final String[] categoryTerms ={ logPattern.getIndexCategoryTerms() > 0 ? startMatch.group(logPattern.getIndexCategoryTerms()) : ""};
+				final String[] categoryTerms = { logPattern.getIndexCategoryTerms() > 0 ? startMatch.group(logPattern.getIndexCategoryTerms()) : "" };
 				final String time = logPattern.getIndexTime() > 0 ? startMatch.group(logPattern.getIndexTime()) : null;
 				return Option.some(new LogInfo(readDate(date), threadName, type, categoryTerms, readTime(time), logPattern));
 			}

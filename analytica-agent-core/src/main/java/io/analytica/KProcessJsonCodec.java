@@ -95,7 +95,6 @@ public final class KProcessJsonCodec {
 		private static final String[] EMPTY_STRING_ARRAY = new String[0];
 
 		/** {@inheritDoc} */
-		@Override
 		public KProcess deserialize(final JsonElement json, final Type typeOfT, final JsonDeserializationContext context) throws JsonParseException {
 			//{"type":"COMMANDE","subTypes":["5 Commandes"],"startDate":"Mar 12, 2014 2:37:48 PM",
 			// "measures":{"sub-duration":3.0,"HMDURATION":4.0},"metaDatas":{},"subProcesses":[]}
@@ -118,27 +117,26 @@ public final class KProcessJsonCodec {
 			final Map<String, Double> measures = deserialize(context, jsonMeasures, MAP_STRING_DOUBLE_TYPE, Collections.<String, Double> emptyMap());
 
 			final double durationMs = measures.get(KProcess.DURATION);
-			
+
 			final JsonObject jsonMetaDatas = jsonObject.getAsJsonObject("metaDatas");
 			final Map<String, Set<String>> metaDatas = deserialize(context, jsonMetaDatas, MAP_STRING_SET_STRING_TYPE, Collections.<String, Set<String>> emptyMap());
 
 			final JsonArray jsonSubProcesses = jsonObject.getAsJsonArray("subProcesses");
 			final List<KProcess> processes = deserialize(context, jsonSubProcesses, LIST_PROCESS_TYPE, Collections.<KProcess> emptyList());
-			
-			
-			KProcessBuilder builder = new KProcessBuilder(appName, type, startDate, durationMs);
-			
-			for (KProcess kProcess : processes) {
+
+			final KProcessBuilder builder = new KProcessBuilder(appName, type, startDate, durationMs);
+
+			for (final KProcess kProcess : processes) {
 				builder.addSubProcess(kProcess);
 			}
-			
-			for (Map.Entry<String, Double> measure : measures.entrySet()) {
+
+			for (final Map.Entry<String, Double> measure : measures.entrySet()) {
 				builder.setMeasure(measure.getKey(), measure.getValue());
 			}
-			for (Map.Entry<String, Set<String>> metaData : metaDatas.entrySet()) {
-				builder.withMetaData(metaData.getKey(),metaData.getValue() );
-			}			
-			
+			for (final Map.Entry<String, Set<String>> metaData : metaDatas.entrySet()) {
+				builder.withMetaData(metaData.getKey(), metaData.getValue());
+			}
+
 			builder.withCategory(categoryTerms);
 			return builder.build();
 		}

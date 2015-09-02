@@ -66,8 +66,8 @@ public abstract class AbstractProcessCollectorTest extends AbstractAnalyticaTest
 	protected final void doSetUp() throws Exception {
 		remoteConnector = new RemoteConnector("http://localhost:9998/process", 20, 1);
 		//		processCollector = new KProcessCollector(this.getClass().getSimpleName(), new String[] { "test", InetAddress.getLocalHost().getHostName() }, remoteConnector);
-		String [] location = { "myServer"};
-		processCollector = new KProcessCollector("myPrettyApp",location,remoteConnector);
+		final String[] location = { "myServer" };
+		processCollector = new KProcessCollector("myPrettyApp", location, remoteConnector);
 		remoteConnector.start();
 		afterSetUp();
 	}
@@ -218,7 +218,6 @@ public abstract class AbstractProcessCollectorTest extends AbstractAnalyticaTest
 			this.nbArticles = nbArticles;
 		}
 
-		@Override
 		public void run() {
 			doOneCommande(numCommande, nbArticles);
 			System.out.println("Finish commande n°" + numCommande);

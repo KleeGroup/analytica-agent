@@ -17,8 +17,7 @@
  */
 package io.analytica.agent;
 
-import io.vertigo.boot.xml.XMLModulesBuilder;
-import io.vertigo.core.Home.App;
+import io.vertigo.core.App;
 import io.vertigo.core.config.AppConfig;
 import io.vertigo.core.config.AppConfigBuilder;
 import io.vertigo.lang.Assertion;
@@ -43,7 +42,7 @@ public final class Starter implements Runnable {
 	private boolean started;
 
 	private App app;
-	
+
 	/**
 	 * @param managersXmlFileName Fichier managers.xml
 	 * @param propertiesFileName Fichier de propriétés
@@ -69,7 +68,7 @@ public final class Starter implements Runnable {
 	 * @param args "Usage: java kasper.kernel.Starter managers.xml <conf.properties>"
 	 */
 	public static void main(final String[] args) {
-		final String usageMsg = "Usage: java "+Starter.class.getCanonicalName()+" managers.xml <conf.properties>";
+		final String usageMsg = "Usage: java " + Starter.class.getCanonicalName() + " managers.xml <conf.properties>";
 		Assertion.checkArgument(args.length >= 1 && args.length <= 2, usageMsg + " (" + args.length + ")");
 		Assertion.checkArgument(args[0].endsWith(".xml"), usageMsg + " (" + args[0] + ")");
 		Assertion.checkArgument(args.length == 1 || args[1].endsWith(".properties"), usageMsg + " (" + (args.length == 2 ? args[1] : "vide") + ")");
@@ -112,18 +111,18 @@ public final class Starter implements Runnable {
 			properties.putAll(defaultProperties.get());
 		}
 		appendFileProperties(properties, propertiesFileName, relativeRootClass);
-		
+
 		final AppConfig appConfig = new AppConfigBuilder()
-				.withSilence(true)
+				.beginBoot().silently().endBoot()
 				.withModules(
-								new XMLModulesBuilder()
+						new XMLModulesBuilder()
 								.withEnvParams(properties)
 								.withXmlFileNames(relativeRootClass, managersXmlFileName)
 								.build()
-							)
+				)
 				.build();
 		// Initialisation de l'état de l'application
-		app = new App(appConfig);	
+		app = new App(appConfig);
 		started = true;
 	}
 

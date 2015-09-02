@@ -90,11 +90,11 @@ public final class KProcessBuilder {
 		KProcessUtil.checkNotNull(startDate, "start of process is required");
 		//---
 		this.appName = appName;
-		this.myType = type;
+		myType = type;
 
-		measures = new HashMap<String, Double>();
-		metaDatas = new HashMap<String, Set<String>>();
-		subProcesses = new ArrayList<KProcess>();
+		measures = new HashMap<>();
+		metaDatas = new HashMap<>();
+		subProcesses = new ArrayList<>();
 		this.startDate = startDate;
 		start = startDate.getTime();
 		this.parent = parent;
@@ -103,12 +103,12 @@ public final class KProcessBuilder {
 	}
 
 	public KProcessBuilder withLocation(final String[] location) {
-		this.myLocation = location;
+		myLocation = location;
 		return this;
 	}
 
 	public KProcessBuilder withCategory(final String[] categoryTerms) {
-		this.myCategoryTerms = categoryTerms;
+		myCategoryTerms = categoryTerms;
 		return this;
 	}
 
@@ -152,13 +152,13 @@ public final class KProcessBuilder {
 		//---------------------------------------------------------------------
 		Set<String> set = metaDatas.get(mdName);
 		if (set == null) {
-			set = new HashSet<String>();
+			set = new HashSet<>();
 			metaDatas.put(mdName, set);
 		}
 		set.add(mdValue);
 		return this;
 	}
-	
+
 	/**
 	 * Mise à jour d'une metadonnée.
 	 * @param mdName Nom de la métadonnée
@@ -168,17 +168,17 @@ public final class KProcessBuilder {
 	public KProcessBuilder withMetaData(final String mdName, final Set<String> mdDetails) {
 		KProcessUtil.checkNotNull(mdName, "Metadata name is required");
 		KProcessUtil.ckeckNotEmpty(mdDetails, "Metadata value is required");
-		
+
 		//---------------------------------------------------------------------
 		Set<String> set = metaDatas.get(mdName);
 		if (set == null) {
-			set = new HashSet<String>();
+			set = new HashSet<>();
 			metaDatas.put(mdName, set);
 		}
 		set.addAll(mdDetails);
 		return this;
 	}
-	
+
 	/**
 	 * Ajout d'un sous processus.
 	 * @param subStartDate Date de début
@@ -187,7 +187,7 @@ public final class KProcessBuilder {
 	 * @return Builder
 	 */
 	public KProcessBuilder beginSubProcess(final String type, final Date subStartDate, final double subDurationMs) {
-		return new KProcessBuilder(this.appName, type, this, subStartDate, subDurationMs);
+		return new KProcessBuilder(appName, type, this, subStartDate, subDurationMs);
 	}
 
 	/**
