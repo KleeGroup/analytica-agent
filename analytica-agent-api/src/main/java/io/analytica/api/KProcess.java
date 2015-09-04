@@ -29,13 +29,14 @@
  */
 package io.analytica.api;
 
-import java.util.Arrays;
+import static io.analytica.api.KProcessUtil.checkNotNull;
+import static io.analytica.api.KProcessUtil.ckeckRegex;
+
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
@@ -72,85 +73,74 @@ public final class KProcess {
 	/**
 	 * Mesure de type durée.
 	 */
-	public static final String SUB_DURATION = "subDuration";
+	public static final String SUB_DURATION = "sub-duration";
 	/**
 	 * REGEX décrivant les règles sur les noms (type de process, mesures et metadata, . (exemples : sql, mail, services)
 	 */
-	public static final Pattern NAME_REGEX = Pattern.compile("[a-z][a-zA-Z]*");
-
-	public static final Pattern MEASURE_REGEX = Pattern.compile("[a-z][a-zA-Z]*");
-
-	public static final Pattern CATEGORY_REGEX = Pattern.compile("[^\\\\]+");
+	public static final Pattern APP_NAME_REGEX = Pattern.compile("[a-z][a-zA-Z-]*");
+	public static final Pattern PROCESS_TYPE_REGEX = Pattern.compile("[a-z][a-zA-Z-]*");
+	public static final Pattern MEASURE_REGEX = Pattern.compile("[a-z][a-zA-Z-]*");
+	public static final Pattern METADATA_REGEX = Pattern.compile("[a-z][a-zA-Z-]*");
+	public static final Pattern CATEGORY_REGEX = Pattern.compile("[a-z][a-z//-]*");
+	public static final Pattern LOCATION_REGEX = Pattern.compile("[a-z][a-z//-]*");
 
 	private final String appName;
 	private final String type; //ex : sql, page....
 
-	private final String[] categoryTerms; //what ex : search/countries
-	private final String[] location; //where ex : serverXXX
+	private final String category; //what ex : accounts/search
+	private final String location; //where ex : fr/idf
 
 	private final Date startDate; //when
 
 	private final Map<String, Double> measures;
-	private final Map<String, Set<String>> metaDatas;
+	private final Map<String, String> metaDatas;
 	private final List<KProcess> subProcesses;
 
 	/**
-	 * Le constructeur est package car il faut passer par le builder.
 	 * @param appName Nom de l'application
 	 * @param type Type du processus
-	 * @param categoryTerms Category
+	 * @param category  Category
 	 * @param startDate Date du processus
 	 * @param measures Mesures du processus
 	 * @param metaDatas Metadonnées du processus
 	 * @param subProcesses Liste des sous processus
 	 */
 	KProcess(final String appName, final String type,
-			final String[] categoryTerms,
-			final String[] location,
+			final String category,
+			final String location,
 			final Date startDate,
 			final Map<String, Double> measures,
-			final Map<String, Set<String>> metaDatas,
+			final Map<String, String> metaDatas,
 			final List<KProcess> subProcesses) {
-		KProcessUtil.checkNotNull(appName, "appName is required");
-		KProcessUtil.checkNotNull(type, "type of process is required");
-		//		checkNotNull(categories, "categories of process are required");
-		//		checkNotNull(location, "location of process is required");
-		KProcessUtil.checkNotNull(startDate, "startDate is required");
-		KProcessUtil.checkNotNull(measures, "measures are required");
-		KProcessUtil.checkNotNull(metaDatas, "metaDatas are required");
-		KProcessUtil.checkNotNull(subProcesses, "subProcesses are required");
+		checkNotNull(appName, "appName is required");
+		checkNotNull(type, "type of process is required");
+		checkNotNull(category, "category of process is required");
+		checkNotNull(location, "location of process is required");
+		checkNotNull(startDate, "startDate is required");
+		checkNotNull(measures, "measures are required");
+		checkNotNull(metaDatas, "metaDatas are required");
+		checkNotNull(subProcesses, "subProcesses are required");
 		//---
-		if (!NAME_REGEX.matcher(appName).matches()) {
-			throw new IllegalArgumentException("appName " + appName + " must match regex :" + NAME_REGEX);
-		}
-		if (!NAME_REGEX.matcher(type).matches()) {
-			throw new IllegalArgumentException("process type " + type + " must match regex :" + NAME_REGEX);
-		}
-		for (final String categoryTerm : categoryTerms) {
-			if (!CATEGORY_REGEX.matcher(categoryTerm).matches()) {
-				throw new IllegalArgumentException("category " + categoryTerm + " must match regex :" + CATEGORY_REGEX);
-			}
-		}
+		ckeckRegex(appName, APP_NAME_REGEX, "appName");
+		ckeckRegex(type, PROCESS_TYPE_REGEX, "process type");
+		ckeckRegex(type, CATEGORY_REGEX, "category");
+		ckeckRegex(type, LOCATION_REGEX, "location");
 		for (final String measureName : measures.keySet()) {
-			if (!MEASURE_REGEX.matcher(measureName).matches()) {
-				throw new IllegalArgumentException("measure " + measureName + " must match regex :" + MEASURE_REGEX);
-			}
+			ckeckRegex(measureName, MEASURE_REGEX, "metadata name");
 		}
 		for (final String metaDataName : metaDatas.keySet()) {
-			if (!MEASURE_REGEX.matcher(metaDataName).matches()) {
-				throw new IllegalArgumentException("metadata " + metaDataName + " must match regex :" + MEASURE_REGEX);
-			}
+			ckeckRegex(metaDataName, METADATA_REGEX, "metadata name");
 		}
 		if (!measures.containsKey(DURATION)) {
 			throw new IllegalArgumentException("measures must contain DURATION");
 		}
 		if (measures.containsKey(SUB_DURATION) && measures.get(SUB_DURATION) > measures.get(DURATION)) {
-			throw new IllegalArgumentException("measures SUB-DURATION must be lower than DURATION (duration:" + measures.get(DURATION) + " < sub-duration:" + measures.get(SUB_DURATION) + ") in " + type + " : " + Arrays.asList(categoryTerms) + " at " + startDate);
+			throw new IllegalArgumentException("measures SUB-DURATION must be lower than DURATION (duration:" + measures.get(DURATION) + " < sub-duration:" + measures.get(SUB_DURATION) + ") in process type " + type + ", category  : " + category + " at " + startDate);
 		}
 		//---------------------------------------------------------------------
 		this.appName = appName;
 		this.type = type;
-		this.categoryTerms = categoryTerms;
+		this.category = category;
 		this.location = location;
 		this.startDate = startDate;
 		this.measures = Collections.unmodifiableMap(new HashMap<>(measures));
@@ -176,8 +166,8 @@ public final class KProcess {
 	 * [what]
 	 * @return Category
 	 */
-	public String[] getCategoryTerms() {
-		return categoryTerms;
+	public String getCategory() {
+		return category;
 	}
 
 	/**
@@ -198,7 +188,7 @@ public final class KProcess {
 	 * [where]
 	 * @return location
 	 */
-	public String[] getLocation() {
+	public String getLocation() {
 		return location;
 	}
 
@@ -212,7 +202,7 @@ public final class KProcess {
 	/**
 	 * @return Metadonnées du processus
 	 */
-	public Map<String, Set<String>> getMetaDatas() {
+	public Map<String, String> getMetaDatas() {
 		return metaDatas;
 	}
 
@@ -226,6 +216,6 @@ public final class KProcess {
 	/** {@inheritDoc} */
 	@Override
 	public String toString() {
-		return "{appName:" + appName + ",  type:" + type + ", categories :" + Arrays.asList(categoryTerms) + ", location:" + location + "}";
+		return "{appName:" + appName + ",  type:" + type + ", category :" + category + ", location:" + location + "}";
 	}
 }

@@ -29,6 +29,7 @@
  */
 package io.analytica.api;
 
+
 /**
  * Connecteur des process.
  * Les messages sont composés des Processus et envoyés ; un consommateur les traitera.
@@ -43,13 +44,14 @@ public interface KProcessConnector {
 	 * @param process Process à ajouter
 	 */
 	void add(KProcess process);
-	/**
-	 * A appeller lors du lancement du connecteur.
-	 */
-	void start();
 
-	/**
-	 * A appeller lors de l'arret du connecteur.
-	 */
-	void stop();
+	//	/**
+	//	 * A appeller lors du lancement du connecteur.
+	//	 */
+	//	void start();
+	//
+	//	/**
+	//	 * A appeller lors de l'arret du connecteur.
+	//	 */
+	//	void stop();
 }

@@ -32,10 +32,8 @@ package io.analytica.api;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Builder permettant de contruire un processus.
@@ -51,14 +49,14 @@ public final class KProcessBuilder {
 	private final String myType;
 	private final Date startDate;
 
-	private String[] myLocation;
-	private String[] myCategoryTerms = new String[0];
+	private String myLocation;
+	private String myCategory;
 
 	//Tableau des mesures identifiées par leur nom.
 	private final Map<String, Double> measures;
 
 	//Tableau des métadonnées identifiées par leur nom.
-	private final Map<String, Set<String>> metaDatas;
+	private final Map<String, String> metaDatas;
 
 	private final long start;
 	private Double durationMs = null;
@@ -102,13 +100,13 @@ public final class KProcessBuilder {
 		this.durationMs = durationMs;
 	}
 
-	public KProcessBuilder withLocation(final String[] location) {
+	public KProcessBuilder withLocation(final String location) {
 		myLocation = location;
 		return this;
 	}
 
-	public KProcessBuilder withCategory(final String[] categoryTerms) {
-		myCategoryTerms = categoryTerms;
+	public KProcessBuilder withCategory(final String category) {
+		myCategory = category;
 		return this;
 	}
 
@@ -146,36 +144,11 @@ public final class KProcessBuilder {
 	 * @param mdValue  Valeur de la métadonnée
 	 * @return Builder
 	 */
-	public KProcessBuilder withMetaData(final String mdName, final String mdValue) {
+	public KProcessBuilder addMetaData(final String mdName, final String mdValue) {
 		KProcessUtil.checkNotNull(mdName, "Metadata name is required");
 		KProcessUtil.checkNotNull(mdValue, "Metadata value is required");
 		//---------------------------------------------------------------------
-		Set<String> set = metaDatas.get(mdName);
-		if (set == null) {
-			set = new HashSet<>();
-			metaDatas.put(mdName, set);
-		}
-		set.add(mdValue);
-		return this;
-	}
-
-	/**
-	 * Mise à jour d'une metadonnée.
-	 * @param mdName Nom de la métadonnée
-	 * @param mdValue  Valeur de la métadonnée
-	 * @return Builder
-	 */
-	public KProcessBuilder withMetaData(final String mdName, final Set<String> mdDetails) {
-		KProcessUtil.checkNotNull(mdName, "Metadata name is required");
-		KProcessUtil.ckeckNotEmpty(mdDetails, "Metadata value is required");
-
-		//---------------------------------------------------------------------
-		Set<String> set = metaDatas.get(mdName);
-		if (set == null) {
-			set = new HashSet<>();
-			metaDatas.put(mdName, set);
-		}
-		set.addAll(mdDetails);
+		metaDatas.put(mdName, mdValue);
 		return this;
 	}
 
@@ -226,6 +199,14 @@ public final class KProcessBuilder {
 		}
 		//On ajoute la mesure obligatoire : durée
 		setMeasure(KProcess.DURATION, durationMs);
-		return new KProcess(appName, myType, myCategoryTerms, myLocation, startDate, measures, metaDatas, subProcesses);
+		return new KProcess(
+				appName,
+				myType,
+				myCategory,
+				myLocation,
+				startDate,
+				measures,
+				metaDatas,
+				subProcesses);
 	}
 }

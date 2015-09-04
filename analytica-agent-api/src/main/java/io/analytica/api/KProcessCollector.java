@@ -42,14 +42,14 @@ import java.util.Stack;
 public final class KProcessCollector {
 	private final KProcessConnector processConnector;
 	private final String appName;
-	private final String[] location;
+	private final String location;
 
 	/**
 	 * Constructor.
 	 * Should be created only once.
 	 * @param processConnector Collector output connector
 	 */
-	public KProcessCollector(final String appName, final String[] location, final KProcessConnector processConnector) {
+	public KProcessCollector(final String appName, final String location, final KProcessConnector processConnector) {
 		KProcessUtil.checkNotNull(appName, "appName is required");
 		KProcessUtil.checkNotNull(location, "location is required");
 		KProcessUtil.checkNotNull(processConnector, "processConnector is required");
@@ -108,10 +108,10 @@ public final class KProcessCollector {
 	 * Doit respecter les règles sur le nom d'un process.
 	 * @param type Type de process
 	 */
-	public KProcessCollector startProcess(final String type, final String... categoryTerms) {
+	public KProcessCollector startProcess(final String type, final String category) {
 		final KProcessBuilder processBuilder = new KProcessBuilder(appName, type)
 				.withLocation(location)
-				.withCategory(categoryTerms);
+				.withCategory(category);
 		push(processBuilder);
 		return this;
 	}
@@ -143,7 +143,16 @@ public final class KProcessCollector {
 	 * @param value Valeur
 	 */
 	public KProcessCollector addMetaData(final String metaDataName, final String value) {
-		peek().withMetaData(metaDataName, value);
+		peek().addMetaData(metaDataName, value);
+		return this;
+	}
+
+	public KProcessCollector sleep(final long millis) {
+		try {
+			Thread.sleep(millis);
+		} catch (final InterruptedException e) {
+			throw new RuntimeException(e);
+		}
 		return this;
 	}
 

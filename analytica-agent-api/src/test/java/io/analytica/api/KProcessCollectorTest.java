@@ -34,8 +34,8 @@ import org.junit.Test;
 
 public final class KProcessCollectorTest {
 	private static KProcessCollector createProcessCollector(final boolean containsSubProcess) {
-		final String[] location = { "myServer" };
-		return new KProcessCollector("myPrettyApp", location, new KProcessConnector() {
+		final String location = "mexico";
+		return new KProcessCollector("my-pretty-app", location, new KProcessConnector() {
 			@Override
 			public void add(final KProcess process) {
 				checkProcess(process);
@@ -50,39 +50,25 @@ public final class KProcessCollectorTest {
 					checkSubProcess(process2);
 				}
 			}
-
-			@Override
-			public void start() {
-				// NA
-
-			}
-
-			@Override
-			public void stop() {
-				// NA
-
-			}
-
 		});
 	}
 
 	@Test
 	public void testSimpleProcess() {
 		createProcessCollector(false)
-				.startProcess("pages", "search", "items")
+				.startProcess("pages", "search/items")
 				.incMeasure("beats", 10)
 				.incMeasure("beats", 5)
 				.incMeasure("beats", 1)
 				.setMeasure("mails", 22)
 				.addMetaData("tags", "fast")
-				.addMetaData("tags", "strong")
 				.stopProcess();
 	}
 
 	@Test
 	public void testComplexProcess() {
 		createProcessCollector(true)
-				.startProcess("pages", "search", "items")
+				.startProcess("pages", "search/items")
 				.incMeasure("beats", 10)
 				.incMeasure("beats", 5)
 				.incMeasure("beats", 1)
@@ -91,26 +77,23 @@ public final class KProcessCollectorTest {
 				.stopProcess()
 				.setMeasure("mails", 22)
 				.addMetaData("tags", "fast")
-				.addMetaData("tags", "strong")
 				.stopProcess();
 	}
 
 	private static void checkSubProcess(final KProcess process) {
 		final KProcess subProcess = process.getSubProcesses().get(0);
-		Assert.assertEquals("myPrettyApp", subProcess.getAppName());
+		Assert.assertEquals("my-pretty-app", subProcess.getAppName());
 		Assert.assertEquals("services", subProcess.getType());
 		Assert.assertEquals(Double.valueOf(55d), subProcess.getMeasures().get("rows"));
 	}
 
 	private static void checkProcess(final KProcess process) {
-		Assert.assertEquals("myPrettyApp", process.getAppName());
+		Assert.assertEquals("my-pretty-app", process.getAppName());
 		Assert.assertEquals("pages", process.getType());
-		Assert.assertEquals("search", process.getCategoryTerms()[0]);
-		Assert.assertEquals("items", process.getCategoryTerms()[1]);
-		Assert.assertEquals("myServer", process.getLocation()[0]);
+		Assert.assertEquals("search/items", process.getCategory());
+		Assert.assertEquals("mexico", process.getLocation());
 		Assert.assertEquals(Double.valueOf(16d), process.getMeasures().get("beats"));
-		Assert.assertTrue(process.getMetaDatas().get("tags").contains("fast"));
-		Assert.assertTrue(process.getMetaDatas().get("tags").contains("strong"));
+		Assert.assertEquals("fast", process.getMetaDatas().get("tags"));
 	}
 
 }
