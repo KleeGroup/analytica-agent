@@ -77,12 +77,12 @@ public final class KProcess {
 	/**
 	 * REGEX décrivant les règles sur les noms (type de process, mesures et metadata, . (exemples : sql, mail, services)
 	 */
-	public static final Pattern APP_NAME_REGEX = Pattern.compile("[a-z][a-zA-Z-]*");
-	public static final Pattern PROCESS_TYPE_REGEX = Pattern.compile("[a-z][a-zA-Z-]*");
-	public static final Pattern MEASURE_REGEX = Pattern.compile("[a-z][a-zA-Z-]*");
-	public static final Pattern METADATA_REGEX = Pattern.compile("[a-z][a-zA-Z-]*");
-	public static final Pattern CATEGORY_REGEX = Pattern.compile("[a-z][a-z//-]*");
-	public static final Pattern LOCATION_REGEX = Pattern.compile("[a-z][a-z//-]*");
+	public static final Pattern APP_NAME_REGEX = Pattern.compile("[a-zA-Z][a-zA-Z_-]+");
+	public static final Pattern PROCESS_TYPE_REGEX = Pattern.compile("[a-zA-Z][a-zA-Z_-]+");
+	public static final Pattern MEASURE_REGEX = Pattern.compile("[a-zA-Z][a-zA-Z_-]+");
+	public static final Pattern METADATA_REGEX = Pattern.compile("[a-zA-Z][a-zA-Z_-]+");
+	//	public static final Pattern CATEGORY_REGEX = Pattern.compile("[a-z][a-z//-_]*");
+	public static final Pattern LOCATION_REGEX = Pattern.compile("[a-z][a-z//]*"); //a revoir
 
 	private final String appName;
 	private final String type; //ex : sql, page....
@@ -123,7 +123,7 @@ public final class KProcess {
 		//---
 		ckeckRegex(appName, APP_NAME_REGEX, "appName");
 		ckeckRegex(type, PROCESS_TYPE_REGEX, "process type");
-		ckeckRegex(type, CATEGORY_REGEX, "category");
+		//	ckeckRegex(type, CATEGORY_REGEX, "category");
 		ckeckRegex(type, LOCATION_REGEX, "location");
 		for (final String measureName : measures.keySet()) {
 			ckeckRegex(measureName, MEASURE_REGEX, "metadata name");
