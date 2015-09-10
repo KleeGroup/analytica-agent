@@ -28,17 +28,17 @@
 		<dependency>
 			<groupId>io.vertigo</groupId>
 			<artifactId>vertigo-core</artifactId>
-			<version>0.8.2-snapshot</version>
+			<version>0.8.3-snapshot</version>
 		</dependency>
 		<dependency>
 			<groupId>io.vertigo</groupId>
 			<artifactId>vertigo-commons-api</artifactId>
-			<version>0.8.2-snapshot</version>
+			<version>0.8.3-snapshot</version>
 		</dependency>
 		<dependency>
 			<groupId>io.vertigo</groupId>
 			<artifactId>vertigo-commons-impl</artifactId>
-			<version>0.8.2-snapshot</version>
+			<version>0.8.3-snapshot</version>
 		</dependency>
 	</dependencies>
 
