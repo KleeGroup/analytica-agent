@@ -147,15 +147,6 @@ public final class KProcessCollector {
 		return this;
 	}
 
-	public KProcessCollector sleep(final long millis) {
-		try {
-			Thread.sleep(millis);
-		} catch (final InterruptedException e) {
-			throw new RuntimeException(e);
-		}
-		return this;
-	}
-
 	/**
 	 * Termine le process courant.
 	 * Le processus courant devient alors le processus parent le cas échéant.

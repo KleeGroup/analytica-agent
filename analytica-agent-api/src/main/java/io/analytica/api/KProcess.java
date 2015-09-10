@@ -82,7 +82,7 @@ public final class KProcess {
 	public static final Pattern MEASURE_REGEX = Pattern.compile("[a-zA-Z][a-zA-Z_-]+");
 	public static final Pattern METADATA_REGEX = Pattern.compile("[a-zA-Z][a-zA-Z_-]+");
 	//	public static final Pattern CATEGORY_REGEX = Pattern.compile("[a-z][a-z//-_]*");
-	public static final Pattern LOCATION_REGEX = Pattern.compile("[a-z][a-z//]*"); //a revoir
+	public static final Pattern LOCATION_REGEX = Pattern.compile("[A-Z0-9a-z//.]*"); //a revoir
 
 	private final String appName;
 	private final String type; //ex : sql, page....

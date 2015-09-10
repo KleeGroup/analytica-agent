@@ -1,7 +1,8 @@
 package io.analytica.agent.plugins.net.influx;
 
-import io.analytica.agent.impl.NetPlugin;
 import io.analytica.api.KProcess;
+import io.analytica.api.KProcessConnector;
+import io.vertigo.lang.Assertion;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -14,9 +15,8 @@ import org.influxdb.InfluxDBFactory;
 import org.influxdb.dto.BatchPoints;
 import org.influxdb.dto.Point;
 
-public final class InfluxProcessConnector implements NetPlugin {
-	private Boolean connected = null;
-	private InfluxDB influxDB;
+public final class InfluxProcessConnector implements KProcessConnector {
+	private final InfluxDB influxDB;
 
 	private static boolean ping(final String host) {
 		try {
@@ -27,23 +27,21 @@ public final class InfluxProcessConnector implements NetPlugin {
 		}
 	}
 
-	private synchronized boolean isConnected(final String appName) {
-		if (connected == null) {
-			if (ping("kasper-redis")) {
-				influxDB = InfluxDBFactory.connect("http://kasper-redis:8086", "scott", "tiger");
-				influxDB.createDatabase(appName);
-				influxDB.enableBatch(2000, 5000, TimeUnit.MILLISECONDS);
-				connected = true;
-			} else {
-				connected = false;
-			}
+	public InfluxProcessConnector(final String appName) {
+		Assertion.checkArgNotEmpty(appName);
+		//-----
+		if (ping("kasper-redis")) {
+			influxDB = InfluxDBFactory.connect("http://kasper-redis:8086", "scott", "tiger");
+			influxDB.createDatabase(appName);
+			influxDB.enableBatch(2000, 5000, TimeUnit.MILLISECONDS);
+		} else {
+			influxDB = null;
 		}
-		return connected;
 	}
 
 	@Override
 	public void add(final KProcess process) {
-		if (isConnected(process.getAppName())) {
+		if (influxDB != null) {
 			final BatchPoints batchPoints = BatchPoints
 					.database(process.getAppName())
 					.retentionPolicy("default")
