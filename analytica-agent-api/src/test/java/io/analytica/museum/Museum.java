@@ -35,7 +35,7 @@ public final class Museum {
 	private static final String HEALTH = "health";
 	private final PageListener pageListener;
 
-	private long pages = 0;
+	//	private long pages = 0;
 
 	public Museum(final PageListener pageListener) {
 		Assertion.checkNotNull(pageListener);
@@ -52,50 +52,56 @@ public final class Museum {
 		today.set(Calendar.MINUTE, 0);
 		today.set(Calendar.SECOND, 0);
 		final Date startDate = new DateBuilder(today.getTime()).addDays(2).build();
-		System.out.println("=============");
-		System.out.println("=====days :" + days);
-		System.out.println("=====visitsByDay :" + visitsByDay);
-		System.out.println("=============");
+		System.out.println("|---------------------------------------------");
+		System.out.println("|---days :" + days);
+		System.out.println("|---visitsByDay :" + visitsByDay);
+		System.out.println("|---------------------------------------------");
+		System.out.println("|");
 
 		final long start = System.currentTimeMillis();
 		for (int day = 0; day < days; day++) {
 			final Date visitDate = new DateBuilder(startDate).addDays(-day).build();
 			final Calendar calendar = new GregorianCalendar();
 			calendar.setTime(visitDate);
-			loadVisitors(visitDate, StatsUtil.random(visitsByDay, Activity.getCoefPerDay(calendar.get(Calendar.DAY_OF_WEEK))));
-			checkMemory(day);
+			loadVisitors(day, visitDate, StatsUtil.random(visitsByDay, Activity.getCoefPerDay(calendar.get(Calendar.DAY_OF_WEEK))));
+			//		checkMemory(day);
 
 		}
-		System.out.println();
-		System.out.println("data loaded in " + (System.currentTimeMillis() - start) / 1000 + "seconds");
-		System.out.println("=============");
+		System.out.println("|");
+		System.out.println("|");
+		System.out.println("|---------------------------------------------");
+		System.out.println("|---data loaded in " + (System.currentTimeMillis() - start) / 1000 + "seconds");
+		System.out.println("|---------------------------------------------");
 	}
 
-	private void checkMemory(final long day) {
-		if (Runtime.getRuntime().freeMemory() * 10 / Runtime.getRuntime().maxMemory() < 1) {
-			System.gc();
-			//---
-			if (Runtime.getRuntime().freeMemory() * 10 / Runtime.getRuntime().maxMemory() < 1) {
-				System.out.println();
-				System.out.println(">>>> free mem =" + Runtime.getRuntime().freeMemory());
-				System.out.println(">>>> max   mem =" + Runtime.getRuntime().maxMemory());
-				System.out.println(">>>> mem total > 90% - days =" + day);
-				System.out.println(">>>> pages       =" + pages);
+	//	private void checkMemory(final long day) {
+	//		if (Runtime.getRuntime().freeMemory() * 10 / Runtime.getRuntime().maxMemory() < 1) {
+	//			System.gc();
+	//			//---
+	//			if (Runtime.getRuntime().freeMemory() * 10 / Runtime.getRuntime().maxMemory() < 1) {
+	//				System.out.println();
+	//				System.out.println(">>>> free mem =" + Runtime.getRuntime().freeMemory());
+	//				System.out.println(">>>> max   mem =" + Runtime.getRuntime().maxMemory());
+	//				System.out.println(">>>> mem total > 90% - days =" + day);
+	//				System.out.println(">>>> pages       =" + pages);
+	//
+	//				//				System.out.println(">>>> cube footprint =" + Runtime.getRuntime().maxMemory() / cubeManager.getApp(APP_NAME).size(null) + " octets");
+	//				try {
+	//					Thread.sleep(1000 * 20); //20s
+	//				} catch (final InterruptedException e) {
+	//					// TODO Auto-generated catch block
+	//					e.printStackTrace();
+	//				}
+	//				System.exit(0);
+	//			}
+	//		}
+	//	}
 
-				//				System.out.println(">>>> cube footprint =" + Runtime.getRuntime().maxMemory() / cubeManager.getApp(APP_NAME).size(null) + " octets");
-				try {
-					Thread.sleep(1000 * 20); //20s
-				} catch (final InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				System.exit(0);
-			}
-		}
-	}
-
-	private void loadVisitors(final Date startDate, final double visitsByDay) {
-		System.out.println("\n===== add " + visitsByDay + " at " + startDate);
+	private void loadVisitors(final int day, final Date startDate, final double visitsByDay) {
+		System.out.println("|");
+		System.out.println("|---day : " + day);
+		System.out.println("|   |---visits : " + visitsByDay);
+		System.out.println("|   |---date : " + startDate);
 		double visitRatioSum = 0;
 		final double[] visitRatioPerHour = new double[24];
 		for (int h = 0; h < 24; h++) {
@@ -104,6 +110,7 @@ public final class Museum {
 		}
 		final double visitPerHourRatio = visitsByDay / visitRatioSum;
 
+		System.out.print("|   |---distribution : ");
 		for (int h = 0; h < 24; h++) {
 			final int nbHourVisit = (int) Math.round(visitRatioPerHour[h] * visitPerHourRatio);
 			System.out.print(h + "h:" + nbHourVisit + ", ");
@@ -116,66 +123,65 @@ public final class Museum {
 			}
 			loadHealthInfos(dateHour, nbHourVisit);
 			loadQOS(dateHour, nbHourVisit);
-
 		}
+		System.out.println();
 	}
 
 	private void addVisitorScenario(final Date startVisit) {
-		//System.out.println("scenario [" + startVisit.getDay() + ", " + startVisit.getHours() + "] >>" + startVisit);
-		//On ne CODE pas un scenario, on le d�clare.
 		final KProcess visiteur = new KProcessBuilder(APP_NAME, "session", startVisit, 0)//
+				.withCategory("mexico")
+				.withLocation("visitor")
 				.setMeasure("sessionHttp", 1) //1 session
 				.build();
 		//On notifie le listener
 		pageListener.onPage(visiteur);
 
-		addPages(startVisit, //
-				Pages.HOME,// 
-				Pages.ARTIST_SEARCH,// 
-				Pages.ARTIST,// 
-				Pages.IMAGE_ARTIST,// 
-				Pages.ARTIST,// 
-				Pages.IMAGE_ARTIST,// 
-				Pages.ARTIST,//
-				Pages.IMAGE_ARTIST,// 
-				Pages.OEUVRE,//
-				Pages.IMAGE_OEUVRE,// 
-				Pages.ARTIST,//
-				Pages.IMAGE_ARTIST,// 
-				Pages.EXPOSITION,//
-				Pages.EXPOSITION,//
-				Pages.OEUVRE,//
-				Pages.IMAGE_OEUVRE,// 
-				Pages.OEUVRE,//
-				Pages.IMAGE_OEUVRE,// 
-				Pages.OEUVRE,//
-				Pages.IMAGE_OEUVRE,// 
-				Pages.OEUVRE,//
-				Pages.IMAGE_OEUVRE,// 
-				Pages.ARTIST_SEARCH,// 
-				Pages.ARTIST,// 
-				Pages.IMAGE_ARTIST,// 
-				Pages.ARTIST,//
-				Pages.IMAGE_ARTIST,//  
-				Pages.OEUVRE,//
-				Pages.IMAGE_OEUVRE,//  
-				Pages.ARTIST,//
-				Pages.IMAGE_ARTIST,//  
-				Pages.OEUVRE,//
-				Pages.IMAGE_OEUVRE,// 
-				Pages.OEUVRE_SEARCH,// 
-				Pages.OEUVRE,//
-				Pages.IMAGE_OEUVRE,//  
-				Pages.OEUVRE,//
-				Pages.IMAGE_OEUVRE,//  
-				Pages.OEUVRE,//
-				Pages.IMAGE_OEUVRE,//  
-				Pages.OEUVRE,//
-				Pages.IMAGE_OEUVRE,// 
-				Pages.EXPOSITION,// 
-				Pages.ARTIST,//
-				Pages.IMAGE_ARTIST// 
-		);
+		addPages(startVisit,
+				Pages.HOME,
+				Pages.ARTIST_SEARCH,
+				Pages.ARTIST,
+				Pages.IMAGE_ARTIST,
+				Pages.ARTIST,
+				Pages.IMAGE_ARTIST,
+				Pages.ARTIST,
+				Pages.IMAGE_ARTIST,
+				Pages.OEUVRE,
+				Pages.IMAGE_OEUVRE,
+				Pages.ARTIST,
+				Pages.IMAGE_ARTIST,
+				Pages.EXPOSITION,
+				Pages.EXPOSITION,
+				Pages.OEUVRE,
+				Pages.IMAGE_OEUVRE,
+				Pages.OEUVRE,
+				Pages.IMAGE_OEUVRE,
+				Pages.OEUVRE,
+				Pages.IMAGE_OEUVRE,
+				Pages.OEUVRE,
+				Pages.IMAGE_OEUVRE,
+				Pages.ARTIST_SEARCH,
+				Pages.ARTIST,
+				Pages.IMAGE_ARTIST,
+				Pages.ARTIST,
+				Pages.IMAGE_ARTIST,
+				Pages.OEUVRE,
+				Pages.IMAGE_OEUVRE,
+				Pages.ARTIST,
+				Pages.IMAGE_ARTIST,
+				Pages.OEUVRE,
+				Pages.IMAGE_OEUVRE,
+				Pages.OEUVRE_SEARCH,
+				Pages.OEUVRE,
+				Pages.IMAGE_OEUVRE,
+				Pages.OEUVRE,
+				Pages.IMAGE_OEUVRE,
+				Pages.OEUVRE,
+				Pages.IMAGE_OEUVRE,
+				Pages.OEUVRE,
+				Pages.IMAGE_OEUVRE,
+				Pages.EXPOSITION,
+				Pages.ARTIST,
+				Pages.IMAGE_ARTIST);
 	}
 
 	private void addPages(final Date startVisit, final PageBuilder... pageBuilders) {
@@ -194,7 +200,7 @@ public final class Museum {
 		final KProcess page = pageBuilder.createPage(startDate);
 		//On notifie le listener
 		pageListener.onPage(page);
-		pages++;
+		//	pages++;
 		return addWaitTime(startDate, pageBuilder);
 	}
 
@@ -213,13 +219,15 @@ public final class Museum {
 		final double perfs = Math.min(100, StatsUtil.random(100, 1.4 - nbVisitsHour / 50));
 		final double health = Math.min(100, StatsUtil.random(100, 1.5 - nbVisitsHour / 50));
 
-		final KProcess qosProcess = new KProcessBuilder(APP_NAME, QOS, dateHour, 0)//
-				.setMeasure("activity", activity)//
-				.setMeasure("activityMax", 100)//
-				.setMeasure("performance", perfs)//
-				.setMeasure("performanceMax", 100)//
-				.setMeasure("health", health)//
-				.setMeasure("healthMax", 100)//
+		final KProcess qosProcess = new KProcessBuilder(APP_NAME, QOS, dateHour, 0)
+				.withCategory("qos")
+				.withLocation("mexico")
+				.setMeasure("activity", activity)
+				.setMeasure("activityMax", 100)
+				.setMeasure("performance", perfs)
+				.setMeasure("performanceMax", 100)
+				.setMeasure("health", health)
+				.setMeasure("healthMax", 100)
 				.build();
 		pageListener.onPage(qosProcess);
 	}
@@ -227,11 +235,12 @@ public final class Museum {
 	private void loadHealthInfos(final Date dateHour, final double nbVisitsHour) {
 		for (int min = 0; min < 60; min += 6) {
 			final Date dateMinute = new DateBuilder(dateHour).addMinutes(min).toDateTime();
-			final KProcess healthProcess = new KProcessBuilder(APP_NAME, HEALTH, dateMinute, 0)//
+			final KProcess healthProcess = new KProcessBuilder(APP_NAME, HEALTH, dateMinute, 0)
+					.withLocation("mexico")
 					.withCategory("physical")
-					.setMeasure("cpu", Math.min(100, 5 + (nbVisitsHour > 0 ? StatsUtil.random(nbVisitsHour, 1) : 0)))//
-					.setMeasure("ram", Math.min(3096, 250 + (nbVisitsHour > 0 ? StatsUtil.random(nbVisitsHour, 10) : 0)))//
-					.setMeasure("io", 10 + (nbVisitsHour > 0 ? StatsUtil.random(nbVisitsHour, 5) : 0))//
+					.setMeasure("cpu", Math.min(100, 5 + (nbVisitsHour > 0 ? StatsUtil.random(nbVisitsHour, 1) : 0)))
+					.setMeasure("ram", Math.min(3096, 250 + (nbVisitsHour > 0 ? StatsUtil.random(nbVisitsHour, 10) : 0)))
+					.setMeasure("io", 10 + (nbVisitsHour > 0 ? StatsUtil.random(nbVisitsHour, 5) : 0))
 					.build();
 			pageListener.onPage(healthProcess);
 		}

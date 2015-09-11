@@ -6,6 +6,8 @@ import io.vertigo.lang.Assertion;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -16,6 +18,8 @@ import org.influxdb.dto.BatchPoints;
 import org.influxdb.dto.Point;
 
 public final class InfluxProcessConnector implements KProcessConnector {
+	private final String appName;
+	private final List<KProcess> processes = new ArrayList<>(); //buffer
 	private final InfluxDB influxDB;
 
 	private static boolean ping(final String host) {
@@ -30,8 +34,10 @@ public final class InfluxProcessConnector implements KProcessConnector {
 	public InfluxProcessConnector(final String appName) {
 		Assertion.checkArgNotEmpty(appName);
 		//-----
+		this.appName = appName;
 		if (ping("kasper-redis")) {
 			influxDB = InfluxDBFactory.connect("http://kasper-redis:8086", "scott", "tiger");
+			//influxDB.deleteDatabase(appName);
 			influxDB.createDatabase(appName);
 			influxDB.enableBatch(2000, 5000, TimeUnit.MILLISECONDS);
 		} else {
@@ -40,19 +46,29 @@ public final class InfluxProcessConnector implements KProcessConnector {
 	}
 
 	@Override
-	public void add(final KProcess process) {
+	public synchronized void add(final KProcess process) {
 		if (influxDB != null) {
-			final BatchPoints batchPoints = BatchPoints
-					.database(process.getAppName())
-					.retentionPolicy("default")
-					.consistency(ConsistencyLevel.ALL)
-					.build();
+			processes.add(process);
+			if (processes.size() > 5000) {
+				flush();
+			}
+		}
+	}
+
+	private void flush() {
+		final BatchPoints batchPoints = BatchPoints
+				.database(appName)
+				.retentionPolicy("default")
+				.consistency(ConsistencyLevel.ALL)
+				.build();
+		for (final KProcess process : processes) {
 			batchPoints.point(processToPoint(process));
 			for (final KProcess subProcess : process.getSubProcesses()) {
 				batchPoints.point(processToPoint(subProcess));
 			}
-			influxDB.write(batchPoints);
 		}
+		influxDB.write(batchPoints);
+		processes.clear();
 	}
 
 	private static Point processToPoint(final KProcess process) {

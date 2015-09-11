@@ -2,7 +2,7 @@
  * Analytica - beta version - Systems Monitoring Tool
  *
  * Copyright (C) 2013, KleeGroup, direction.technique@kleegroup.com (http://www.kleegroup.com)
- * KleeGroup, Centre d'affaire la Boursidière - BP 159 - 92357 Le Plessis Robinson Cedex - France
+ * KleeGroup, Centre d'affaire la Boursidiï¿½re - BP 159 - 92357 Le Plessis Robinson Cedex - France
  *
  * This program is free software; you can redistribute it and/or modify it under the terms
  * of the GNU General Public License as published by the Free Software Foundation;
@@ -37,9 +37,9 @@ import java.util.Map;
 
 /**
  * Builder permettant de contruire un processus.
- * Il y a deux modes de création.
- *  - live (La date de début et celle de la création , la durée s'obtient lors de la création du process
- *  - différé (la date de débute et la durée sont renseignée ensembles )
+ * Il y a deux modes de crï¿½ation.
+ *  - live (La date de dï¿½but et celle de la crï¿½ation , la durï¿½e s'obtient lors de la crï¿½ation du process
+ *  - diffï¿½rï¿½ (la date de dï¿½bute et la durï¿½e sont renseignï¿½e ensembles )
  *
  * @author pchretien, npiedeloup
  * @version $Id: KProcessBuilder.java,v 1.18 2012/11/08 17:06:27 pchretien Exp $
@@ -52,10 +52,10 @@ public final class KProcessBuilder {
 	private String myLocation;
 	private String myCategory;
 
-	//Tableau des mesures identifiées par leur nom.
+	//Tableau des mesures identifiï¿½es par leur nom.
 	private final Map<String, Double> measures;
 
-	//Tableau des métadonnées identifiées par leur nom.
+	//Tableau des mï¿½tadonnï¿½es identifiï¿½es par leur nom.
 	private final Map<String, String> metaDatas;
 
 	private final long start;
@@ -65,7 +65,7 @@ public final class KProcessBuilder {
 
 	/**
 	 * Constructeur.
-	 * La durée du processus sera obtenue lors de l'appel à la méthode build().
+	 * La durï¿½e du processus sera obtenue lors de l'appel ï¿½ la mï¿½thode build().
 	 * @param type Type du processus
 	 */
 	public KProcessBuilder(final String appName, final String type) {
@@ -75,8 +75,8 @@ public final class KProcessBuilder {
 	/**
 	 * Constructeur .
 	 * @param type Type du processus
-	 * @param startDate Date de début processus
-	 * @param durationMs Durée du processus (Millisecondes)
+	 * @param startDate Date de dï¿½but processus
+	 * @param durationMs Durï¿½e du processus (Millisecondes)
 	 */
 	public KProcessBuilder(final String appName, final String type, final Date startDate, final double durationMs) {
 		this(appName, type, null, startDate, durationMs);
@@ -111,10 +111,10 @@ public final class KProcessBuilder {
 	}
 
 	/**
-	 * Incrément d'une mesure.
-	 * Si la mesure est nouvelle, elle est automatiquement créée avec la valeur
+	 * Incrï¿½ment d'une mesure.
+	 * Si la mesure est nouvelle, elle est automatiquement crï¿½ï¿½e avec la valeur
 	 * @param mName Nom de la mesure
-	 * @param mValue  Valeur à incrémenter
+	 * @param mValue  Valeur ï¿½ incrï¿½menter
 	 * @return Builder
 	 */
 	public KProcessBuilder incMeasure(final String mName, final double mValue) {
@@ -126,9 +126,9 @@ public final class KProcessBuilder {
 	}
 
 	/**
-	 * Mise à jour d'une mesure.
+	 * Mise ï¿½ jour d'une mesure.
 	 * @param mName Nom de la mesure
-	 * @param mValue  Valeur à incrémenter
+	 * @param mValue  Valeur ï¿½ incrï¿½menter
 	 * @return Builder
 	 */
 	public KProcessBuilder setMeasure(final String mName, final double mValue) {
@@ -139,9 +139,9 @@ public final class KProcessBuilder {
 	}
 
 	/**
-	 * Mise à jour d'une metadonnée.
-	 * @param mdName Nom de la métadonnée
-	 * @param mdValue  Valeur de la métadonnée
+	 * Mise ï¿½ jour d'une metadonnï¿½e.
+	 * @param mdName Nom de la mï¿½tadonnï¿½e
+	 * @param mdValue  Valeur de la mï¿½tadonnï¿½e
 	 * @return Builder
 	 */
 	public KProcessBuilder addMetaData(final String mdName, final String mdValue) {
@@ -154,18 +154,18 @@ public final class KProcessBuilder {
 
 	/**
 	 * Ajout d'un sous processus.
-	 * @param subStartDate Date de début
-	 * @param subDurationMs Durée du sous process en Ms
+	 * @param subStartDate Date de dï¿½but
+	 * @param subDurationMs Durï¿½e du sous process en Ms
 	 * @param type Type du sous process
 	 * @return Builder
 	 */
 	public KProcessBuilder beginSubProcess(final String type, final Date subStartDate, final double subDurationMs) {
-		return new KProcessBuilder(appName, type, this, subStartDate, subDurationMs);
+		return new KProcessBuilder(appName, type, this, subStartDate, subDurationMs).withLocation(myLocation);
 	}
 
 	/**
 	 * Fin d'un sous processus.
-	 * Le sous processus est automatiquement ajouté au processus parent.
+	 * Le sous processus est automatiquement ajoutï¿½ au processus parent.
 	 * @return Builder
 	 */
 	public KProcessBuilder endSubProcess() {
@@ -177,7 +177,7 @@ public final class KProcessBuilder {
 
 	/**
 	 * Ajout d'un sous processus.
-	 * @param subPocess Sous-Processus à ajouter
+	 * @param subPocess Sous-Processus ï¿½ ajouter
 	 * @return Builder
 	 */
 	public KProcessBuilder addSubProcess(final KProcess subPocess) {
@@ -193,11 +193,11 @@ public final class KProcessBuilder {
 	 * @return Process
 	 */
 	public KProcess build() {
-		//Si on est dans le mode de construction en runtime, on ajoute la durée.
+		//Si on est dans le mode de construction en runtime, on ajoute la durï¿½e.
 		if (durationMs == null) {
 			durationMs = Long.valueOf(System.currentTimeMillis() - start).doubleValue();
 		}
-		//On ajoute la mesure obligatoire : durée
+		//On ajoute la mesure obligatoire : durï¿½e
 		setMeasure(KProcess.DURATION, durationMs);
 		return new KProcess(
 				appName,

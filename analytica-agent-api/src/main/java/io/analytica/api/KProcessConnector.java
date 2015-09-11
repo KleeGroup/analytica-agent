@@ -2,7 +2,7 @@
  * Analytica - beta version - Systems Monitoring Tool
  *
  * Copyright (C) 2013, KleeGroup, direction.technique@kleegroup.com (http://www.kleegroup.com)
- * KleeGroup, Centre d'affaire la Boursidière - BP 159 - 92357 Le Plessis Robinson Cedex - France
+ * KleeGroup, Centre d'affaire la Boursidiï¿½re - BP 159 - 92357 Le Plessis Robinson Cedex - France
  *
  * This program is free software; you can redistribute it and/or modify it under the terms
  * of the GNU General Public License as published by the Free Software Foundation;
@@ -29,29 +29,18 @@
  */
 package io.analytica.api;
 
-
 /**
  * Connecteur des process.
- * Les messages sont composés des Processus et envoyés ; un consommateur les traitera.
+ * Les messages sont composï¿½s des Processus et envoyï¿½s ; un consommateur les traitera.
  *
  * @author pchretien, npiedeloup
  * @version $Id: NetPlugin.java,v 1.1 2012/03/22 18:20:57 pchretien Exp $
  */
 public interface KProcessConnector {
 	/**
-	 * Ajout d'un process dans le système.
-	 * Cet ajout peut-être multi-threadé.
-	 * @param process Process à ajouter
+	 * Ajout d'un process dans le systï¿½me.
+	 * Cet ajout peut-ï¿½tre multi-threadï¿½.
+	 * @param process Process ï¿½ ajouter
 	 */
 	void add(KProcess process);
-
-	//	/**
-	//	 * A appeller lors du lancement du connecteur.
-	//	 */
-	//	void start();
-	//
-	//	/**
-	//	 * A appeller lors de l'arret du connecteur.
-	//	 */
-	//	void stop();
 }
