@@ -38,6 +38,7 @@ import io.analytica.api.KProcessConnector;
  */
 public final class DummyConnector implements KProcessConnector {
 	/** {@inheritDoc} */
+	@Override
 	public void add(final KProcess process) {
 		//rien
 	}

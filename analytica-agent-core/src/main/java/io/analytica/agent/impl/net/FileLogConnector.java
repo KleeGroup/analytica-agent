@@ -60,7 +60,7 @@ public final class FileLogConnector implements KProcessConnector {
 	private final Logger logger = Logger.getLogger(FileLogConnector.class);
 	private final long spoolFrequencyMs = 250;
 	private Thread processSpoolerThread = null;
-	private final ConcurrentLinkedQueue<KProcess> processQueue = new ConcurrentLinkedQueue<KProcess>();
+	private final ConcurrentLinkedQueue<KProcess> processQueue = new ConcurrentLinkedQueue<>();
 	private final String fileName;
 
 	public FileLogConnector(final String fileName) {
@@ -72,6 +72,7 @@ public final class FileLogConnector implements KProcessConnector {
 	}
 
 	/** {@inheritDoc} */
+	@Override
 	public void add(final KProcess process) {
 		processQueue.add(process);
 	}
@@ -153,7 +154,7 @@ public final class FileLogConnector implements KProcessConnector {
 	 * Effectue le flush de la queue des processes à envoyer.
 	 */
 	void flushProcessQueue() {
-		final List<KProcess> processes = new ArrayList<KProcess>();
+		final List<KProcess> processes = new ArrayList<>();
 		KProcess head;
 		do {
 			head = processQueue.poll();

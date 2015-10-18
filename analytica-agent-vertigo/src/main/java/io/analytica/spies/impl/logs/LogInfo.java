@@ -35,7 +35,7 @@ final class LogInfo {
 	private final String json;
 	private final String threadName;
 	private final String type;
-	private final String[] categoryTerms;
+	private final String categoryTerms;
 	private final long time;
 	private final LogPattern logPattern;
 
@@ -48,7 +48,7 @@ final class LogInfo {
 	 * @param time Temps d'execution du traitement loggé
 	 * @param logPattern Pattern de lecture du log
 	 */
-	public LogInfo(final Date dateEvent, final String threadName, final String type, final String[] categoryTerms, final long time, final LogPattern logPattern) {
+	public LogInfo(final Date dateEvent, final String threadName, final String type, final String categoryTerms, final long time, final LogPattern logPattern) {
 		this.threadName = threadName;
 		this.type = type.toUpperCase();
 		this.categoryTerms = categoryTerms;
@@ -98,7 +98,7 @@ final class LogInfo {
 		Assertion.checkArgument(logInfo.getType().equals(type), "Ce LogInfo n''est pas du même type : {0} != {1}", type, logInfo);
 		Assertion.checkArgument(logInfo.getCategoryTerms().equals(categoryTerms), "Ce LogInfo n''est pas du même sous-type : {0} != {1}", categoryTerms, logInfo);
 		//---------------------------------------------------------------------
-		this.startLogInfo = logInfo;
+		startLogInfo = logInfo;
 	}
 
 	/**
@@ -142,7 +142,7 @@ final class LogInfo {
 	/**
 	 * @return Sous catégories du process
 	 */
-	public String[] getCategoryTerms() {
+	public String getCategoryTerms() {
 		return categoryTerms;
 	}
 

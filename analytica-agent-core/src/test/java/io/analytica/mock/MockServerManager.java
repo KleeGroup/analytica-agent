@@ -47,14 +47,14 @@ import org.apache.log4j.Logger;
  */
 public final class MockServerManager {
 	private static final Logger LOG = Logger.getLogger(MockServerManager.class);
-	private final Map<String, List<KProcess>> processesMap = new HashMap<String, List<KProcess>>();
-	private static WeakReference<MockServerManager> INSTANCE = new WeakReference<MockServerManager>(null);
+	private final Map<String, List<KProcess>> processesMap = new HashMap<>();
+	private static WeakReference<MockServerManager> INSTANCE = new WeakReference<>(null);
 
 	/**
 	 * Constructeur simple pour instanciation par TU.
 	 */
 	public MockServerManager() {
-		INSTANCE = new WeakReference<MockServerManager>(this); //WeakRef pour etre libéré automatiquement
+		INSTANCE = new WeakReference<>(this); //WeakRef pour etre libéré automatiquement
 	}
 
 	/**
@@ -91,7 +91,7 @@ public final class MockServerManager {
 	private List<KProcess> obtainProcesses(final String type) {
 		List<KProcess> processes = processesMap.get(type);
 		if (processes == null) {
-			processes = new ArrayList<KProcess>();
+			processes = new ArrayList<>();
 			processesMap.put(type, processes);
 		}
 		return processes;
@@ -113,9 +113,9 @@ public final class MockServerManager {
 	 */
 	public synchronized List<Double> getMeasures(final String metricName, final String type, final String... subTypes) {
 		final List<KProcess> processByType = obtainProcesses(type);
-		final List<Double> measures = new ArrayList<Double>();
+		final List<Double> measures = new ArrayList<>();
 		for (final KProcess process : processByType) {
-			if (toTree(process.getCategoryTerms()).startsWith(toTree(subTypes))) {
+			if (process.getCategory().startsWith(toTree(subTypes))) {
 				final Double measure = process.getMeasures().get(metricName);
 				if (measure != null) {
 					measures.add(measure);

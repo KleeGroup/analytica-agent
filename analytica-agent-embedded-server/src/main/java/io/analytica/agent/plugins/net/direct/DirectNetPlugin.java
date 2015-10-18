@@ -52,13 +52,11 @@ public final class DirectNetPlugin implements NetPlugin {
 	}
 
 	/** {@inheritDoc} */
-	@Override
 	public void start() {
 		//rien
 	}
 
 	/** {@inheritDoc} */
-	@Override
 	public void stop() {
 		//rien
 	}

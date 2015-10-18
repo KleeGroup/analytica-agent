@@ -23,7 +23,7 @@ import io.vertigo.lang.Component;
 /**
  * Agent de collecte des données.
  * Collecte automatique des Process (les infos sont portées par le thread courant).
- * 
+ *
  * @author pchretien, npiedeloup
  * @version $Id: AgentManager.java,v 1.2 2012/03/19 09:03:31 npiedeloup Exp $
  */

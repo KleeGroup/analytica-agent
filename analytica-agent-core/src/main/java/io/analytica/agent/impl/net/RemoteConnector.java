@@ -64,7 +64,7 @@ public final class RemoteConnector implements KProcessConnector {
 	private final Logger logger = Logger.getLogger(RemoteConnector.class);
 
 	private Thread processSenderThread = null;
-	private final ConcurrentLinkedQueue<KProcess> processQueue = new ConcurrentLinkedQueue<KProcess>();
+	private final ConcurrentLinkedQueue<KProcess> processQueue = new ConcurrentLinkedQueue<>();
 	private net.sf.ehcache.CacheManager manager;
 	private final String serverUrl;
 	private final int sendPaquetSize;
@@ -87,6 +87,7 @@ public final class RemoteConnector implements KProcessConnector {
 	}
 
 	/** {@inheritDoc} */
+	@Override
 	public void add(final KProcess process) {
 		processQueue.add(process);
 		//		if (processQueue.size() >= sendPaquetSize) {
@@ -168,7 +169,7 @@ public final class RemoteConnector implements KProcessConnector {
 					//on envoi avant l'arret du serveur
 				}
 				//On flush la queue sur :
-				// - le timeout 
+				// - le timeout
 				// - un processQueue.notify (taille max de la queue atteinte)
 				// - un interrupt (arret du serveur)
 				remoteConnector.retrySendProcesses();
@@ -183,15 +184,15 @@ public final class RemoteConnector implements KProcessConnector {
 
 	/**
 	 * On attend la constitution d'un paquet.
-	 * Rend la main après : 
-	 * - le timeout 
+	 * Rend la main après :
+	 * - le timeout
 	 * - un processQueue.notify (taille max de la queue atteinte)
-	 * - un interrupt (arret du serveur) 
+	 * - un interrupt (arret du serveur)
 	 * @throws InterruptedException Si interrupt
 	 */
 	void waitToSendPacket() throws InterruptedException {
 		final long start = System.currentTimeMillis();
-		while (processQueue.size() < sendPaquetSize // 
+		while (processQueue.size() < sendPaquetSize //
 				&& System.currentTimeMillis() - start < sendPaquetFrequencySeconds * 1000) {
 			Thread.sleep(sizeCheckFrequencyMs);
 		}
@@ -221,7 +222,7 @@ public final class RemoteConnector implements KProcessConnector {
 	 */
 	private void flushProcessQueue(final long maxPaquetSize) {
 		long sendPaquet = 0;
-		final List<KProcess> processes = new ArrayList<KProcess>();
+		final List<KProcess> processes = new ArrayList<>();
 		KProcess head;
 		do {
 			head = processQueue.poll();
@@ -259,7 +260,7 @@ public final class RemoteConnector implements KProcessConnector {
 	void retrySendProcesses() {
 		try {
 			final List<UUID> keys = manager.getCache(SPOOL_CONTEXT).getKeys();
-			for (int i = 0; i < maxResendJson && i < keys.size(); i++) { //on limite a 5 car ce sont déjà des paquets constitués 
+			for (int i = 0; i < maxResendJson && i < keys.size(); i++) { //on limite a 5 car ce sont déjà des paquets constitués
 				final UUID key = keys.get(i);
 				doSendJson(remoteWebResource, (String) manager.getCache(SPOOL_CONTEXT).get(key).getValue());
 				manager.getCache(SPOOL_CONTEXT).remove(key); //si l'envoi est passé, on retire du cache

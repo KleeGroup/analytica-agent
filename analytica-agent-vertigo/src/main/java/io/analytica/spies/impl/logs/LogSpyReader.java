@@ -67,7 +67,7 @@ public final class LogSpyReader implements Activeable {
 
 	private final AgentManager agentManager;
 	private final String systemName;
-	private final String[] systemLocation;
+	private final String systemLocation;
 
 	private final URL logFileUrl;
 	private final List<String> dateFormats;
@@ -176,7 +176,7 @@ public final class LogSpyReader implements Activeable {
 		//2 - on dépile les lignes de log
 		for (final LogInfo logInfo : logInfos) {
 			processBuilder = new KProcessBuilder(systemName, logInfo.getType(), logInfo.getStartDateEvent(), logInfo.getTime())
-					.withLocation(systemLocation).withCategory(logInfo.getCategoryTerms());
+			.withLocation(systemLocation).withCategory(logInfo.getCategoryTerms());
 			processBuilder.setMeasure(ME_ERROR_PCT, logInfo.getLogPattern().isError() ? 100 : 0);
 			if (stackLogInfo.isEmpty()) {
 				//2a - la premiere ligne crée la racine
@@ -200,7 +200,7 @@ public final class LogSpyReader implements Activeable {
 			}
 		} while (!stackLogInfo.isEmpty());
 
-		//4 - On purge les logs lus 
+		//4 - On purge les logs lus
 		getLogInfos(threadName).clear();
 
 		//5 - On retourne le process résultat
@@ -214,7 +214,7 @@ public final class LogSpyReader implements Activeable {
 		final SimpleDateFormat sdfHour = new SimpleDateFormat("HH:mm:ss.SSS ");
 
 		sb.append(linePrefix);
-		sb.append("{").append("").append(process.getType()).append(":").append(Arrays.asList(process.getCategoryTerms())).append("; startDate:").append(sdfHour.format(process.getStartDate())).append("; endDate:").append(sdfHour.format(new Date(process.getStartDate().getTime() + (long) process.getDuration()))).append("; duration:").append(process.getDuration());
+		sb.append("{").append("").append(process.getType()).append(":").append(Arrays.asList(process.getCategory())).append("; startDate:").append(sdfHour.format(process.getStartDate())).append("; endDate:").append(sdfHour.format(new Date(process.getStartDate().getTime() + (long) process.getDuration()))).append("; duration:").append(process.getDuration());
 		if (!process.getSubProcesses().isEmpty()) {
 			sb.append("\n").append(linePrefix).append("subprocess:{");
 			for (final KProcess subProcess : process.getSubProcesses()) {
@@ -265,8 +265,8 @@ public final class LogSpyReader implements Activeable {
 			stackLogInfo.push(logInfo);
 			stackProcessBuilder.push(processBuilder);
 		} else {
-			//Si l'event n'est pas inclus dans les dates du précédent, 
-			//on dépile le précédent qu'on ajoute au parent, 
+			//Si l'event n'est pas inclus dans les dates du précédent,
+			//on dépile le précédent qu'on ajoute au parent,
 			//puis on empile le nouveau suivant la même regle
 			final KProcessBuilder processBuilderPrevious = stackProcessBuilder.pop();
 			stackLogInfo.pop();

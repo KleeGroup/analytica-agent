@@ -40,7 +40,7 @@
 
 
 	<properties>
-		<vertigo.version>0.8.2-snapshot</vertigo.version>
+		<vertigo.version>0.8.3</vertigo.version>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<project.build.sourceEncoding>Cp1252</project.build.sourceEncoding>
