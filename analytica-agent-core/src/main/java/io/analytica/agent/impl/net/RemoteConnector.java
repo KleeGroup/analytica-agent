@@ -2,7 +2,7 @@
  * Analytica - beta version - Systems Monitoring Tool
  *
  * Copyright (C) 2013, KleeGroup, direction.technique@kleegroup.com (http://www.kleegroup.com)
- * KleeGroup, Centre d'affaire la Boursidière - BP 159 - 92357 Le Plessis Robinson Cedex - France
+ * KleeGroup, Centre d'affaire la Boursidiï¿½re - BP 159 - 92357 Le Plessis Robinson Cedex - France
  *
  * This program is free software; you can redistribute it and/or modify it under the terms
  * of the GNU General Public License as published by the Free Software Foundation;
@@ -29,9 +29,9 @@
  */
 package io.analytica.agent.impl.net;
 
-import io.analytica.KProcessJsonCodec;
+import io.analytica.agent.api.KProcessConnector;
 import io.analytica.api.KProcess;
-import io.analytica.api.KProcessConnector;
+import io.analytica.api.KProcessJsonCodec;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,14 +57,14 @@ import com.sun.jersey.api.client.WebResource;
  */
 public final class RemoteConnector implements KProcessConnector {
 	private static final String SPOOL_CONTEXT = "Analytica_Spool";
-	private static final String VERSION_MAJOR = "1.0"; //definit la compatibilité
+	private static final String VERSION_MAJOR = "1.0"; //definit la compatibilitï¿½
 	private static final String VERSION_MINOR = "0";
 	private static final String VERSION = VERSION_MAJOR + "." + VERSION_MINOR;
 
 	private final Logger logger = Logger.getLogger(RemoteConnector.class);
 
 	private Thread processSenderThread = null;
-	private final ConcurrentLinkedQueue<KProcess> processQueue = new ConcurrentLinkedQueue<>();
+	private final ConcurrentLinkedQueue<KProcess> processQueue = new ConcurrentLinkedQueue<KProcess>();
 	private net.sf.ehcache.CacheManager manager;
 	private final String serverUrl;
 	private final int sendPaquetSize;
@@ -72,11 +72,11 @@ public final class RemoteConnector implements KProcessConnector {
 	private final int sendPaquetFrequencySeconds;
 	private Client locatorClient;
 	private WebResource remoteWebResource;
-	private final int maxResendJson = 5; //On limite a 5 car ce sont déjà des paquets de sendPaquetSize Processes
+	private final int maxResendJson = 5; //On limite a 5 car ce sont dï¿½jï¿½ des paquets de sendPaquetSize Processes
 
 	/**
 	 * @param serverUrl Url du serveur Analytica
-	 * @param sendPaquetSize Taille des paquets déclenchant l'envoi anticipé
+	 * @param sendPaquetSize Taille des paquets dï¿½clenchant l'envoi anticipï¿½
 	 * @param sendPaquetFrequencySeconds Frequence normal d'envoi des paquets (en seconde)
 	 */
 	public RemoteConnector(final String serverUrl, final int sendPaquetSize, final int sendPaquetFrequencySeconds) {
@@ -87,7 +87,6 @@ public final class RemoteConnector implements KProcessConnector {
 	}
 
 	/** {@inheritDoc} */
-	@Override
 	public void add(final KProcess process) {
 		processQueue.add(process);
 		//		if (processQueue.size() >= sendPaquetSize) {
@@ -108,9 +107,9 @@ public final class RemoteConnector implements KProcessConnector {
 		if (!manager.cacheExists(SPOOL_CONTEXT)) {
 			final boolean overflowToDisk = true;
 			final boolean eternal = false;
-			final int timeToLiveSeconds = 8 * 60 * 60; //on accept 8h d'indisponibilité max
+			final int timeToLiveSeconds = 8 * 60 * 60; //on accept 8h d'indisponibilitï¿½ max
 			final int timeToIdleSeconds = timeToLiveSeconds;
-			final int maxElementsInMemory = 1;//0 = illimité, 1 car on souhaite le minimum d'empreinte mémoire
+			final int maxElementsInMemory = 1;//0 = illimitï¿½, 1 car on souhaite le minimum d'empreinte mï¿½moire
 			final net.sf.ehcache.Cache cache = new net.sf.ehcache.Cache(SPOOL_CONTEXT, maxElementsInMemory, overflowToDisk, eternal, timeToLiveSeconds, timeToIdleSeconds);
 			manager.addCache(cache);
 		}
@@ -148,7 +147,7 @@ public final class RemoteConnector implements KProcessConnector {
 
 		SendProcessThread(final RemoteConnector remoteConnector) {
 			super("AnalyticaSendProcessThread");
-			setDaemon(false); //ce n'est pas un démon car on veux envoyer les derniers process
+			setDaemon(false); //ce n'est pas un dï¿½mon car on veux envoyer les derniers process
 			if (remoteConnector == null) {
 				throw new NullPointerException("remoteConnector is required");
 			}
@@ -164,7 +163,7 @@ public final class RemoteConnector implements KProcessConnector {
 				try {
 					remoteConnector.waitToSendPacket();
 				} catch (final InterruptedException e) {
-					interrupt();//On remet le flag qui a été reset lors du throw InterruptedException (pour le test isInterrupted())
+					interrupt();//On remet le flag qui a ï¿½tï¿½ reset lors du throw InterruptedException (pour le test isInterrupted())
 					//logger.trace("interrupt()");
 					//on envoi avant l'arret du serveur
 				}
@@ -184,7 +183,7 @@ public final class RemoteConnector implements KProcessConnector {
 
 	/**
 	 * On attend la constitution d'un paquet.
-	 * Rend la main après :
+	 * Rend la main aprï¿½s :
 	 * - le timeout
 	 * - un processQueue.notify (taille max de la queue atteinte)
 	 * - un interrupt (arret du serveur)
@@ -211,18 +210,18 @@ public final class RemoteConnector implements KProcessConnector {
 	}
 
 	/**
-	 * Flush toute la queue des processes (utilisée lors de l'arret de l'agent)
+	 * Flush toute la queue des processes (utilisï¿½e lors de l'arret de l'agent)
 	 */
 	void flushAllProcessQueue() {
 		flushProcessQueue(Long.MAX_VALUE);
 	}
 
 	/**
-	 * Effectue le flush de la queue des processes à envoyer.
+	 * Effectue le flush de la queue des processes ï¿½ envoyer.
 	 */
 	private void flushProcessQueue(final long maxPaquetSize) {
 		long sendPaquet = 0;
-		final List<KProcess> processes = new ArrayList<>();
+		final List<KProcess> processes = new ArrayList<KProcess>();
 		KProcess head;
 		do {
 			head = processQueue.poll();
@@ -255,15 +254,15 @@ public final class RemoteConnector implements KProcessConnector {
 	}
 
 	/**
-	 * Tente de renvoyer les paquets qui ont échoués.
+	 * Tente de renvoyer les paquets qui ont ï¿½chouï¿½s.
 	 */
 	void retrySendProcesses() {
 		try {
 			final List<UUID> keys = manager.getCache(SPOOL_CONTEXT).getKeys();
-			for (int i = 0; i < maxResendJson && i < keys.size(); i++) { //on limite a 5 car ce sont déjà des paquets constitués
+			for (int i = 0; i < maxResendJson && i < keys.size(); i++) { //on limite a 5 car ce sont dï¿½jï¿½ des paquets constituï¿½s
 				final UUID key = keys.get(i);
 				doSendJson(remoteWebResource, (String) manager.getCache(SPOOL_CONTEXT).get(key).getValue());
-				manager.getCache(SPOOL_CONTEXT).remove(key); //si l'envoi est passé, on retire du cache
+				manager.getCache(SPOOL_CONTEXT).remove(key); //si l'envoi est passï¿½, on retire du cache
 			}
 		} catch (final Exception e) {
 			//serveur indisponible ou en erreur

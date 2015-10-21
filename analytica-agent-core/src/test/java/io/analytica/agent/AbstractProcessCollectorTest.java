@@ -2,7 +2,7 @@
  * Analytica - beta version - Systems Monitoring Tool
  *
  * Copyright (C) 2013, KleeGroup, direction.technique@kleegroup.com (http://www.kleegroup.com)
- * KleeGroup, Centre d'affaire la Boursidière - BP 159 - 92357 Le Plessis Robinson Cedex - France
+ * KleeGroup, Centre d'affaire la Boursidiï¿½re - BP 159 - 92357 Le Plessis Robinson Cedex - France
  *
  * This program is free software; you can redistribute it and/or modify it under the terms
  * of the GNU General Public License as published by the Free Software Foundation;
@@ -30,8 +30,9 @@
 package io.analytica.agent;
 
 import io.analytica.AbstractAnalyticaTestCaseJU4;
+import io.analytica.agent.api.KProcessCollector;
+import io.analytica.agent.impl.KProcessCollectorContainer;
 import io.analytica.agent.impl.net.RemoteConnector;
-import io.analytica.api.KProcessCollector;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
@@ -50,7 +51,7 @@ import org.junit.Test;
  */
 public abstract class AbstractProcessCollectorTest extends AbstractAnalyticaTestCaseJU4 {
 
-	/** Base de données gérant les articles envoyés dans une commande. */
+	/** Base de donnï¿½es gï¿½rant les articles envoyï¿½s dans une commande. */
 	private static final String PROCESS1_TYPE = "ARTICLE";
 	private static final String PROCESS2_TYPE = "COMMANDE";
 
@@ -66,8 +67,7 @@ public abstract class AbstractProcessCollectorTest extends AbstractAnalyticaTest
 	protected final void doSetUp() throws Exception {
 		remoteConnector = new RemoteConnector("http://localhost:9998/process", 20, 1);
 		//		processCollector = new KProcessCollector(this.getClass().getSimpleName(), new String[] { "test", InetAddress.getLocalHost().getHostName() }, remoteConnector);
-		final String location = "myServer";
-		processCollector = new KProcessCollector("myPrettyApp", location, remoteConnector);
+		processCollector = KProcessCollectorContainer.getInstance();
 		remoteConnector.start();
 		afterSetUp();
 	}
@@ -84,7 +84,7 @@ public abstract class AbstractProcessCollectorTest extends AbstractAnalyticaTest
 	/**
 	 * Test simple avec un compteur.
 	 * Test sur l'envoi d'un process
-	 * Chaque article coute 10€.
+	 * Chaque article coute 10ï¿½.
 	 */
 	@Test
 	public void testOneProcess() {
@@ -99,7 +99,7 @@ public abstract class AbstractProcessCollectorTest extends AbstractAnalyticaTest
 	/**
 	 * Test simple avec deux compteurs.
 	 * Test sur l'envoi de 1000 articles d'un poids de 25 kg.
-	 * Chaque article coute 10€.
+	 * Chaque article coute 10ï¿½.
 	 */
 	@Test
 	public void test1000Articles() {
@@ -109,7 +109,7 @@ public abstract class AbstractProcessCollectorTest extends AbstractAnalyticaTest
 	}
 
 	/**
-	 * Test pour vérifier que l'on peut se passer des processus si et seulement si le mode Analytics est désactivé.
+	 * Test pour vï¿½rifier que l'on peut se passer des processus si et seulement si le mode Analytics est dï¿½sactivï¿½.
 	 */
 	@Test
 	public void testNoProcess() {
@@ -117,17 +117,17 @@ public abstract class AbstractProcessCollectorTest extends AbstractAnalyticaTest
 			processCollector.setMeasure("POIDS", 25);
 			Assert.fail();
 		} catch (final Exception e) {
-			// Ce cas de test est réussi s'il remonte une exception
+			// Ce cas de test est rï¿½ussi s'il remonte une exception
 			// OK
 			Assert.assertTrue(true);
 		}
 	}
 
 	/**
-	 * Test de récursivité.
+	 * Test de rï¿½cursivitï¿½.
 	 * Test sur l'envoi de 500 commandes contenant chacune 500 articles d'un poids de 25 kg.
-	 * Chaque article coute 10€.
-	 * Les frais d'envoi sont de 5€.
+	 * Chaque article coute 10ï¿½.
+	 * Les frais d'envoi sont de 5ï¿½.
 	 */
 	@Test
 	public void test500Commandes() {
@@ -140,11 +140,11 @@ public abstract class AbstractProcessCollectorTest extends AbstractAnalyticaTest
 	}
 
 	/**
-	 * Test de parallélisme.
+	 * Test de parallï¿½lisme.
 	 * Test sur l'envoi de 500 commandes contenant chacune 1000 articles d'un poids de 25 kg.
 	 * L'envoi est simuler avec 20 clients (thread).
-	 * Chaque article coute 10€.
-	 * Les frais d'envoi sont de 5€.
+	 * Chaque article coute 10ï¿½.
+	 * Les frais d'envoi sont de 5ï¿½.
 	 * @throws InterruptedException Interruption
 	 */
 	@Test
@@ -158,7 +158,7 @@ public abstract class AbstractProcessCollectorTest extends AbstractAnalyticaTest
 		workersPool.shutdown();
 		workersPool.awaitTermination(2 * 60, TimeUnit.SECONDS); //On laisse 2 minute pour vider la pile
 		if (!workersPool.isTerminated()) {
-			throw new IllegalStateException("Les threads ne sont pas tous stoppés");
+			throw new IllegalStateException("Les threads ne sont pas tous stoppï¿½s");
 		}
 
 		log.trace("elapsed = " + (System.currentTimeMillis() - start));
@@ -218,10 +218,9 @@ public abstract class AbstractProcessCollectorTest extends AbstractAnalyticaTest
 			this.nbArticles = nbArticles;
 		}
 
-		@Override
 		public void run() {
 			doOneCommande(numCommande, nbArticles);
-			System.out.println("Finish commande n°" + numCommande);
+			System.out.println("Finish commande nï¿½" + numCommande);
 			try {
 				Thread.sleep(100);
 			} catch (final InterruptedException e) {

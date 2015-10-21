@@ -2,7 +2,7 @@
  * Analytica - beta version - Systems Monitoring Tool
  *
  * Copyright (C) 2013, KleeGroup, direction.technique@kleegroup.com (http://www.kleegroup.com)
- * KleeGroup, Centre d'affaire la Boursidière - BP 159 - 92357 Le Plessis Robinson Cedex - France
+ * KleeGroup, Centre d'affaire la BoursidiÃ¨re - BP 159 - 92357 Le Plessis Robinson Cedex - France
  *
  * This program is free software; you can redistribute it and/or modify it under the terms
  * of the GNU General Public License as published by the Free Software Foundation;
@@ -29,6 +29,9 @@
  */
 package io.analytica.api;
 
+import io.analytica.agent.api.KProcessCollector;
+import io.analytica.agent.api.KProcessConnector;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -36,19 +39,28 @@ public final class KProcessCollectorTest {
 	private static KProcessCollector createProcessCollector(final boolean containsSubProcess) {
 		final String location = "mexico";
 		return new KProcessCollector("my-pretty-app", location, new KProcessConnector() {
-			@Override
 			public void add(final KProcess process) {
 				checkProcess(process);
 				if (containsSubProcess) {
 					checkSubProcess(process);
 				}
-				//on vérifie que l'encodage json fonctionne correctement
+				//on vï¿½rifie que l'encodage json fonctionne correctement
 				final String sprocess = KProcessUtil.toJson(process);
 				final KProcess process2 = KProcessUtil.fromJson(sprocess);
 				checkProcess(process2);
 				if (containsSubProcess) {
 					checkSubProcess(process2);
 				}
+			}
+
+			public void start() {
+				// TODO Auto-generated method stub
+
+			}
+
+			public void stop() {
+				// TODO Auto-generated method stub
+
 			}
 		});
 	}

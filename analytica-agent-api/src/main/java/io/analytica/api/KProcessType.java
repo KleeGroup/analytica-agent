@@ -2,7 +2,7 @@
  * Analytica - beta version - Systems Monitoring Tool
  *
  * Copyright (C) 2013, KleeGroup, direction.technique@kleegroup.com (http://www.kleegroup.com)
- * KleeGroup, Centre d'affaire la Boursidi�re - BP 159 - 92357 Le Plessis Robinson Cedex - France
+ * KleeGroup, Centre d'affaire la Boursidière - BP 159 - 92357 Le Plessis Robinson Cedex - France
  *
  * This program is free software; you can redistribute it and/or modify it under the terms
  * of the GNU General Public License as published by the Free Software Foundation;
@@ -27,28 +27,26 @@
  * but you are not obliged to do so.
  * If you do not wish to do so, delete this exception statement from your version.
  */
-package io.analytica.agent.impl.net;
+package io.analytica.api;
 
-import io.analytica.agent.api.KProcessConnector;
-import io.analytica.api.KProcess;
+public enum KProcessType {
+	WEB("WEB"),
+	SERVICE("SERVICE"),
+	DB("DB"),
+	RESPONSE_LENGTH("RESPONSE_LENGTH"),
+	USER_ERROR("USER_ERROR"),
+	OTHER_ERROR("OTHER_ERROR"),
+	CPU_TIME("CPU_TIME");
 
-/**
- * @author npiedeloup
- * @version $Id: RemoteNetPlugin.java,v 1.4 2012/06/14 13:49:17 npiedeloup Exp $
- */
-public final class DummyConnector implements KProcessConnector {
-	/** {@inheritDoc} */
-	public void add(final KProcess process) {
-		//rien
+	private final String processType;
+
+	private KProcessType(final String processType) {
+		this.processType = processType;
 	}
 
-	/** {@inheritDoc} */
-	public void start() {
-		//rien
+	@Override
+	public String toString() {
+		return processType;
 	}
 
-	/** {@inheritDoc} */
-	public void stop() {
-		//rien
-	}
 }

@@ -29,20 +29,66 @@
  */
 package io.analytica.api;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import java.util.Collection;
+import java.util.regex.Pattern;
 
-/**
- * @author pchretien
- */
-public final class KProcessUtil {
-	private static final Gson gson = new GsonBuilder().create();
-
-	public static KProcess fromJson(final String json) {
-		return gson.fromJson(json, KProcess.class);
+public final class Assertion {
+	public static void checkNotNull(final Object value, final String msg) {
+		if (value == null) {
+			throw new NullPointerException(msg);
+		}
 	}
 
-	public static String toJson(final KProcess process) {
-		return gson.toJson(process);
+	public static void checkNotNull(final Object value) {
+		if (value == null) {
+			throw new NullPointerException();
+		}
+	}
+
+	/**
+	 * Permet de tester le caractère renseigné (non vide) d'une chaine.
+	 * @param str String Chaine non vide
+	 */
+	public static void checkArgNotEmpty(final String str) {
+		checkNotNull(str);
+		if (StringUtil.isEmpty(str)) {
+			throw new IllegalArgumentException("String must not be empty");
+		}
+	}
+
+	public static void checkArgument(final boolean test, final String msg, final Object... params) {
+		if (!test) {
+			throw new IllegalArgumentException(msg);
+		}
+	}
+
+	public static void ckeckRegex(final String s, final Pattern pattern, final String info) {
+		if (!pattern.matcher(s).matches()) {
+			throw new IllegalArgumentException(info + " " + s + " must match regex :" + pattern.pattern());
+		}
+	}
+
+	public static void ckeckNotEmpty(final Collection<?> collection, final String msg) {
+		if (collection == null) {
+			throw new NullPointerException(msg);
+		}
+		if (collection.isEmpty()) {
+			throw new NullPointerException(msg);
+		}
+	}
+
+	/**
+	 * Vérification d'un état.
+	 * S'utilise de maniére courante dans les calculs pour vérifer les états de variables au cours du traitement.
+	 * S'utilise comme postCondition
+	 *
+	 * @param test Expression booléenne qui doit être vérifiée
+	 * @param msg Message affiché si le test <b>n'est pas</b> vérifié.
+	 * @param params paramètres du message
+	 */
+	public static void checkState(final boolean test, final String msg, final Object... params) {
+		if (!test) {
+			throw new IllegalStateException(StringUtil.format(msg, params));
+		}
 	}
 }

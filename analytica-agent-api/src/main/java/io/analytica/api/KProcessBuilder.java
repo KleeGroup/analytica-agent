@@ -32,14 +32,16 @@ package io.analytica.api;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Builder permettant de contruire un processus.
- * Il y a deux modes de cr�ation.
- *  - live (La date de d�but et celle de la cr�ation , la dur�e s'obtient lors de la cr�ation du process
- *  - diff�r� (la date de d�bute et la dur�e sont renseign�e ensembles )
+ * Il y a deux modes de creation.
+ *  - live (La date de debut et celle de la creation , la duree s'obtient lors de la creation du process
+ *  - differe (la date de debute et la duree sont renseignee ensembles )
  *
  * @author pchretien, npiedeloup
  * @version $Id: KProcessBuilder.java,v 1.18 2012/11/08 17:06:27 pchretien Exp $
@@ -52,10 +54,10 @@ public final class KProcessBuilder {
 	private String myLocation;
 	private String myCategory;
 
-	//Tableau des mesures identifi�es par leur nom.
+	//Tableau des mesures identifiees par leur nom.
 	private final Map<String, Double> measures;
 
-	//Tableau des m�tadonn�es identifi�es par leur nom.
+	//Tableau des metadonnees identifiees par leur nom.
 	private final Map<String, String> metaDatas;
 
 	private final long start;
@@ -65,7 +67,7 @@ public final class KProcessBuilder {
 
 	/**
 	 * Constructeur.
-	 * La dur�e du processus sera obtenue lors de l'appel � la m�thode build().
+	 * La duree du processus sera obtenue lors de l'appel a la methode build().
 	 * @param type Type du processus
 	 */
 	public KProcessBuilder(final String appName, final String type) {
@@ -75,24 +77,24 @@ public final class KProcessBuilder {
 	/**
 	 * Constructeur .
 	 * @param type Type du processus
-	 * @param startDate Date de d�but processus
-	 * @param durationMs Dur�e du processus (Millisecondes)
+	 * @param startDate Date de debut processus
+	 * @param durationMs Duree du processus (Millisecondes)
 	 */
 	public KProcessBuilder(final String appName, final String type, final Date startDate, final double durationMs) {
 		this(appName, type, null, startDate, durationMs);
 	}
 
 	private KProcessBuilder(final String appName, final String type, final KProcessBuilder parent, final Date startDate, final Double durationMs) {
-		KProcessUtil.checkNotNull(appName, "appName is required");
-		KProcessUtil.checkNotNull(type, "type of process is required");
-		KProcessUtil.checkNotNull(startDate, "start of process is required");
+		Assertion.checkNotNull(appName, "appName is required");
+		Assertion.checkNotNull(type, "type of process is required");
+		Assertion.checkNotNull(startDate, "start of process is required");
 		//---
 		this.appName = appName;
 		myType = type;
 
-		measures = new HashMap<>();
-		metaDatas = new HashMap<>();
-		subProcesses = new ArrayList<>();
+		measures = new HashMap<String, Double>();
+		metaDatas = new HashMap<String, String>();
+		subProcesses = new ArrayList<KProcess>();
 		this.startDate = startDate;
 		start = startDate.getTime();
 		this.parent = parent;
@@ -110,15 +112,24 @@ public final class KProcessBuilder {
 		return this;
 	}
 
+	public KProcessBuilder withCategory(final String... categories) {
+		final StringBuilder categoryBuilder = new StringBuilder();
+		for (final String category : categories) {
+			categoryBuilder.append(category).append("/");
+		}
+		myCategory = categoryBuilder.toString();
+		return this;
+	}
+
 	/**
-	 * Incr�ment d'une mesure.
-	 * Si la mesure est nouvelle, elle est automatiquement cr��e avec la valeur
+	 * Increment d'une mesure.
+	 * Si la mesure est nouvelle, elle est automatiquement creee avec la valeur
 	 * @param mName Nom de la mesure
-	 * @param mValue  Valeur � incr�menter
+	 * @param mValue  Valeur a incrementer
 	 * @return Builder
 	 */
 	public KProcessBuilder incMeasure(final String mName, final double mValue) {
-		KProcessUtil.checkNotNull(mName, "Measure name is required");
+		Assertion.checkNotNull(mName, "Measure name is required");
 		//---------------------------------------------------------------------
 		final Double lastmValue = measures.get(mName);
 		measures.put(mName, lastmValue == null ? mValue : mValue + lastmValue);
@@ -126,36 +137,56 @@ public final class KProcessBuilder {
 	}
 
 	/**
-	 * Mise � jour d'une mesure.
+	 * Mise a jour d'une mesure.
 	 * @param mName Nom de la mesure
 	 * @param mValue  Valeur � incr�menter
 	 * @return Builder
 	 */
 	public KProcessBuilder setMeasure(final String mName, final double mValue) {
-		KProcessUtil.checkNotNull(mName, "Measure name is required");
+		Assertion.checkNotNull(mName, "Measure name is required");
 		//---------------------------------------------------------------------
 		measures.put(mName, mValue);
 		return this;
 	}
 
 	/**
-	 * Mise � jour d'une metadonn�e.
-	 * @param mdName Nom de la m�tadonn�e
-	 * @param mdValue  Valeur de la m�tadonn�e
+	 * Mise a jour d'une metadonnee.
+	 * @param mdName Nom de la metadonnee
+	 * @param mdValue  Valeur de la metadonnee
 	 * @return Builder
 	 */
 	public KProcessBuilder addMetaData(final String mdName, final String mdValue) {
-		KProcessUtil.checkNotNull(mdName, "Metadata name is required");
-		KProcessUtil.checkNotNull(mdValue, "Metadata value is required");
+		Assertion.checkNotNull(mdName, "Metadata name is required");
+		Assertion.checkNotNull(mdValue, "Metadata value is required");
 		//---------------------------------------------------------------------
 		metaDatas.put(mdName, mdValue);
 		return this;
 	}
 
 	/**
+	 * Mise a jour d'une metadonnee.
+	 * @param mdName Nom de la metadonnee
+	 * @param mdValue  Valeur de la metadonnee
+	 * @return Builder
+	 */
+	public KProcessBuilder addMetaData(final String mdName, final Set<String> mdValues) {
+		Assertion.checkNotNull(mdName, "Metadata name is required");
+		Assertion.checkNotNull(mdValues, "Metadata value is required");
+		//---------------------------------------------------------------------
+		final StringBuilder metadataBuilder = new StringBuilder();
+		final Iterator<String> mdValuesIterator = mdValues.iterator();
+		while (mdValuesIterator.hasNext()) {
+			metadataBuilder.append(mdValuesIterator.next()).append("/");
+		}
+
+		metaDatas.put(mdName, metadataBuilder.toString());
+		return this;
+	}
+
+	/**
 	 * Ajout d'un sous processus.
-	 * @param subStartDate Date de d�but
-	 * @param subDurationMs Dur�e du sous process en Ms
+	 * @param subStartDate Date de debut
+	 * @param subDurationMs Duree du sous process en Ms
 	 * @param type Type du sous process
 	 * @return Builder
 	 */
@@ -165,11 +196,11 @@ public final class KProcessBuilder {
 
 	/**
 	 * Fin d'un sous processus.
-	 * Le sous processus est automatiquement ajout� au processus parent.
+	 * Le sous processus est automatiquement ajoute au processus parent.
 	 * @return Builder
 	 */
 	public KProcessBuilder endSubProcess() {
-		KProcessUtil.checkNotNull(parent, "parent is required when you close a subprocess");
+		Assertion.checkNotNull(parent, "parent is required when you close a subprocess");
 		//---------------------------------------------------------------------
 		parent.addSubProcess(build());
 		return parent;
@@ -177,11 +208,11 @@ public final class KProcessBuilder {
 
 	/**
 	 * Ajout d'un sous processus.
-	 * @param subPocess Sous-Processus � ajouter
+	 * @param subPocess Sous-Processus a ajouter
 	 * @return Builder
 	 */
 	public KProcessBuilder addSubProcess(final KProcess subPocess) {
-		KProcessUtil.checkNotNull(subPocess, "sub process is required ");
+		Assertion.checkNotNull(subPocess, "sub process is required ");
 		//---------------------------------------------------------------------
 		subProcesses.add(subPocess);
 		incMeasure(KProcess.SUB_DURATION, subPocess.getDuration());
@@ -193,11 +224,11 @@ public final class KProcessBuilder {
 	 * @return Process
 	 */
 	public KProcess build() {
-		//Si on est dans le mode de construction en runtime, on ajoute la dur�e.
+		//Si on est dans le mode de construction en runtime, on ajoute la duree.
 		if (durationMs == null) {
 			durationMs = Long.valueOf(System.currentTimeMillis() - start).doubleValue();
 		}
-		//On ajoute la mesure obligatoire : dur�e
+		//On ajoute la mesure obligatoire : duree
 		setMeasure(KProcess.DURATION, durationMs);
 		return new KProcess(
 				appName,

@@ -2,7 +2,7 @@
  * Analytica - beta version - Systems Monitoring Tool
  *
  * Copyright (C) 2013, KleeGroup, direction.technique@kleegroup.com (http://www.kleegroup.com)
- * KleeGroup, Centre d'affaire la Boursidière - BP 159 - 92357 Le Plessis Robinson Cedex - France
+ * KleeGroup, Centre d'affaire la Boursidiï¿½re - BP 159 - 92357 Le Plessis Robinson Cedex - France
  *
  * This program is free software; you can redistribute it and/or modify it under the terms
  * of the GNU General Public License as published by the Free Software Foundation;
@@ -29,8 +29,8 @@
  */
 package io.analytica.mock;
 
-import io.analytica.KProcessJsonCodec;
 import io.analytica.api.KProcess;
+import io.analytica.api.KProcessJsonCodec;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -47,14 +47,14 @@ import org.apache.log4j.Logger;
  */
 public final class MockServerManager {
 	private static final Logger LOG = Logger.getLogger(MockServerManager.class);
-	private final Map<String, List<KProcess>> processesMap = new HashMap<>();
-	private static WeakReference<MockServerManager> INSTANCE = new WeakReference<>(null);
+	private final Map<String, List<KProcess>> processesMap = new HashMap<String, List<KProcess>>();
+	private static WeakReference<MockServerManager> INSTANCE = new WeakReference<MockServerManager>(null);
 
 	/**
 	 * Constructeur simple pour instanciation par TU.
 	 */
 	public MockServerManager() {
-		INSTANCE = new WeakReference<>(this); //WeakRef pour etre libéré automatiquement
+		INSTANCE = new WeakReference<MockServerManager>(this); //WeakRef pour etre libï¿½rï¿½ automatiquement
 	}
 
 	/**
@@ -91,7 +91,7 @@ public final class MockServerManager {
 	private List<KProcess> obtainProcesses(final String type) {
 		List<KProcess> processes = processesMap.get(type);
 		if (processes == null) {
-			processes = new ArrayList<>();
+			processes = new ArrayList<KProcess>();
 			processesMap.put(type, processes);
 		}
 		return processes;
@@ -113,7 +113,7 @@ public final class MockServerManager {
 	 */
 	public synchronized List<Double> getMeasures(final String metricName, final String type, final String... subTypes) {
 		final List<KProcess> processByType = obtainProcesses(type);
-		final List<Double> measures = new ArrayList<>();
+		final List<Double> measures = new ArrayList<Double>();
 		for (final KProcess process : processByType) {
 			if (process.getCategory().startsWith(toTree(subTypes))) {
 				final Double measure = process.getMeasures().get(metricName);

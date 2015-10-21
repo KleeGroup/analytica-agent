@@ -2,7 +2,7 @@
  * Analytica - beta version - Systems Monitoring Tool
  *
  * Copyright (C) 2013, KleeGroup, direction.technique@kleegroup.com (http://www.kleegroup.com)
- * KleeGroup, Centre d'affaire la Boursidière - BP 159 - 92357 Le Plessis Robinson Cedex - France
+ * KleeGroup, Centre d'affaire la BoursidiÃ¨re - BP 159 - 92357 Le Plessis Robinson Cedex - France
  *
  * This program is free software; you can redistribute it and/or modify it under the terms
  * of the GNU General Public License as published by the Free Software Foundation;
@@ -29,8 +29,8 @@
  */
 package io.analytica.api;
 
-import static io.analytica.api.KProcessUtil.checkNotNull;
-import static io.analytica.api.KProcessUtil.ckeckRegex;
+import static io.analytica.api.Assertion.checkNotNull;
+import static io.analytica.api.Assertion.ckeckRegex;
 
 import java.util.Collections;
 import java.util.Date;
@@ -40,14 +40,14 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
- * Un processus est un événement
- *   - déclenché dans une application spécifique
- *   - relatif à un type d'événement (exemple : métrics des pages, des requêtes sql, des mails envoyés, des services ...)
+ * Un processus est un evenement
+ *   - declenche dans une application specifique
+ *   - relatif a un type d'evenement (exemple : metrics des pages, des requetes sql, des mails envoyï¿½s, des services ...)
  *
- *	Un évenement est défini selon 3 axes
- *	 - when, quand a eu lieu l'événement
+ *	Un evenement est defini selon 3 axes
+ *	 - when, quand a eu lieu l'evenement
  *	 - what, de quoi s'agit-il ?
- *	 - where, où s'est passé l'événement  ? sur quel serveur ?
+ *	 - where, ou s'est passe l'evenement  ? sur quel serveur ?
  *
  *	[what]
  * - categories defined an array of string : search/items
@@ -67,15 +67,15 @@ import java.util.regex.Pattern;
  */
 public final class KProcess {
 	/**
-	 * Mesure de type durée.
+	 * Mesure de type duree.
 	 */
 	public static final String DURATION = "duration";
 	/**
-	 * Mesure de type durée.
+	 * Mesure de type duree.
 	 */
 	public static final String SUB_DURATION = "sub-duration";
 	/**
-	 * REGEX décrivant les règles sur les noms (type de process, mesures et metadata, . (exemples : sql, mail, services)
+	 * REGEX dï¿½crivant les rï¿½gles sur les noms (type de process, mesures et metadata, . (exemples : sql, mail, services)
 	 */
 	public static final Pattern APP_NAME_REGEX = Pattern.compile("[a-zA-Z][a-zA-Z_-]+");
 	public static final Pattern PROCESS_TYPE_REGEX = Pattern.compile("[a-zA-Z][a-zA-Z_-]+");
@@ -102,7 +102,7 @@ public final class KProcess {
 	 * @param category  Category
 	 * @param startDate Date du processus
 	 * @param measures Mesures du processus
-	 * @param metaDatas Metadonnées du processus
+	 * @param metaDatas Metadonnï¿½es du processus
 	 * @param subProcesses Liste des sous processus
 	 */
 	KProcess(final String appName, final String type,
@@ -120,6 +120,7 @@ public final class KProcess {
 		checkNotNull(measures, "measures are required");
 		checkNotNull(metaDatas, "metaDatas are required");
 		checkNotNull(subProcesses, "subProcesses are required");
+
 		//---
 		ckeckRegex(appName, APP_NAME_REGEX, "appName");
 		ckeckRegex(type, PROCESS_TYPE_REGEX, "process type");
@@ -143,8 +144,8 @@ public final class KProcess {
 		this.category = category;
 		this.location = location;
 		this.startDate = startDate;
-		this.measures = Collections.unmodifiableMap(new HashMap<>(measures));
-		this.metaDatas = Collections.unmodifiableMap(new HashMap<>(metaDatas));
+		this.measures = Collections.unmodifiableMap(new HashMap<String, Double>(measures));
+		this.metaDatas = Collections.unmodifiableMap(new HashMap<String, String>(metaDatas));
 		this.subProcesses = subProcesses;
 	}
 
@@ -200,7 +201,7 @@ public final class KProcess {
 	}
 
 	/**
-	 * @return Metadonnées du processus
+	 * @return Metadonnees du processus
 	 */
 	public Map<String, String> getMetaDatas() {
 		return metaDatas;
