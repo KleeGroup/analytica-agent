@@ -2,7 +2,7 @@
  * Analytica - beta version - Systems Monitoring Tool
  *
  * Copyright (C) 2013, KleeGroup, direction.technique@kleegroup.com (http://www.kleegroup.com)
- * KleeGroup, Centre d'affaire la Boursidi�re - BP 159 - 92357 Le Plessis Robinson Cedex - France
+ * KleeGroup, Centre d'affaire la Boursidière - BP 159 - 92357 Le Plessis Robinson Cedex - France
  *
  * This program is free software; you can redistribute it and/or modify it under the terms
  * of the GNU General Public License as published by the Free Software Foundation;
@@ -39,16 +39,16 @@ import io.analytica.api.KProcess;
 public final class DummyConnector implements KProcessConnector {
 	/** {@inheritDoc} */
 	public void add(final KProcess process) {
-		//rien
+		//Nothing
 	}
 
 	/** {@inheritDoc} */
 	public void start() {
-		//rien
+		//Nothing
 	}
 
 	/** {@inheritDoc} */
 	public void stop() {
-		//rien
+		//Nothing
 	}
 }

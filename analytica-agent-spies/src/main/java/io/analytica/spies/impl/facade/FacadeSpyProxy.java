@@ -2,7 +2,7 @@
  * Analytica - beta version - Systems Monitoring Tool
  *
  * Copyright (C) 2013, KleeGroup, direction.technique@kleegroup.com (http://www.kleegroup.com)
- * KleeGroup, Centre d'affaire la Boursidi�re - BP 159 - 92357 Le Plessis Robinson Cedex - France
+ * KleeGroup, Centre d'affaire la Boursidière - BP 159 - 92357 Le Plessis Robinson Cedex - France
  *
  * This program is free software; you can redistribute it and/or modify it under the terms
  * of the GNU General Public License as published by the Free Software Foundation;
@@ -19,6 +19,7 @@ package io.analytica.spies.impl.facade;
 
 import io.analytica.agent.impl.KProcessCollectorContainer;
 import io.analytica.api.Assertion;
+import io.analytica.api.KMeasureType;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -33,7 +34,6 @@ import java.util.Set;
  * @version $Id: CounterProxy.java,v 1.5 2010/11/23 09:49:33 npiedeloup Exp $
  */
 public final class FacadeSpyProxy implements InvocationHandler {
-	private static final String ME_ERROR_PCT = "ERROR_PCT";
 	private static final String ME_ERROR_HEADER = "ERROR_HEADER";
 
 	private final Object object;
@@ -42,10 +42,10 @@ public final class FacadeSpyProxy implements InvocationHandler {
 
 	/**
 	 * Contruction du proxy.
-	 * @param object Objet proxis�
+	 * @param object Objet proxise
 	 * @param facadeType Type de la facade
 	 * @param facadeName Nom de la facade
-	 * @param KProcessCollectorContainer.getInstance() Agent de r�colte de process
+	 * @param KProcessCollectorContainer.getInstance() Agent de recolte de process
 	 */
 	FacadeSpyProxy(final Object object, final String facadeType, final String facadeName) {
 		Assertion.checkNotNull(object);
@@ -64,22 +64,22 @@ public final class FacadeSpyProxy implements InvocationHandler {
 		try {
 			return method.invoke(object, args);
 		} catch (final Throwable th) {
-			KProcessCollectorContainer.getInstance().setMeasure(ME_ERROR_PCT, 100);
+			KProcessCollectorContainer.getInstance().setMeasure(KMeasureType.OTHER_ERROR.toString(), 100);
 			KProcessCollectorContainer.getInstance().addMetaData(ME_ERROR_HEADER, th.getMessage());
 			throw th;
 		} finally {
-			KProcessCollectorContainer.getInstance().stopProcess();//La mesure Duration est sett�e implicitement par le stop
+			KProcessCollectorContainer.getInstance().stopProcess();
 		}
 	}
 
 	/**
-	 * Instrumentation automatique de toutes les m�thodes d'un objet.
+	 * Instrumentation automatique de toutes les methodes d'un objet.
 	 *
 	 * @param <O> Type de l'objet sur lequel ajouter le proxy.
 	 * @param object Object sur lequel ajouter le Spy
 	 * @param facadeType Pseudo-type de la facade (Service, WS, Mail, ...)
-	 * @param KProcessCollectorContainer.getInstance() Agent de r�colte de process
-	 * @return Proxy de l'objet pass� avec le spy plac� sur les m�thodes de ses interfaces.
+	 * @param KProcessCollectorContainer.getInstance() Agent de recolte de process
+	 * @return Proxy de l'objet passe avec le spy place sur les methodes de ses interfaces.
 	 */
 
 	public static <O extends Object> O plugSpy(final O object, final String facadeType) {
@@ -94,8 +94,8 @@ public final class FacadeSpyProxy implements InvocationHandler {
 	}
 
 	/**
-	 * R�cup�re l'ensemble des interfaces impl�ment�es par cette class.
-	 * Cette m�thode est utilis� pour la cr�ation dynamique des Proxy.
+	 * Recupere l'ensemble des interfaces implementees par cette class.
+	 * Cette methode est utilise pour la creation dynamique des Proxy.
 	 * @param myClass Classe dont on veut les interfaces
 	 * @return Class[] Tableau des interfaces de cette classe (il peut y avoir des doublons)
 	 */

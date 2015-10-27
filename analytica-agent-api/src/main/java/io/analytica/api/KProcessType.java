@@ -33,10 +33,7 @@ public enum KProcessType {
 	WEB("WEB"),
 	SERVICE("SERVICE"),
 	DB("DB"),
-	RESPONSE_LENGTH("RESPONSE_LENGTH"),
-	USER_ERROR("USER_ERROR"),
-	OTHER_ERROR("OTHER_ERROR"),
-	CPU_TIME("CPU_TIME");
+	JOB("JOB");
 
 	private final String processType;
 

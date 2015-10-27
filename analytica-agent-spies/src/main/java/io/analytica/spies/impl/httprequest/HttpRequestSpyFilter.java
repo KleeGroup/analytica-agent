@@ -19,6 +19,7 @@ package io.analytica.spies.impl.httprequest;
 
 import io.analytica.agent.api.KProcessCollector;
 import io.analytica.agent.impl.KProcessCollectorContainer;
+import io.analytica.api.KMeasureType;
 import io.analytica.api.KProcessType;
 
 import java.io.IOException;
@@ -59,25 +60,25 @@ public final class HttpRequestSpyFilter implements Filter {
 	/** {@inheritDoc} */
 	@Override
 	public void destroy() {
-		// Rien de sp�cial
+		// Rien de special
 	}
 
 	/**
 	 * La méthode doFilter est appelée par le container chaque fois qu'une paire
-	 * requ�te/r�ponse passe � travers la cha�ne suite � une requ�te d'un client
-	 * pour une ressource au bout de la cha�ne. L'instance de FilterChain pass�e
-	 * dans cette m�thode permet au filtre de passer la requ�te et la r�ponse �
-	 * l'entit� suivante dans la cha�ne.
+	 * requete/reponse passe e travers la chaene suite e une requete d'un client
+	 * pour une ressource au bout de la chaene. L'instance de FilterChain passee
+	 * dans cette methode permet au filtre de passer la requete et la reponse e
+	 * l'entite suivante dans la chaene.
 	 *
-	 * Cette impl�mentation encapsule les flux d'entr�e et de sortie (compress�s
-	 * ou non) pour compter les octets lus ou �crits. Puis elle logue le
-	 * r�sultat avec le nom du filtre (pour distinguer si c'est avant ou apr�s
-	 * compression). Le r�sultat est �galement enregistr� dans les statistiques.
+	 * Cette implementation encapsule les flux d'entree et de sortie (compresses
+	 * ou non) pour compter les octets lus ou ecrits. Puis elle logue le
+	 * resultat avec le nom du filtre (pour distinguer si c'est avant ou apres
+	 * compression). Le resultat est egalement enregistre dans les statistiques.
 	 *
 	 * @param request javax.servlet.ServletRequest
 	 * @param response javax.servlet.ServletResponse
 	 * @param chain javax.servlet.FilterChain
-	 * @throws java.io.IOException Si une erreur d'entr�e/sortie survient
+	 * @throws java.io.IOException Si une erreur d'entree/sortie survient
 	 * @throws javax.servlet.ServletException Si une erreur de servlet survient
 	 */
 	@Override
@@ -102,14 +103,14 @@ public final class HttpRequestSpyFilter implements Filter {
 		final HttpRequestSpyServletResponseWrapper wrappedResponse = new HttpRequestSpyServletResponseWrapper(httpResponse);
 		try {
 			chain.doFilter(httpRequest, httpResponse);
-			agentManager.setMeasure(KProcessType.RESPONSE_LENGTH.toString(), wrappedResponse.getDataLength());
+			agentManager.setMeasure(KMeasureType.RESPONSE_LENGTH.toString(), wrappedResponse.getDataLength());
 			ok = true;
 		} catch (final ServletException servletException) {
 			//Permet de compter les erreurs par type.
 			if (isUserException(servletException)) {
-				agentManager.setMeasure(KProcessType.USER_ERROR.toString(), 100);
+				agentManager.setMeasure(KMeasureType.USER_ERROR.toString(), 100);
 			} else {
-				agentManager.setMeasure(KProcessType.OTHER_ERROR.toString(), 100);
+				agentManager.setMeasure(KMeasureType.OTHER_ERROR.toString(), 100);
 			}
 			logRequestException(servletException);
 			throw servletException;
@@ -117,7 +118,7 @@ public final class HttpRequestSpyFilter implements Filter {
 			final long endCpuTime = threadBean.getThreadCpuTime(Thread.currentThread().getId());
 			if (startCpuTime != -1 && endCpuTime != -1) {
 				//On compte le temps CPU de ce thread
-				agentManager.setMeasure(KProcessType.CPU_TIME.toString(), endCpuTime / 1000000 - startCpuTime / 1000000);
+				agentManager.setMeasure(KMeasureType.CPU_TIME.toString(), endCpuTime / 1000000 - startCpuTime / 1000000);
 			}
 			agentManager.stopProcess();
 			logRequestFinish(httpRequest, System.currentTimeMillis() - begin, ok);
@@ -144,29 +145,27 @@ public final class HttpRequestSpyFilter implements Filter {
 	}
 
 	/**
-	 * Retourne le nom du type de la requ�te.
+	 * Retourne le nom du type de la requête.
 	 *
-	 * @param request Requ�te HTTP
-	 * @return Nom du dossier dans lequel sont class�s les r�sultats
+	 * @param request Requête HTTP
+	 * @return Nom du dossier dans lequel sont classés les résultats
 	 */
 	private String getProcessName(final HttpServletRequest request) {
-		final StringBuilder requestName = new StringBuilder();
-		String pathInfo = request.getPathInfo();
-		final boolean containsDot = pathInfo.indexOf(".") != -1;
+
+		String pageUrl = request.getPathInfo() != null ? request.getPathInfo() : request.getServletPath();
+		if (pageUrl == null) {
+			return "empty";
+		}
+		final boolean containsDot = pageUrl.indexOf(".") != -1;
 		if (containsDot) {
-			pathInfo = pathInfo.substring(0, pathInfo.indexOf("."));
+			pageUrl = pageUrl.substring(0, pageUrl.indexOf("."));
 		}
-		final boolean firstIsSlash = pathInfo.indexOf("/") == 0;
+		final boolean firstIsSlash = pageUrl.indexOf("/") == 0;
 		if (firstIsSlash) {
-			pathInfo = pathInfo.substring(1);
+			pageUrl = pageUrl.substring(1);
 		}
-		if (pathInfo != null) {
-			requestName.append(pathInfo);
-		} else {
-			final String servletPath = request.getServletPath();
-			requestName.append(servletPath);
-		}
-		return requestName.toString();
+
+		return pageUrl;
 	}
 
 	private static KProcessCollector getProcessCollector() {
@@ -193,16 +192,16 @@ public final class HttpRequestSpyFilter implements Filter {
 		} else {
 			//Echec
 			if (requestName == null) {
-				generalLog.warn("[Finish] -NoRequestName- interrompue apr�s ( " + requestTime + ") ms");
+				generalLog.warn("[Finish] -NoRequestName- interrompue apres ( " + requestTime + ") ms");
 			} else {
-				generalLog.warn("[Finish] " + requestName + " interrompue apr�s ( " + requestTime + ") ms");
+				generalLog.warn("[Finish] " + requestName + " interrompue apres ( " + requestTime + ") ms");
 			}
 		}
 	}
 
 	private void logRequestException(final Exception exception) {
-		// e.toString()) affiche la classe du message et le message lui m�me.
-		// Une KUser non proprement g�r� est volontairement logg�e en erreur.
+		// e.toString()) affiche la classe du message et le message lui meme.
+		// Une KUser non proprement gere est volontairement loggee en erreur.
 		generalLog.error(exception.toString(), exception);
 	}
 

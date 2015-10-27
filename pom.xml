@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.analytica</groupId>
 	<artifactId>analytica-agent-reactor</artifactId>
-	<version>1.2.0-SNAPSHOT</version>
+	<version>1.3.2</version>
 	<packaging>pom</packaging>
 	<name>analytica-agent-reactor</name>
 	<description>Analytica-Agent manage to collect and send Business Application's measures to Analytica-Server</description>
@@ -22,9 +22,11 @@
 	<modules>
 		<module>analytica-agent-api</module>
 		<module>analytica-agent-core</module>
-		<module>analytica-agent-javaagent</module>
+		<module>analytica-agent-spies</module>
+		<module>analytica-museum</module>
+		<!--<module>analytica-agent-javaagent</module>
 		<module>analytica-agent-vertigo</module>
-		<module>analytica-agent-embedded-server</module>
+		<module>analytica-agent-embedded-server</module>-->
 	</modules>
 
 	<build>

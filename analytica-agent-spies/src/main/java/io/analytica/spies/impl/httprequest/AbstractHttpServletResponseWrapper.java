@@ -2,7 +2,7 @@
  * Analytica - beta version - Systems Monitoring Tool
  *
  * Copyright (C) 2013, KleeGroup, direction.technique@kleegroup.com (http://www.kleegroup.com)
- * KleeGroup, Centre d'affaire la Boursidière - BP 159 - 92357 Le Plessis Robinson Cedex - France
+ * KleeGroup, Centre d'affaire la BoursidiÃ¨re - BP 159 - 92357 Le Plessis Robinson Cedex - France
  *
  * This program is free software; you can redistribute it and/or modify it under the terms
  * of the GNU General Public License as published by the Free Software Foundation;
@@ -25,7 +25,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Implémentation de HttpServletResponseWrapper pour éviter warnings à la compilation.
+ * Implementation de HttpServletResponseWrapper pour eviter warnings a la compilation.
  * @author Emeric Vernat
  * @version $Id: AbstractHttpServletResponseWrapper.java,v 1.1 2012/10/23 15:30:29 pchretien Exp $
  */
@@ -63,18 +63,18 @@ public abstract class AbstractHttpServletResponseWrapper extends javax.servlet.h
 	}
 
 	/**
-	 * Surcharge de addHeader pour fixer le header même si la réponse est incluse (contrairement à tomcat).
+	 * Surcharge de addHeader pour fixer le header meme si la reponse est incluse (contrairement e tomcat).
 	 * @param name String
 	 * @param value String
 	 */
 	@Override
 	public final void addHeader(final String name, final String value) {
-		// nécessaire pour header gzip du filtre de compression
+		// necessaire pour header gzip du filtre de compression
 		response.addHeader(name, value);
 	}
 
 	/**
-	 * Surcharge de setHeader pour fixer le header même si la réponse est incluse (contrairement à tomcat).
+	 * Surcharge de setHeader pour fixer le header meme si la reponse est incluse (contrairement e tomcat).
 	 * @param name String
 	 * @param value String
 	 */
@@ -84,7 +84,7 @@ public abstract class AbstractHttpServletResponseWrapper extends javax.servlet.h
 	}
 
 	/**
-	 * Retourne le status définit par setStatus ou sendError.
+	 * Retourne le status definit par setStatus ou sendError.
 	 * @return int
 	 */
 	public final int getStatus() {
@@ -92,7 +92,7 @@ public abstract class AbstractHttpServletResponseWrapper extends javax.servlet.h
 	}
 
 	/**
-	 * Définit le status de la réponse http (SC_OK, SC_NOT_FOUND, SC_INTERNAL_SERVER_ERROR ...).
+	 * Definit le status de la reponse http (SC_OK, SC_NOT_FOUND, SC_INTERNAL_SERVER_ERROR ...).
 	 * @param status int
 	 */
 	@Override
@@ -102,9 +102,9 @@ public abstract class AbstractHttpServletResponseWrapper extends javax.servlet.h
 	}
 
 	/**
-	 * Envoie une erreur comme réponse http (SC_OK, SC_NOT_FOUND, SC_INTERNAL_SERVER_ERROR ...).
+	 * Envoie une erreur comme reponse http (SC_OK, SC_NOT_FOUND, SC_INTERNAL_SERVER_ERROR ...).
 	 * @param error int
-	 * @throws IOException   Exception d'entrée/sortie
+	 * @throws IOException   Exception d'entree/sortie
 	 */
 	@Override
 	public final void sendError(final int error) throws IOException {
@@ -113,16 +113,16 @@ public abstract class AbstractHttpServletResponseWrapper extends javax.servlet.h
 	}
 
 	/**
-	 * Crée et retourne un ServletOutputStream pour écrire le contenu dans la response associée.
+	 * Cree et retourne un ServletOutputStream pour ecrire le contenu dans la response associee.
 	 * @return javax.servlet.ServletOutputStream
-	 * @throws java.io.IOException   Erreur d'entrée/sortie
+	 * @throws java.io.IOException   Erreur d'entree/sortie
 	 */
 	public abstract ServletOutputStream createOutputStream() throws IOException;
 
 	/**
-	 * Retourne le servlet output stream associé avec cette response.
+	 * Retourne le servlet output stream associe avec cette response.
 	 * @return javax.servlet.ServletOutputStream
-	 * @throws java.io.IOException   Erreur d'entrée/sortie
+	 * @throws java.io.IOException   Erreur d'entree/sortie
 	 */
 	@Override
 	public final ServletOutputStream getOutputStream() throws IOException {
@@ -137,9 +137,9 @@ public abstract class AbstractHttpServletResponseWrapper extends javax.servlet.h
 	}
 
 	/**
-	 * Retourne le writer associé avec cette response.
+	 * Retourne le writer associe avec cette response.
 	 * @return java.io.PrintWriter
-	 * @throws java.io.IOException   Erreur d'entrée/sortie
+	 * @throws java.io.IOException   Erreur d'entree/sortie
 	 */
 	@Override
 	public final PrintWriter getWriter() throws IOException {
@@ -164,7 +164,7 @@ public abstract class AbstractHttpServletResponseWrapper extends javax.servlet.h
 
 	/**
 	 * Flushe le buffer et commite la response.
-	 * @throws java.io.IOException   Erreur d'entrée/sortie
+	 * @throws java.io.IOException   Erreur d'entree/sortie
 	 */
 	@Override
 	public final void flushBuffer() throws IOException {
@@ -176,8 +176,8 @@ public abstract class AbstractHttpServletResponseWrapper extends javax.servlet.h
 	}
 
 	/**
-	 * Définit la longueur du corps du contenu dans la réponse.
-	 * Dans les servlets http, cette méthode définit le Content-Length dans les headers HTTP.
+	 * Definit la longueur du corps du contenu dans la reponse.
+	 * Dans les servlets http, cette methode definit le Content-Length dans les headers HTTP.
 	 * @param length int
 	 */
 	@Override
@@ -186,8 +186,8 @@ public abstract class AbstractHttpServletResponseWrapper extends javax.servlet.h
 	}
 
 	/**
-	 * Définit le type du contenu dans la réponse.
-	 * Dans les servlets http, cette méthode définit le Content-Type dans les headers HTTP.
+	 * Definit le type du contenu dans la reponse.
+	 * Dans les servlets http, cette methode definit le Content-Type dans les headers HTTP.
 	 * @param type String
 	 */
 	@Override

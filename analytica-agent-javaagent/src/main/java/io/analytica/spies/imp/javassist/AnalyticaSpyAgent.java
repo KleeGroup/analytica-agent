@@ -88,7 +88,7 @@ public final class AnalyticaSpyAgent {
 	}
 
 	public static void reloadAll() {
-		//code < jdk1.6 : can't reload 
+		//code < jdk1.6 : can't reload
 		System.out.println("AnalyticaAgent reload All");
 		doReload(obtainInstrumentedClasses());
 	}
@@ -115,7 +115,7 @@ public final class AnalyticaSpyAgent {
 
 	private static Class<?>[] obtainInstrumentedClasses() {
 		final Class<?>[] allLoadedClasses = instrumentation.getAllLoadedClasses();
-		final List<Class<?>> classes = new ArrayList<Class<?>>(allLoadedClasses.length);
+		final List<Class<?>> classes = new ArrayList<>(allLoadedClasses.length);
 		for (final Class<?> clazz : allLoadedClasses) {
 			if (((AnalyticaSpyTransformer) transformer).shouldTransform(clazz.getClassLoader(), clazz.getName())) {
 				classes.add(clazz);

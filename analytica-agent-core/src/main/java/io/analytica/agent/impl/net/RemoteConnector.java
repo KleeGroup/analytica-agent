@@ -2,7 +2,7 @@
  * Analytica - beta version - Systems Monitoring Tool
  *
  * Copyright (C) 2013, KleeGroup, direction.technique@kleegroup.com (http://www.kleegroup.com)
- * KleeGroup, Centre d'affaire la Boursidi�re - BP 159 - 92357 Le Plessis Robinson Cedex - France
+ * KleeGroup, Centre d'affaire la Boursidière - BP 159 - 92357 Le Plessis Robinson Cedex - France
  *
  * This program is free software; you can redistribute it and/or modify it under the terms
  * of the GNU General Public License as published by the Free Software Foundation;
@@ -41,6 +41,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status.Family;
 
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
 
 import org.apache.log4j.Logger;
@@ -51,33 +53,35 @@ import com.sun.jersey.api.client.ClientResponse.Status;
 import com.sun.jersey.api.client.WebResource;
 
 /**
- * TODO voir http://ghads.wordpress.com/2008/09/24/calling-a-rest-webservice-from-java-without-libs/
+ * TODO look into http://ghads.wordpress.com/2008/09/24/calling-a-rest-webservice-from-java-without-libs/
  * @author npiedeloup
  * @version $Id: RemoteNetPlugin.java,v 1.4 2012/06/14 13:49:17 npiedeloup Exp $
  */
 public final class RemoteConnector implements KProcessConnector {
 	private static final String SPOOL_CONTEXT = "Analytica_Spool";
-	private static final String VERSION_MAJOR = "1.0"; //definit la compatibilit�
-	private static final String VERSION_MINOR = "0";
-	private static final String VERSION = VERSION_MAJOR + "." + VERSION_MINOR;
-
+	private static final String VERSION_MAJOR = "1"; //used for compatibility warning
+	private static final String VERSION_MINOR = "3";
+	private static final String VERSION_PATCH = "2";
+	private static final String VERSION = VERSION_MAJOR + "." + VERSION_MINOR + "." + VERSION_PATCH;
+	private static final int EIGHT_HOURS = 8 * 60 * 60;
+	private static long MAX_TIME_WAITING_TILL_FORCE_KILL = 10000L;
 	private final Logger logger = Logger.getLogger(RemoteConnector.class);
 
 	private Thread processSenderThread = null;
 	private final ConcurrentLinkedQueue<KProcess> processQueue = new ConcurrentLinkedQueue<KProcess>();
-	private net.sf.ehcache.CacheManager manager;
+	private CacheManager manager;
 	private final String serverUrl;
 	private final int sendPaquetSize;
 	private final int sizeCheckFrequencyMs;
 	private final int sendPaquetFrequencySeconds;
 	private Client locatorClient;
 	private WebResource remoteWebResource;
-	private final int maxResendJson = 5; //On limite a 5 car ce sont d�j� des paquets de sendPaquetSize Processes
+	private final int maxResendJson = 5;//predefined value
 
 	/**
-	 * @param serverUrl Url du serveur Analytica
-	 * @param sendPaquetSize Taille des paquets d�clenchant l'envoi anticip�
-	 * @param sendPaquetFrequencySeconds Frequence normal d'envoi des paquets (en seconde)
+	 * @param serverUrl Analytica's server addresse for PUT. example http://analytica/rest/process
+	 * @param sendPaquetSize Number of processes to send in bulk
+	 * @param sendPaquetFrequencySeconds Sending Frequency(in seconds)
 	 */
 	public RemoteConnector(final String serverUrl, final int sendPaquetSize, final int sendPaquetFrequencySeconds) {
 		this.serverUrl = serverUrl;
@@ -89,12 +93,6 @@ public final class RemoteConnector implements KProcessConnector {
 	/** {@inheritDoc} */
 	public void add(final KProcess process) {
 		processQueue.add(process);
-		//		if (processQueue.size() >= sendPaquetSize) {
-		//			synchronized (processQueue) {
-		//				processQueue.notify();
-		//				logger.trace("processQueue.size() >= sendPaquetSize notify : " + processQueue.size() + " >= " + sendPaquetSize);
-		//			}
-		//		}
 	}
 
 	/** {@inheritDoc} */
@@ -103,14 +101,14 @@ public final class RemoteConnector implements KProcessConnector {
 		locatorClient.addFilter(new com.sun.jersey.api.client.filter.GZIPContentEncodingFilter());
 		remoteWebResource = locatorClient.resource(serverUrl);
 
-		manager = net.sf.ehcache.CacheManager.create();
+		manager = CacheManager.create();
 		if (!manager.cacheExists(SPOOL_CONTEXT)) {
 			final boolean overflowToDisk = true;
 			final boolean eternal = false;
-			final int timeToLiveSeconds = 8 * 60 * 60; //on accept 8h d'indisponibilit� max
+			final int timeToLiveSeconds = EIGHT_HOURS;
 			final int timeToIdleSeconds = timeToLiveSeconds;
-			final int maxElementsInMemory = 1;//0 = illimit�, 1 car on souhaite le minimum d'empreinte m�moire
-			final net.sf.ehcache.Cache cache = new net.sf.ehcache.Cache(SPOOL_CONTEXT, maxElementsInMemory, overflowToDisk, eternal, timeToLiveSeconds, timeToIdleSeconds);
+			final int maxElementsInMemory = 1;
+			final Cache cache = new Cache(SPOOL_CONTEXT, maxElementsInMemory, overflowToDisk, eternal, timeToLiveSeconds, timeToIdleSeconds);
 			manager.addCache(cache);
 		}
 
@@ -126,9 +124,9 @@ public final class RemoteConnector implements KProcessConnector {
 		logger.info("Stopping Analytica RemoteNetPlugin");
 		processSenderThread.interrupt();
 		try {
-			processSenderThread.join(10000);//on attend 10s max
+			processSenderThread.join(MAX_TIME_WAITING_TILL_FORCE_KILL);
 		} catch (final InterruptedException e) {
-			//rien, si interrupt on continu l'arret
+			//NA
 		}
 		processSenderThread = null;
 		flushAllProcessQueue();
@@ -136,18 +134,15 @@ public final class RemoteConnector implements KProcessConnector {
 		locatorClient = null;
 		remoteWebResource = null;
 		manager.shutdown();
-
 		logger.info("Stop Analytica RemoteNetPlugin");
 	}
 
 	private static class SendProcessThread extends Thread {
 		private final RemoteConnector remoteConnector;
 
-		//private final Logger logger = Logger.getLogger(SendProcessThread.class);
-
 		SendProcessThread(final RemoteConnector remoteConnector) {
 			super("AnalyticaSendProcessThread");
-			setDaemon(false); //ce n'est pas un d�mon car on veux envoyer les derniers process
+			setDaemon(false);
 			if (remoteConnector == null) {
 				throw new NullPointerException("remoteConnector is required");
 			}
@@ -159,35 +154,23 @@ public final class RemoteConnector implements KProcessConnector {
 		@Override
 		public void run() {
 			while (!isInterrupted()) {
-				//System.out.println("WHILE processSenderThread isInterrupted() :" + isInterrupted());
 				try {
 					remoteConnector.waitToSendPacket();
 				} catch (final InterruptedException e) {
-					interrupt();//On remet le flag qui a �t� reset lors du throw InterruptedException (pour le test isInterrupted())
-					//logger.trace("interrupt()");
-					//on envoi avant l'arret du serveur
+					interrupt();
 				}
-				//On flush la queue sur :
-				// - le timeout
-				// - un processQueue.notify (taille max de la queue atteinte)
-				// - un interrupt (arret du serveur)
 				remoteConnector.retrySendProcesses();
 				remoteConnector.flushProcessQueue();
-				//System.out.println("WHILE processSenderThread isInterrupted() :" + isInterrupted());
-
 			}
-			//System.out.println("END processSenderThread isInterrupted() :" + isInterrupted());
-
 		}
 	}
 
 	/**
-	 * On attend la constitution d'un paquet.
-	 * Rend la main apr�s :
-	 * - le timeout
-	 * - un processQueue.notify (taille max de la queue atteinte)
-	 * - un interrupt (arret du serveur)
-	 * @throws InterruptedException Si interrupt
+	 * Waiting for:
+	 * - timeout
+	 * - processQueue.notify (number of paquets has achived the maximum)
+	 * - interruption
+	 * @throws InterruptedException
 	 */
 	void waitToSendPacket() throws InterruptedException {
 		final long start = System.currentTimeMillis();
@@ -195,29 +178,26 @@ public final class RemoteConnector implements KProcessConnector {
 				&& System.currentTimeMillis() - start < sendPaquetFrequencySeconds * 1000) {
 			Thread.sleep(sizeCheckFrequencyMs);
 		}
-		//		synchronized (processQueue) { //synchronized pour recevoir le notifiy
-		//			logger.trace("processQueue.wait");
-		//			processQueue.wait(sendPaquetFrequencySeconds * 1000);
-		//			logger.trace("processQueue.wait continue");
-		//		}
 	}
 
 	/**
-	 * Flush la queue des process (au max sendPaquetSize * 2).
+	 * Standard usage of the flushing the process queue function
 	 */
 	void flushProcessQueue() {
-		flushProcessQueue(sendPaquetSize * 2); //si besoin on va jusqu'a un sur-booking x2 des paquets
+		flushProcessQueue(sendPaquetSize * 2); //if necessary accepting twice the allowed limit
 	}
 
 	/**
-	 * Flush toute la queue des processes (utilis�e lors de l'arret de l'agent)
+	 * Flushing the entire process queue(generally when stopping the agent)
 	 */
 	void flushAllProcessQueue() {
 		flushProcessQueue(Long.MAX_VALUE);
 	}
 
 	/**
-	 * Effectue le flush de la queue des processes � envoyer.
+	 * Flushing maximum maxPaquetSize elements from the queue
+	 * - sending the data using the configured connector
+	 * - removing the data
 	 */
 	private void flushProcessQueue(final long maxPaquetSize) {
 		long sendPaquet = 0;
@@ -228,16 +208,13 @@ public final class RemoteConnector implements KProcessConnector {
 			if (head != null) {
 				processes.add(head);
 			}
-			if (processes.size() >= sendPaquetSize * 2) { //si besoin on va jusqu'a un sur-booking x2 des paquets
+			if (processes.size() >= sendPaquetSize * 2) {
 				doSendProcesses(processes);
 				sendPaquet += processes.size();
 				processes.clear();
 			}
 		} while (head != null && sendPaquet < maxPaquetSize);
 		doSendProcesses(processes);
-
-		//On n'utilise pas le MediaType.APPLICATION_JSON, car jackson a besoin de modifications sur KProcess
-		//final ClientResponse response = remoteWeResource.accept(MediaType.APPLICATION_JSON).put(ClientResponse.class, processes);
 	}
 
 	private void doSendProcesses(final List<KProcess> processes) {
@@ -253,31 +230,25 @@ public final class RemoteConnector implements KProcessConnector {
 		}
 	}
 
-	/**
-	 * Tente de renvoyer les paquets qui ont �chou�s.
-	 */
 	void retrySendProcesses() {
 		try {
 			final List<UUID> keys = manager.getCache(SPOOL_CONTEXT).getKeys();
-			for (int i = 0; i < maxResendJson && i < keys.size(); i++) { //on limite a 5 car ce sont d�j� des paquets constitu�s
+			for (int i = 0; i < maxResendJson && i < keys.size(); i++) {
 				final UUID key = keys.get(i);
 				doSendJson(remoteWebResource, (String) manager.getCache(SPOOL_CONTEXT).get(key).getValue());
-				manager.getCache(SPOOL_CONTEXT).remove(key); //si l'envoi est pass�, on retire du cache
+				manager.getCache(SPOOL_CONTEXT).remove(key);
 			}
 		} catch (final Exception e) {
-			//serveur indisponible ou en erreur
 			logSendError(true, e);
 		}
 	}
 
 	private void logSendError(final boolean isResend, final Exception e) {
-		//serveur indisponible ou en erreur
 		final String action = isResend ? "Resend" : "Send";
 		if (logger.isDebugEnabled()) {
-			logger.debug(action + " : Serveur Analytica indisponible : " + e.getMessage(), e);
+			logger.debug(action + " : The Analytica server is not responding : " + e.getMessage(), e);
 		} else {
-			final String message = action + " : Serveur Analytica indisponible : " + e.getMessage();
-			//volontairement on ne passe pas l'exception pour ne pas saturer le log
+			final String message = action + " : The Analytica server is not responding : " + e.getMessage();
 			if (isResend) {
 				logger.info(message);
 			} else {
@@ -307,22 +278,20 @@ public final class RemoteConnector implements KProcessConnector {
 		if (status.getFamily() == Family.SUCCESSFUL) {
 			return;
 		}
-		throw new RuntimeException("Une erreur est survenue : " + status.getStatusCode() + " " + status.getReasonPhrase());
+		throw new RuntimeException("The error " + status.getStatusCode() + " was received. " + status.getReasonPhrase());
 	}
 
 	private void checkServerVersion() {
-		//On check la version
 		final WebResource remoteVersionWebResource = locatorClient.resource(serverUrl + "/version");
 		try {
 			final String serverVersion = doGet(remoteVersionWebResource);
 			if (!serverVersion.startsWith(VERSION_MAJOR)) {
-				logger.warn("Cette version du client Analytica (" + VERSION + ") n''est pas compatible avec la version du serveur (" + serverVersion + ")");
+				logger.warn("Analytica's client version (" + VERSION + ") is not compatible with the server (" + serverVersion + ")");
 			} else {
 				logger.info("Connexion OK avec le serveur Analytica (" + serverUrl + ")");
 			}
 		} catch (final Exception e) {
-			//serveur indisponible ou en erreur
-			logger.warn("Serveur Analytica indisponible (" + serverUrl + ") : " + e.getMessage());
+			logger.warn("Unable to connect to the Analytica server (" + serverUrl + ") : " + e.getMessage());
 		}
 	}
 }

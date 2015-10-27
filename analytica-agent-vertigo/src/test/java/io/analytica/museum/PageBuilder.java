@@ -15,24 +15,13 @@
  * You should have received a copy of the GNU General Public License along with this program;
  * if not, see <http://www.gnu.org/licenses>
  */
-package io.analytica.spies.impl.facade;
+package io.analytica.museum;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import io.analytica.api.KProcess;
 
-/**
- * Annotation à poser sur les méthodes des implémentations des services.
- * L'utilisation de cette annotation est optionnelle. 
- * Pour la pose systématique d'un intercepteur gérant l'instrumentation, utiliser un
- * aspect automatique.
- * 
- * @author npiedeloup
- * @version $Id: Instrumented.java,v 1.1 2011/05/12 10:16:12 npiedeloup Exp $
- */
-@Target({ ElementType.METHOD })
-@Retention(RetentionPolicy.RUNTIME)
-public @interface Instrumented {
-	// vide
+import java.util.Date;
+
+interface PageBuilder {
+	KProcess createPage(final Date dateVisit);
+
 }

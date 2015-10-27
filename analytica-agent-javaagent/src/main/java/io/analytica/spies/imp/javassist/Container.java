@@ -29,13 +29,9 @@
  */
 package io.analytica.spies.imp.javassist;
 
-import io.analytica.agent.impl.net.DummyConnector;
-import io.analytica.agent.impl.net.FileLogConnector;
-import io.analytica.agent.impl.net.RemoteConnector;
-import io.analytica.api.KProcessCollector;
-import io.analytica.api.KProcessConnector;
-
-import java.util.Map;
+import io.analytica.agent.api.KProcessCollector;
+import io.analytica.agent.api.KProcessConnector;
+import io.vertigo.core.Home;
 
 /**
  *
@@ -55,26 +51,25 @@ public final class Container {
 	 * @param analyticaSpyConf Configuration file
 	 */
 	public static void initCollector(final AnalyticaSpyConf analyticaSpyConf) {
-		final String collectorName = analyticaSpyConf.getCollectorName();
-		final Map<String, String> collectorParams = analyticaSpyConf.getCollectorParams();
-		final KProcessConnector processConnector;
-		if ("FileLog".equals(collectorName)) {
-			processConnector = new FileLogConnector(collectorParams.get("fileName"));
-		} else if ("RemoteHTTP".equals(collectorName)) {
-			processConnector = new RemoteConnector(collectorParams.get("serverUrl"), Integer.parseInt(collectorParams.get("sendPaquetSize")), Integer.parseInt(collectorParams.get("sendPaquetFrequencySeconds")));
-		} else {
-			System.err.println("Unknown Connector : " + collectorName + " fallback to DummyCollector (use one of : FileLog, RemoteHTTP, Dummy)");
-			processConnector = new DummyConnector();
-		}
+		//		final String collectorName = analyticaSpyConf.getCollectorName();
+		//		final Map<String, String> collectorParams = analyticaSpyConf.getCollectorParams();
+		//		final KProcessConnector processConnector;
+		//		if ("FileLog".equals(collectorName)) {
+		//			processConnector = new FileLogConnector(collectorParams.get("fileName"));
+		//		} else if ("RemoteHTTP".equals(collectorName)) {
+		//			processConnector = new RemoteConnector(collectorParams.get("serverUrl"), Integer.parseInt(collectorParams.get("sendPaquetSize")), Integer.parseInt(collectorParams.get("sendPaquetFrequencySeconds")));
+		//		} else {
+		//			System.err.println("Unknown Connector : " + collectorName + " fallback to DummyCollector (use one of : FileLog, RemoteHTTP, Dummy)");
+		//			processConnector = new DummyConnector();
+		//		}
 
-		PROCESS_COLLECTOR_INSTANCE = new KProcessCollector(analyticaSpyConf.getSystemName(), analyticaSpyConf.getSystemLocation(), processConnector);
-		processConnector.start();
+		PROCESS_COLLECTOR_INSTANCE = Home.getComponentSpace().resolve(KProcessCollector.class);
 
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			@Override
 			public void run() {
 				if (PROCESS_CONNECTOR_INSTANCE != null) {
-					PROCESS_CONNECTOR_INSTANCE.stop();
+					//					PROCESS_CONNECTOR_INSTANCE.stop();
 				}
 			}
 		});

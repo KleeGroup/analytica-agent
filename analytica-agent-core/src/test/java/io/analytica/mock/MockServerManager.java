@@ -54,7 +54,7 @@ public final class MockServerManager {
 	 * Constructeur simple pour instanciation par TU.
 	 */
 	public MockServerManager() {
-		INSTANCE = new WeakReference<MockServerManager>(this); //WeakRef pour etre lib�r� automatiquement
+		INSTANCE = new WeakReference<MockServerManager>(this);
 	}
 
 	/**

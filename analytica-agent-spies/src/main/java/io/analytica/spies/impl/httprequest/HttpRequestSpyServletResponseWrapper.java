@@ -2,7 +2,7 @@
  * Analytica - beta version - Systems Monitoring Tool
  *
  * Copyright (C) 2013, KleeGroup, direction.technique@kleegroup.com (http://www.kleegroup.com)
- * KleeGroup, Centre d'affaire la Boursidière - BP 159 - 92357 Le Plessis Robinson Cedex - France
+ * KleeGroup, Centre d'affaire la Boursidiere - BP 159 - 92357 Le Plessis Robinson Cedex - France
  *
  * This program is free software; you can redistribute it and/or modify it under the terms
  * of the GNU General Public License as published by the Free Software Foundation;
@@ -35,13 +35,13 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Implémentation de HttpServletResponseWrapper qui fonctionne avec le HttpRequestSpy.
+ * Implementation de HttpServletResponseWrapper qui fonctionne avec le HttpRequestSpy.
  * @author npiedeloup
  * @version $Id: CounterServletResponseWrapper.java,v 1.1 2010/02/11 15:35:39 pchretien Exp $
  */
 final class HttpRequestSpyServletResponseWrapper extends AbstractHttpServletResponseWrapper {
 	/**
-	 * Constructeur qui crée un adapteur de ServletResponse wrappant la response spécifiée.
+	 * Constructeur qui cree un adapteur de ServletResponse wrappant la response specifiee.
 	 * @param response javax.servlet.HttpServletResponse
 	 */
 	HttpRequestSpyServletResponseWrapper(final HttpServletResponse response) {
@@ -49,7 +49,7 @@ final class HttpRequestSpyServletResponseWrapper extends AbstractHttpServletResp
 	}
 
 	/**
-	 * Retourne la valeur de la propriété dataLength.
+	 * Retourne la valeur de la propriete dataLength.
 	 * @return int
 	 */
 	public long getDataLength() {
@@ -57,9 +57,9 @@ final class HttpRequestSpyServletResponseWrapper extends AbstractHttpServletResp
 	}
 
 	/**
-	 * Crée et retourne un ServletOutputStream pour écrire le contenu dans la response associée.
+	 * Cree et retourne un ServletOutputStream pour ecrire le contenu dans la response associee.
 	 * @return javax.servlet.ServletOutputStream
-	 * @throws java.io.IOException   Erreur d'entrée/sortie
+	 * @throws java.io.IOException   Erreur d'entree/sortie
 	 */
 	@Override
 	public ServletOutputStream createOutputStream() throws IOException {

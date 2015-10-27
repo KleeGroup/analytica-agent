@@ -84,6 +84,8 @@ public final class KProcess {
 	//	public static final Pattern CATEGORY_REGEX = Pattern.compile("[a-z][a-z//-_]*");
 	public static final Pattern LOCATION_REGEX = Pattern.compile("[A-Z0-9a-z//.]*"); //a revoir
 
+	public static final String CATEGORY_SEPARATOR = "/";
+	public static final String LOCATION_SEPARATOR = "/";
 	private final String appName;
 	private final String type; //ex : sql, page....
 
@@ -171,6 +173,10 @@ public final class KProcess {
 		return category;
 	}
 
+	public String[] getCategoryAsArray() {
+		return category.split(CATEGORY_SEPARATOR);
+	}
+
 	/**
 	 * @return Process duration */
 	public double getDuration() {
@@ -191,6 +197,10 @@ public final class KProcess {
 	 */
 	public String getLocation() {
 		return location;
+	}
+
+	public String[] getLocationAsArray() {
+		return location.split(LOCATION_SEPARATOR);
 	}
 
 	/**

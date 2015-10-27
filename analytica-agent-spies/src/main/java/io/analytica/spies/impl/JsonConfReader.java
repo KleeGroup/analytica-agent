@@ -2,7 +2,7 @@
  * Analytica - beta version - Systems Monitoring Tool
  *
  * Copyright (C) 2013, KleeGroup, direction.technique@kleegroup.com (http://www.kleegroup.com)
- * KleeGroup, Centre d'affaire la Boursidière - BP 159 - 92357 Le Plessis Robinson Cedex - France
+ * KleeGroup, Centre d'affaire la BoursidiÃ¨re - BP 159 - 92357 Le Plessis Robinson Cedex - France
  *
  * This program is free software; you can redistribute it and/or modify it under the terms
  * of the GNU General Public License as published by the Free Software Foundation;
@@ -50,7 +50,7 @@ public final class JsonConfReader {
 	 * Chargement d'une configuration.
 	 * @param confFileUrl URL du fichier de conf
 	 * @param confClass Class de l'objet portant la conf
-	 * @return Instance de la configuration chargée à partir du fichier
+	 * @return Instance de la configuration charge a partir du fichier
 	 */
 	public static <D extends Object> D loadJsonConf(final URL confFileUrl, final Class<D> confClass) {
 		try {
@@ -68,7 +68,7 @@ public final class JsonConfReader {
 	 * Chargement d'une configuration.
 	 * @param configurationFileName Chemin du fichier de conf
 	 * @param confClass Class de l'objet portant la conf
-	 * @return Instance de la configuration chargée à partir du fichier
+	 * @return Instance de la configuration charge a partir du fichier
 	 */
 	public static final <D extends Object> D loadJsonConf(final String configurationFileName, final Class<D> confClass) {
 		try {

@@ -52,22 +52,22 @@ import org.junit.Test;
 public final class ConfAnalyticaSpyAgentTest {
 
 	/**
-	 * Test simple avec deux compteurs. 
-	 * Test sur l'envoi de 1000 articles d'un poids de 25 kg. 
+	 * Test simple avec deux compteurs.
+	 * Test sur l'envoi de 1000 articles d'un poids de 25 kg.
 	 * Chaque article coute 10€.
 	 */
 	@Test
 	public void testEscapeComments() {
-		final String[] testedTexts = { // 
-		"/* First comment \n first comment—line two*/\n/* Second comment */", //
+		final String[] testedTexts = { //
+				"/* First comment \n first comment—line two*/\n/* Second comment */", //
 				"start_code();\n/* First comment */\nmore_code(); \n/* Second comment */\nend_code();", //
 				"/*\n * Common multi-line comment style.\n */\n/* Second comment */", //
 				"start_code();\n/****\n * Common multi-line comment style.\n ****/\nmore_code(); \n/*\n * Another common multi-line comment style.\n */\nend_code();", //
 				"/****\n * Common multi-line comment style.\n ****/\n/****\n * Another common multi-line comment style.\n */" //
 		};
-		final String[] testedPatterns = { // 
-		//"/\\*.*\\*/", //
-		//	"/\\*(.|[\\r\\n])*\\*/",//
+		final String[] testedPatterns = { //
+				//"/\\*.*\\*/", //
+				//	"/\\*(.|[\\r\\n])*\\*/",//
 				"/\\*(.|[\\r\\n])*?\\*/",//
 				"(?:/\\*(?:[^*]|(?:\\*+[^*/]))*\\*+/)|(?://.*)",//
 		};
@@ -75,7 +75,7 @@ public final class ConfAnalyticaSpyAgentTest {
 	}
 
 	private void doTestParsing(final String[] testedlogs, final String[] testedPatterns) {
-		final List<Pattern> patterns = new ArrayList<Pattern>(testedPatterns.length);
+		final List<Pattern> patterns = new ArrayList<>(testedPatterns.length);
 
 		for (final String testedPattern : testedPatterns) {
 			patterns.add(Pattern.compile(testedPattern));

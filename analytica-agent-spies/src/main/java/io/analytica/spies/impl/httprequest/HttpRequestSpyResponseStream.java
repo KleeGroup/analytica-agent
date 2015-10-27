@@ -2,7 +2,7 @@
  * Analytica - beta version - Systems Monitoring Tool
  *
  * Copyright (C) 2013, KleeGroup, direction.technique@kleegroup.com (http://www.kleegroup.com)
- * KleeGroup, Centre d'affaire la Boursidière - BP 159 - 92357 Le Plessis Robinson Cedex - France
+ * KleeGroup, Centre d'affaire la BoursidiÃ¨re - BP 159 - 92357 Le Plessis Robinson Cedex - France
  *
  * This program is free software; you can redistribute it and/or modify it under the terms
  * of the GNU General Public License as published by the Free Software Foundation;
@@ -23,7 +23,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Implémentation de ServletOutputStream qui fonctionne avec le HttpRequestSpy.
+ * Implementation de ServletOutputStream qui fonctionne avec le HttpRequestSpy.
  * @author npiedeloup
  * @version $Id: CounterResponseStream.java,v 1.1 2010/02/11 15:35:39 pchretien Exp $
  */
@@ -32,9 +32,9 @@ final class HttpRequestSpyResponseStream extends ServletOutputStream {
 	private int dataLength; //implicite = 0;
 
 	/**
-	 * Construit un servlet output stream associé avec la réponse spécifiée.
+	 * Construit un servlet output stream associe avec la reponse specifiee.
 	 * @param response javax.servlet.http.HttpServletResponse
-	 * @throws java.io.IOException   Erreur d'entrée/sortie
+	 * @throws java.io.IOException   Erreur d'entree/sortie
 	 */
 	HttpRequestSpyResponseStream(final HttpServletResponse response) throws IOException {
 		super();
@@ -42,7 +42,7 @@ final class HttpRequestSpyResponseStream extends ServletOutputStream {
 	}
 
 	/**
-	 * Retourne la valeur de la propriété dataLength.
+	 * Retourne la valeur de la propriete dataLength.
 	 * @return int
 	 */
 	public int getDataLength() {
@@ -50,8 +50,8 @@ final class HttpRequestSpyResponseStream extends ServletOutputStream {
 	}
 
 	/**
-	 * Ferme cet output stream (et flushe les données bufferisées).
-	 * @throws java.io.IOException   Erreur d'entrée/sortie
+	 * Ferme cet output stream (et flushe les donnees bufferisees).
+	 * @throws java.io.IOException   Erreur d'entree/sortie
 	 */
 	@Override
 	public void close() throws IOException {
@@ -59,8 +59,8 @@ final class HttpRequestSpyResponseStream extends ServletOutputStream {
 	}
 
 	/**
-	 * Flushe les données bufferisées de cet output stream.
-	 * @throws java.io.IOException   Erreur d'entrée/sortie
+	 * Flushe les donnees bufferisees de cet output stream.
+	 * @throws java.io.IOException   Erreur d'entree/sortie
 	 */
 	@Override
 	public void flush() throws IOException {
@@ -68,9 +68,9 @@ final class HttpRequestSpyResponseStream extends ServletOutputStream {
 	}
 
 	/**
-	 * Ecrit l'octet spécifié dans l'output stream
+	 * Ecrit l'octet specifie dans l'output stream
 	 * @param i int
-	 * @throws java.io.IOException   Erreur d'entrée/sortie
+	 * @throws java.io.IOException   Erreur d'entree/sortie
 	 */
 	@Override
 	public void write(final int i) throws IOException {
@@ -79,9 +79,9 @@ final class HttpRequestSpyResponseStream extends ServletOutputStream {
 	}
 
 	/**
-	 * Ecrit les octets spécifiés dans l'output stream.
+	 * Ecrit les octets specifies dans l'output stream.
 	 * @param bytes bytes[]
-	 * @throws java.io.IOException   Erreur d'entrée/sortie
+	 * @throws java.io.IOException   Erreur d'entree/sortie
 	 */
 	@Override
 	public void write(final byte[] bytes) throws IOException {
@@ -91,12 +91,12 @@ final class HttpRequestSpyResponseStream extends ServletOutputStream {
 	}
 
 	/**
-	 * Ecrit <code>len</code> octets du tableau d'octets spécifiés, en commençant à la position spécifiée,
+	 * Ecrit <code>len</code> octets du tableau d'octets specifies, en commeneant e la position specifiee,
 	 * dans l'output stream.
 	 * @param bytes bytes[]
 	 * @param off int
 	 * @param len int
-	 * @throws java.io.IOException   Erreur d'entrée/sortie
+	 * @throws java.io.IOException   Erreur d'entree/sortie
 	 */
 	@Override
 	public void write(final byte[] bytes, final int off, final int len) throws IOException {

@@ -107,15 +107,34 @@ public final class KProcessBuilder {
 		return this;
 	}
 
+	public KProcessBuilder withLocation(final String... locations) {
+		int counter = 0;
+		final StringBuilder locationBuilder = new StringBuilder();
+		for (final String _location : locations) {
+			if (counter != 0) {
+				locationBuilder.append(KProcess.CATEGORY_SEPARATOR);
+			}
+			locationBuilder.append(_location);
+			counter++;
+		}
+		myLocation = locationBuilder.toString();
+		return this;
+	}
+
 	public KProcessBuilder withCategory(final String category) {
 		myCategory = category;
 		return this;
 	}
 
 	public KProcessBuilder withCategory(final String... categories) {
+		int counter = 0;
 		final StringBuilder categoryBuilder = new StringBuilder();
-		for (final String category : categories) {
-			categoryBuilder.append(category).append("/");
+		for (final String _category : categories) {
+			if (counter != 0) {
+				categoryBuilder.append(KProcess.CATEGORY_SEPARATOR);
+			}
+			categoryBuilder.append(_category);
+			counter++;
 		}
 		myCategory = categoryBuilder.toString();
 		return this;
