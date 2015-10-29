@@ -230,14 +230,19 @@ public final class KProcessBuilder {
 	 * @param subPocess Sous-Processus a ajouter
 	 * @return Builder
 	 */
-	public KProcessBuilder addSubProcess(final KProcess subPocess) {
-		Assertion.checkNotNull(subPocess, "sub process is required ");
-		//---------------------------------------------------------------------
-		subProcesses.add(subPocess);
-		incMeasure(KProcess.SUB_DURATION, subPocess.getDuration());
-		return this;
+	public KProcessBuilder addSubProcess(final KProcess subProcess) {
+		return addSubProcess(subProcess,true);
 	}
 
+	public KProcessBuilder addSubProcess(final KProcess subProcess, final boolean addSubDuration){
+		Assertion.checkNotNull(subProcess, "sub process is required ");
+		//---------------------------------------------------------------------
+		subProcesses.add(subProcess);
+		if (addSubDuration){
+			incMeasure(KProcess.SUB_DURATION, subProcess.getDuration());
+		}
+		return this;
+	}
 	/**
 	 * Construction du Processus.
 	 * @return Process

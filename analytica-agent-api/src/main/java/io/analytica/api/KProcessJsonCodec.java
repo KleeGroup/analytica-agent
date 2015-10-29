@@ -94,7 +94,7 @@ public final class KProcessJsonCodec {
 		/** {@inheritDoc} */
 		public KProcess deserialize(final JsonElement json, final Type typeOfT, final JsonDeserializationContext context) throws JsonParseException {
 			//{"type":"COMMANDE","subTypes":["5 Commandes"],"startDate":"Mar 12, 2014 2:37:48 PM",
-			// "measures":{"sub-duration":3.0,"HMDURATION":4.0},"metaDatas":{},"subProcesses":[]}
+			// "measures":{"sub_duration":3.0,"HMDURATION":4.0},"metaDatas":{},"subProcesses":[]}
 			final JsonObject jsonObject = json.getAsJsonObject();
 
 			final JsonPrimitive jsonAppName = jsonObject.getAsJsonPrimitive("appName");

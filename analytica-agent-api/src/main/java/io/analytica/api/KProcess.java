@@ -73,7 +73,7 @@ public final class KProcess {
 	/**
 	 * Mesure de type duree.
 	 */
-	public static final String SUB_DURATION = "sub-duration";
+	public static final String SUB_DURATION = "sub_duration";
 	/**
 	 * REGEX d�crivant les r�gles sur les noms (type de process, mesures et metadata, . (exemples : sql, mail, services)
 	 */
@@ -138,7 +138,7 @@ public final class KProcess {
 			throw new IllegalArgumentException("measures must contain DURATION");
 		}
 		if (measures.containsKey(SUB_DURATION) && measures.get(SUB_DURATION) > measures.get(DURATION)) {
-			throw new IllegalArgumentException("measures SUB-DURATION must be lower than DURATION (duration:" + measures.get(DURATION) + " < sub-duration:" + measures.get(SUB_DURATION) + ") in process type " + type + ", category  : " + category + " at " + startDate);
+			throw new IllegalArgumentException("measures SUB_DURATION must be lower than DURATION (duration:" + measures.get(DURATION) + " < sub_duration:" + measures.get(SUB_DURATION) + ") in process type " + type + ", category  : " + category + " at " + startDate);
 		}
 		//---------------------------------------------------------------------
 		this.appName = appName;
