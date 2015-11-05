@@ -65,6 +65,14 @@ public final class KProcessCollector {
 		this.processConnector.start();
 	}
 
+	public String getAppName() {
+		return appName;
+	}
+
+	public String getLocation() {
+		return location;
+	}
+	
 	/**
 	 * Processus binde sur le thread courant. Le processus , recoit les notifications des sondes placees dans le code de
 	 * l'application pendant le traitement d'une requete (thread).

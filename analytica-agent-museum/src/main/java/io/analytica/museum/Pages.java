@@ -17,8 +17,10 @@
  */
 package io.analytica.museum;
 
+import io.analytica.api.KMeasureType;
 import io.analytica.api.KProcess;
 import io.analytica.api.KProcessBuilder;
+import io.analytica.api.KProcessType;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -34,10 +36,10 @@ final class Pages {
 	public final static PageBuilder IMAGE_ARTIST = new ImageArtistPage();
 	public final static PageBuilder IMAGE_OEUVRE = new ImageOeuvrePage();
 
-	private static final String ERROR_MEASURE = "error";
-	private static final String PAGE_PROCESS = "page";
-	private static final String SERVICE_PROCESS = "service";
-	private static final String SQL_PROCESS = "sql";
+	private static final String ERROR_MEASURE = KMeasureType.USER_ERROR.toString();;
+	private static final String PAGE_PROCESS = KProcessType.WEB.toString();
+	private static final String SERVICE_PROCESS = KProcessType.SERVICE.toString();
+	private static final String SQL_PROCESS = KProcessType.DB.toString();
 	private static final String SEARCH_PROCESS = "search";
 
 	private static class HomePage implements PageBuilder {

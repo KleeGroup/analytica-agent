@@ -63,12 +63,19 @@ public final class MuseumStarter {
 		remoteConnector.start();
 		final int days = Integer.parseInt(properties.getProperty("days"));
 		final int visitsByDay = Integer.parseInt(properties.getProperty("visitsByDay"));
-		new Museum(new PageListener() {
+		Museum museum= new Museum(new PageListener() {
 			@Override
 			public void onPage(final KProcess process) {
 				remoteConnector.add(process);
 			}
-		}).load(days, visitsByDay);
+		});
+//		museum.load(days, visitsByDay);
+		try {
+			museum.constantLoad(visitsByDay);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		System.exit(0);
 	}
 }

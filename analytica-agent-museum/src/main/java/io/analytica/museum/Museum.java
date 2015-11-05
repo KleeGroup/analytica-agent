@@ -51,7 +51,7 @@ public final class Museum {
 		today.set(Calendar.HOUR_OF_DAY, 0);
 		today.set(Calendar.MINUTE, 0);
 		today.set(Calendar.SECOND, 0);
-		final Date startDate = new DateBuilder(today.getTime()).addDays(2).build();
+		final Date startDate = new DateBuilder(today.getTime()).build();
 		System.out.println("=============");
 		System.out.println("=====days :" + days);
 		System.out.println("=====visitsByDay :" + visitsByDay);
@@ -62,7 +62,12 @@ public final class Museum {
 			final Date visitDate = new DateBuilder(startDate).addDays(-day).build();
 			final Calendar calendar = new GregorianCalendar();
 			calendar.setTime(visitDate);
-			loadVisitors(visitDate, StatsUtil.random(visitsByDay, Activity.getCoefPerDay(calendar.get(Calendar.DAY_OF_WEEK))));
+			try {
+				loadVisitors(visitDate, StatsUtil.random(visitsByDay, Activity.getCoefPerDay(calendar.get(Calendar.DAY_OF_WEEK))));
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
 		}
 		System.out.println();
@@ -71,7 +76,24 @@ public final class Museum {
 
 	}
 
-	private void loadVisitors(final Date startDate, final double visitsByDay) {
+	public void constantLoad(final double visitsByDay) throws InterruptedException{
+		while (true){
+			Date currentDate = new Date();
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(currentDate);
+			cal.add(Calendar.HOUR, -1);
+			Date oneHourBack = cal.getTime();
+			loadVisitors( currentDate,visitsByDay, true);
+		}
+		
+		
+	}
+	
+	private void loadVisitors(final Date startDate, final double visitsByDay) throws InterruptedException{
+		loadVisitors(startDate,visitsByDay,false);
+	}
+	
+	private void loadVisitors(final Date startDate, final double visitsByDay, final boolean sleep) throws InterruptedException {
 		System.out.println("\n===== add " + visitsByDay + " at " + startDate);
 		double visitRatioSum = 0;
 		final double[] visitRatioPerHour = new double[24];
@@ -82,21 +104,33 @@ public final class Museum {
 		final double visitPerHourRatio = visitsByDay / visitRatioSum;
 
 		for (int h = 0; h < 24; h++) {
-			final int nbHourVisit = (int) Math.round(visitRatioPerHour[h] * visitPerHourRatio);
+			loadVisitorPerHour(h, visitPerHourRatio, visitRatioPerHour, startDate,sleep);	
+		}
+	}
+	
+		private void loadVisitorPerHour(final int h,final double visitPerHourRatio, final double []visitRatioPerHour, final Date startDate, final boolean sleep) throws InterruptedException{
+			int index = h;
+			if (sleep){
+				Date date = new Date();   // given date
+				Calendar calendar = GregorianCalendar.getInstance(); // creates a new calendar instance
+				calendar.setTime(date);   
+				index =calendar.get(Calendar.HOUR_OF_DAY);
+			}
+			final int nbHourVisit = (int) Math.round(visitRatioPerHour[index] * visitPerHourRatio);
 			System.out.print(h + "h:" + nbHourVisit + ", ");
+			final long timeToSleep = 60*60*1000L /nbHourVisit;
 			final Date dateHour = new DateBuilder(startDate).addHours(h).toDateTime();
 			for (int i = 0; i < nbHourVisit; i++) {
 				final int defaultMinute = (int) Math.round((i + 1) * 60d / (nbHourVisit + 1));
 				final int randomMinute = (int) (defaultMinute + (4 * 5 - StatsUtil.random(4 * 5, 1))); //default +/- 5 minutes (on joue sur le battement de 20%)
 				final Date startVisit = new DateBuilder(dateHour).addMinutes(randomMinute).toDateTime();
 				addVisitorScenario(startVisit);
+				Thread.sleep(timeToSleep);
 			}
 			loadHealthInfos(dateHour, nbHourVisit);
 			loadQOS(dateHour, nbHourVisit);
-
 		}
-	}
-
+	
 	private void addVisitorScenario(final Date startVisit) {
 		//System.out.println("scenario [" + startVisit.getDay() + ", " + startVisit.getHours() + "] >>" + startVisit);
 		//On ne CODE pas un scenario, on le déclare.
@@ -203,7 +237,7 @@ public final class Museum {
 	}
 
 	private void loadHealthInfos(final Date dateHour, final double nbVisitsHour) {
-		for (int min = 0; min < 60; min += 6) {
+		for (int min = 0; min < 60; min ++) {
 			final Date dateMinute = new DateBuilder(dateHour).addMinutes(min).toDateTime();
 			final KProcess healthProcess = new KProcessBuilder(APP_NAME, HEALTH, dateMinute, 0)
 					.withLocation(Museum.APP_LOCATION).withCategory("physical")

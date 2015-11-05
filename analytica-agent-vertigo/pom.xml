@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>io.analytica</groupId>
 		<artifactId>analytica-agent-parent</artifactId>
-		<version>1.3.2</version>
+		<version>1.3.3</version>
 		<relativePath>../analytica-agent-parent</relativePath>
 	</parent>
 

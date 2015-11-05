@@ -2,7 +2,7 @@
  * Analytica - beta version - Systems Monitoring Tool
  *
  * Copyright (C) 2013, KleeGroup, direction.technique@kleegroup.com (http://www.kleegroup.com)
- * KleeGroup, Centre d'affaire la Boursidière - BP 159 - 92357 Le Plessis Robinson Cedex - France
+ * KleeGroup, Centre d'affaire la Boursidiere - BP 159 - 92357 Le Plessis Robinson Cedex - France
  *
  * This program is free software; you can redistribute it and/or modify it under the terms
  * of the GNU General Public License as published by the Free Software Foundation;
@@ -27,24 +27,42 @@
  * but you are not obliged to do so.
  * If you do not wish to do so, delete this exception statement from your version.
  */
-package io.analytica.api;
+package io.analytica.spies.impl.httprequest;
 
-public enum KProcessType {
-	WEB("WEB"),
-	SERVICE("SERVICE"),
-	DB("DB"),
-	SESSION("SESSION"),
-	JOB("JOB");
+import java.io.IOException;
 
-	private final String processType;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 
-	private KProcessType(final String processType) {
-		this.processType = processType;
+/**
+ * Implementation de HttpServletResponseWrapper qui fonctionne avec le HttpRequestSpy.
+ * @author npiedeloup
+ * @version $Id: CounterServletResponseWrapper.java,v 1.1 2010/02/11 15:35:39 pchretien Exp $
+ */
+final class HttpRequestSpyServletResponseWrapper extends AbstractHttpServletResponseWrapper {
+	/**
+	 * Constructeur qui cree un adapteur de ServletResponse wrappant la response specifiee.
+	 * @param response javax.servlet.HttpServletResponse
+	 */
+	HttpRequestSpyServletResponseWrapper(final HttpServletResponse response) {
+		super(response);
 	}
 
+	/**
+	 * Retourne la valeur de la propriete dataLength.
+	 * @return int
+	 */
+	public long getDataLength() {
+		return getStream() == null ? 0 : ((HttpRequestSpyResponseStream) getStream()).getDataLength();
+	}
+
+	/**
+	 * Cree et retourne un ServletOutputStream pour ecrire le contenu dans la response associee.
+	 * @return javax.servlet.ServletOutputStream
+	 * @throws java.io.IOException   Erreur d'entree/sortie
+	 */
 	@Override
-	public String toString() {
-		return processType;
+	public ServletOutputStream createOutputStream() throws IOException {
+		return new HttpRequestSpyResponseStream((HttpServletResponse) getResponse());
 	}
-
 }

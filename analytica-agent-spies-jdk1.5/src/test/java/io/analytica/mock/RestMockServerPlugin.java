@@ -2,7 +2,7 @@
  * Analytica - beta version - Systems Monitoring Tool
  *
  * Copyright (C) 2013, KleeGroup, direction.technique@kleegroup.com (http://www.kleegroup.com)
- * KleeGroup, Centre d'affaire la BoursidiÃ¨re - BP 159 - 92357 Le Plessis Robinson Cedex - France
+ * KleeGroup, Centre d'affaire la Boursidière - BP 159 - 92357 Le Plessis Robinson Cedex - France
  *
  * This program is free software; you can redistribute it and/or modify it under the terms
  * of the GNU General Public License as published by the Free Software Foundation;
@@ -27,24 +27,42 @@
  * but you are not obliged to do so.
  * If you do not wish to do so, delete this exception statement from your version.
  */
-package io.analytica.api;
+package io.analytica.mock;
 
-public enum KProcessType {
-	WEB("WEB"),
-	SERVICE("SERVICE"),
-	DB("DB"),
-	SESSION("SESSION"),
-	JOB("JOB");
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 
-	private final String processType;
+/**
+ * Plugin gérant l'api reseau en REST avec jersey.
+ * @author npiedeloup
+ * @version $Id: RestNetApiPlugin.java,v 1.3 2012/10/16 12:39:27 npiedeloup Exp $
+ */
+@Path("/process")
+public final class RestMockServerPlugin {
+	/**
+	 * Constructeur simple pour instanciation par jersey.
+	 */
+	public RestMockServerPlugin() {
 
-	private KProcessType(final String processType) {
-		this.processType = processType;
 	}
 
-	@Override
-	public String toString() {
-		return processType;
+	/**
+	 * @param json json du process recu
+	 */
+	@POST
+	@Consumes(MediaType.TEXT_PLAIN)
+	public void push(final String json) {
+		MockServerManager.getInstance().push(json);
 	}
 
+	@GET
+	@Path("/version")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String getVersion() {
+		return "1.3.0";
+	}
 }

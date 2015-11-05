@@ -2,7 +2,7 @@
  * Analytica - beta version - Systems Monitoring Tool
  *
  * Copyright (C) 2013, KleeGroup, direction.technique@kleegroup.com (http://www.kleegroup.com)
- * KleeGroup, Centre d'affaire la BoursidiÃ¨re - BP 159 - 92357 Le Plessis Robinson Cedex - France
+ * KleeGroup, Centre d'affaire la Boursidière - BP 159 - 92357 Le Plessis Robinson Cedex - France
  *
  * This program is free software; you can redistribute it and/or modify it under the terms
  * of the GNU General Public License as published by the Free Software Foundation;
@@ -27,24 +27,43 @@
  * but you are not obliged to do so.
  * If you do not wish to do so, delete this exception statement from your version.
  */
-package io.analytica.api;
+package io.analytica.agent.remote;
 
-public enum KProcessType {
-	WEB("WEB"),
-	SERVICE("SERVICE"),
-	DB("DB"),
-	SESSION("SESSION"),
-	JOB("JOB");
+import io.analytica.agent.AbstractProcessCollectorTest;
 
-	private final String processType;
+import java.io.IOException;
 
-	private KProcessType(final String processType) {
-		this.processType = processType;
-	}
+/**
+ * Cas de Test JUNIT de l'API Analytics.
+ * Dans le cas ou le serveur n'est pas toujours joignable.
+ * 
+ * @author pchretien, npiedeloup
+ * @version $Id: AgentManagerOutOfSyncTest.java,v 1.2 2012/06/14 13:52:26 npiedeloup Exp $
+ */
+public final class RemoteConnectorOutOfSyncTest extends AbstractProcessCollectorTest {
 
+	/**
+	 * Initialisation du test pour implé spécifique.
+	 * @throws IOException Erreur
+	 */
 	@Override
-	public String toString() {
-		return processType;
+	protected void afterSetUp() throws IOException {
+		//on ne démarre pas le serveur
 	}
 
+	/** {@inheritDoc} */
+	@Override
+	protected void flushAgentToServer() {
+		try {
+			Thread.sleep(5000);//on attend 5s que le process soit conservé coté client.
+			try {
+				startServer();
+			} catch (final IOException e1) {
+				throw new RuntimeException("Impossible de lancer le server jersey");
+			}
+			Thread.sleep(2000);//on attend 2s que le process soit envoyé au serveur.
+		} catch (final InterruptedException e) {
+			//rien on stop juste l'attente
+		}
+	}
 }
