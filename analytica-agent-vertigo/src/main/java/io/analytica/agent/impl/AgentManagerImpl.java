@@ -18,9 +18,9 @@
 package io.analytica.agent.impl;
 
 import io.analytica.agent.AgentManager;
+import io.analytica.agent.api.KProcessCollector;
 import io.analytica.agent.plugins.net.NetPlugin;
 import io.analytica.api.KProcess;
-import io.analytica.api.KProcessCollector;
 import io.vertigo.lang.Assertion;
 
 import javax.inject.Inject;
@@ -29,7 +29,7 @@ import javax.inject.Named;
 /**
  * Agent de collecte des données.
  * Collecte automatique des Process (les infos sont portées par le thread courant).
- * 
+ *
  * @author pchretien, npiedeloup
  * @version $Id: AgentManagerImpl.java,v 1.7 2012/03/29 08:48:19 npiedeloup Exp $
  */
@@ -47,7 +47,7 @@ public final class AgentManagerImpl implements AgentManager {
 		super();
 		Assertion.checkNotNull(netPlugin);
 		//-----------------------------------------------------------------
-		processCollector = new KProcessCollector(systemName, systemLocation.split(";"), netPlugin);
+		processCollector = new KProcessCollector(systemName, systemLocation, netPlugin);
 	}
 
 	/** {@inheritDoc} */
@@ -83,6 +83,6 @@ public final class AgentManagerImpl implements AgentManager {
 	/** {@inheritDoc} */
 	@Override
 	public void add(final KProcess process) {
-		processCollector.  add(process);
+		processCollector.add(process);
 	}
 }

@@ -57,6 +57,7 @@ public final class CtBehaviorMatcher implements Matcher<CtBehavior> {
 	}
 
 	/** {@inheritDoc}*/
+	@Override
 	public boolean isMatch(final CtBehavior input) {
 		//Assertion.notNull(input);
 		return methodNameMatcher.isMatch(input.getName());

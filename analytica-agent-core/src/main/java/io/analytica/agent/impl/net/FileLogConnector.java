@@ -2,7 +2,7 @@
  * Analytica - beta version - Systems Monitoring Tool
  *
  * Copyright (C) 2013, KleeGroup, direction.technique@kleegroup.com (http://www.kleegroup.com)
- * KleeGroup, Centre d'affaire la Boursidière - BP 159 - 92357 Le Plessis Robinson Cedex - France
+ * KleeGroup, Centre d'affaire la BoursidiÃ¨re - BP 159 - 92357 Le Plessis Robinson Cedex - France
  *
  * This program is free software; you can redistribute it and/or modify it under the terms
  * of the GNU General Public License as published by the Free Software Foundation;
@@ -29,9 +29,9 @@
  */
 package io.analytica.agent.impl.net;
 
-import io.analytica.KProcessJsonCodec;
+import io.analytica.agent.api.KProcessConnector;
 import io.analytica.api.KProcess;
-import io.analytica.api.KProcessConnector;
+import io.analytica.api.KProcessJsonCodec;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -52,9 +52,6 @@ import org.apache.log4j.Logger;
  * @version $Id: RemoteNetPlugin.java,v 1.4 2012/06/14 13:49:17 npiedeloup Exp $
  */
 public final class FileLogConnector implements KProcessConnector {
-	//	private static final String VERSION_MAJOR = "1.0"; //definit la compatibilité
-	//	private static final String VERSION_MINOR = "0";
-	//	private static final String VERSION = VERSION_MAJOR + "." + VERSION_MINOR;
 	private static final String DATE_FORMAT = "yyyyMMdd HH:mm:ss";
 
 	private final Logger logger = Logger.getLogger(FileLogConnector.class);
@@ -112,7 +109,7 @@ public final class FileLogConnector implements KProcessConnector {
 
 		SpoolProcessThread(final FileLogConnector fileLogConnector) {
 			super("AnalyticaSpoolProcessThread");
-			setDaemon(false); //ce n'est pas un démon car on veux envoyer les derniers process
+			setDaemon(false);
 			//-----------------------------------------------------------------
 			this.fileLogConnector = fileLogConnector;
 		}
@@ -124,23 +121,17 @@ public final class FileLogConnector implements KProcessConnector {
 				try {
 					fileLogConnector.waitToSendPacket();
 				} catch (final InterruptedException e) {
-					interrupt();//On remet le flag qui a été reset lors du throw InterruptedException (pour le test isInterrupted())
-					//on envoi avant l'arret du serveur
+					interrupt();
 				}
-				//On flush la queue sur :
-				// - le timeout
-				// - un interrupt (arret du serveur)
 				fileLogConnector.flushProcessQueue();
 			}
 		}
 	}
 
 	/**
-	 * On attend la constitution d'un paquet.
-	 * Rend la main après :
-	 * - le timeout
-	 * - un processQueue.notify (taille max de la queue atteinte)
-	 * - un interrupt (arret du serveur)
+	 * waiting for:
+	 *  - spoolFrequencyMs miliseconds
+	 *  - plus the relase of processQueue
 	 * @throws InterruptedException Si interrupt
 	 */
 	void waitToSendPacket() throws InterruptedException {
@@ -150,7 +141,7 @@ public final class FileLogConnector implements KProcessConnector {
 	}
 
 	/**
-	 * Effectue le flush de la queue des processes à envoyer.
+	 * Effectue le flush de la queue des processes ï¿½ envoyer.
 	 */
 	void flushProcessQueue() {
 		final List<KProcess> processes = new ArrayList<KProcess>();
@@ -160,11 +151,10 @@ public final class FileLogConnector implements KProcessConnector {
 			if (head != null) {
 				processes.add(head);
 			}
-		} while (head != null); //On depile tout : car lors de l'arret du serveur on aura pas d'autre flush
+		} while (head != null);
 		if (!processes.isEmpty()) {
 			final String json = KProcessJsonCodec.toJson(processes);
 			writeToLogFile(json);
-			//logger.info("Spool " + processes.size() + " processes to " + spoolLogger.getName());
 		}
 	}
 
@@ -186,7 +176,7 @@ public final class FileLogConnector implements KProcessConnector {
 		} catch (final IOException e) {
 			logger.error("Can't write in logFile :" + fileName + " : " + e.getMessage());
 			e.printStackTrace();
-			throw new RuntimeException("Can't write in logFile :" + fileName, e); //stopera le thread
+			throw new RuntimeException("Can't write in logFile :" + fileName, e);
 		}
 	}
 

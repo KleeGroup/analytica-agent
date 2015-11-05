@@ -31,7 +31,7 @@ package io.analytica.spies.impl.javassist;
 
 /**
  * Cas de Test JUNIT de l'API Analytics.
- * 
+ *
  * @author pchretien, npiedeloup
  * @version $Id: AgentManagerTest.java,v 1.3 2012/03/29 08:48:19 npiedeloup Exp $
  */
@@ -45,6 +45,7 @@ public final class TestAnalyse2 implements InterfaceTestAnalyse {
 		}
 	}
 
+	@Override
 	public void workInterface() {
 		try {
 			Thread.sleep(1000);

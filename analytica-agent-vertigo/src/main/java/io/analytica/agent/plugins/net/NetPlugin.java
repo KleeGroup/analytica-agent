@@ -17,8 +17,8 @@
  */
 package io.analytica.agent.plugins.net;
 
+import io.analytica.agent.api.KProcessConnector;
 import io.analytica.api.KProcess;
-import io.analytica.api.KProcessConnector;
 import io.vertigo.lang.Plugin;
 
 /**

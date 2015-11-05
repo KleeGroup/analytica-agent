@@ -37,7 +37,7 @@ import javassist.NotFoundException;
  * Exemple :
  * <li>#inherits java.sql.DataSource
  * <li>#inherits myproject.domain.Service
- * 
+ *
  * @author npiedeloup
  * @version $Id: GlobMatcher.java,v 1.1 2011/05/12 10:16:12 prahmoune Exp $
  */
@@ -55,6 +55,7 @@ public final class InheritClassMatcher implements Matcher<CtClass> {
 	}
 
 	/** {@inheritDoc}*/
+	@Override
 	public boolean isMatch(final CtClass input) {
 		//Assertion.notNull(input);
 		try {

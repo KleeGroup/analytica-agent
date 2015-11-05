@@ -68,17 +68,17 @@ final class AnalyticaSpyTransformer implements ClassFileTransformer {
 	private final AnalyticaSpyConf analyticaSpyConf;
 	private final Matcher<String> excludeMatcher;
 	private final Matcher<String> includeMatcher;
-	private final Map<Matcher<String>, AnalyticaSpyHookPoint> classNameHookPointMatchers = new LinkedHashMap<Matcher<String>, AnalyticaSpyHookPoint>();
-	private final Map<AnalyticaSpyHookPoint, Matcher<CtClass>> classHookPointMatchers = new LinkedHashMap<AnalyticaSpyHookPoint, Matcher<CtClass>>();
-	private final Map<AnalyticaSpyHookPoint, Matcher<CtBehavior>> methodHookPointMatchers = new LinkedHashMap<AnalyticaSpyHookPoint, Matcher<CtBehavior>>();
+	private final Map<Matcher<String>, AnalyticaSpyHookPoint> classNameHookPointMatchers = new LinkedHashMap<>();
+	private final Map<AnalyticaSpyHookPoint, Matcher<CtClass>> classHookPointMatchers = new LinkedHashMap<>();
+	private final Map<AnalyticaSpyHookPoint, Matcher<CtBehavior>> methodHookPointMatchers = new LinkedHashMap<>();
 
-	private final Map<String, CtClass> localVariables = new HashMap<String, CtClass>();
+	private final Map<String, CtClass> localVariables = new HashMap<>();
 	private final List<String> methodBefore;
 	private final List<String> methodAfter;
-	private final Map<CtClass, List<String>> methodCatchs = new HashMap<CtClass, List<String>>();
+	private final Map<CtClass, List<String>> methodCatchs = new HashMap<>();
 	private final List<String> methodFinally;
 
-	private final List<ClassLoader> registeredClassLoader = new ArrayList<ClassLoader>();
+	private final List<ClassLoader> registeredClassLoader = new ArrayList<>();
 	private final ClassPool classPool = ClassPool.getDefault();
 
 	/**
@@ -113,6 +113,7 @@ final class AnalyticaSpyTransformer implements ClassFileTransformer {
 	}
 
 	/** {@inheritDoc} */
+	@Override
 	public byte[] transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain, final byte[] classfileBuffer) throws IllegalClassFormatException {
 		try {
 			final String adaptedclassName = className.replace('/', '.');
@@ -149,24 +150,24 @@ final class AnalyticaSpyTransformer implements ClassFileTransformer {
 
 	private static Matcher<String> buildStringMatchers(final List<String> patterns, final boolean ifEmpty) {
 		if (patterns.isEmpty()) {
-			return new StaticMatcher<String>(ifEmpty);
+			return new StaticMatcher<>(ifEmpty);
 		}
-		final List<Matcher<String>> stringMatchers = new ArrayList<Matcher<String>>();
+		final List<Matcher<String>> stringMatchers = new ArrayList<>();
 		for (final String pattern : patterns) {
 			stringMatchers.add(new RegExpMatcher(pattern));
 		}
-		return new CompositeMatcher<String>(stringMatchers);
+		return new CompositeMatcher<>(stringMatchers);
 	}
 
 	private static Matcher<CtBehavior> buildCtBehaviorMatchers(final List<String> patterns, final boolean ifEmpty) {
 		if (patterns.isEmpty()) {
-			return new StaticMatcher<CtBehavior>(ifEmpty);
+			return new StaticMatcher<>(ifEmpty);
 		}
-		final List<Matcher<CtBehavior>> ctBehaviorMatchers = new ArrayList<Matcher<CtBehavior>>();
+		final List<Matcher<CtBehavior>> ctBehaviorMatchers = new ArrayList<>();
 		for (final String pattern : patterns) {
 			ctBehaviorMatchers.add(new CtBehaviorMatcher(pattern));
 		}
-		return new CompositeMatcher<CtBehavior>(ctBehaviorMatchers);
+		return new CompositeMatcher<>(ctBehaviorMatchers);
 	}
 
 	private AnalyticaSpyHookPoint lookForHookPoint(final ClassLoader loader, final String adaptedclassName) {
@@ -213,7 +214,7 @@ final class AnalyticaSpyTransformer implements ClassFileTransformer {
 	}
 
 	private List<AnalyticaSpyHookPoint> getHookPointByClassName(final String adaptedclassName) {
-		final List<AnalyticaSpyHookPoint> hookPoints = new ArrayList<AnalyticaSpyHookPoint>();
+		final List<AnalyticaSpyHookPoint> hookPoints = new ArrayList<>();
 		for (final Map.Entry<Matcher<String>, AnalyticaSpyHookPoint> entry : classNameHookPointMatchers.entrySet()) {
 			if (entry.getKey().isMatch(adaptedclassName)) {
 				hookPoints.add(entry.getValue());
