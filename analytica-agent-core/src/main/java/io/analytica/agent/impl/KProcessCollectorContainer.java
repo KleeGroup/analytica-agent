@@ -46,13 +46,7 @@ import javax.naming.NamingException;
  */
 public final class KProcessCollectorContainer {
 
-	private static final String ANALYTICA_CONNECTOR_REMOTE_SEND_PAQUET_FREQUENCY_SECONDS = "analytica.connector.remote.sendPaquetFrequencySeconds";
-	private static final String ANALYTICA_CONNECTOR_REMOTE_SEND_PAQUET_SIZE = "analytica.connector.remote.sendPaquetSize";
-	private static final String ANALYTICA_CONNECTOR_REMOTE_SERVER_URL = "analytica.connector.remote.serverUrl";
-	private static final String ANALYTICA_CONNECTOR_FILE_FILE_NAME = "analytica.connector.file.fileName";
-	private static final String ANALYTICA_CONNECTOR_TYPE = "analytica.connector.type";
-	private static final String ANALYTICA_LOCATION = "analytica.location";
-	private static final String ANALYTICA_APP_NAME = "analytica.appName";
+
 	private static KProcessCollector INSTANCE = createProcessCollector();
 
 	public static KProcessCollector getInstance() {
@@ -60,51 +54,34 @@ public final class KProcessCollectorContainer {
 	}
 
 	private static KProcessCollector createProcessCollector() {
-		Context initCtx;
-		Context context;
-		String appName = "DummyApplication";
-		String location = "DummyLocation";
-		String connectorType = "DummyConnector";
-		KProcessConnector processConnector = null;
-
-		//verifying analytica's default configuration
-		try {
-			initCtx = new InitialContext();
-			context = (Context) initCtx.lookup("java:comp/env");
-			appName = (String) context.lookup(ANALYTICA_APP_NAME);
-			location = (String) context.lookup(ANALYTICA_LOCATION);
-			connectorType = (String) context.lookup(ANALYTICA_CONNECTOR_TYPE);
-
-		} catch (final NamingException e) {
-			processConnector = new DummyConnector();
+		String appName = (String) AnalyticaConfigurationStore.getInstace().getConfiguration(AnalyticaConfigurationType.ANALYTICA_APP_NAME);
+		String location =(String) AnalyticaConfigurationStore.getInstace().getConfiguration(AnalyticaConfigurationType.ANALYTICA_LOCATION);
+		String connectorType = (String) AnalyticaConfigurationStore.getInstace().getConfiguration(AnalyticaConfigurationType.ANALYTICA_CONNECTOR_TYPE);
+		
+		if(		appName.equalsIgnoreCase(AnalyticaConfigurationStore.DEFAULT_APP_NAME)||
+				location.equalsIgnoreCase(AnalyticaConfigurationStore.DEFAULT_LOCATION)||
+				connectorType.equalsIgnoreCase(AnalyticaConfigurationStore.DEFAULT_CONNECTOR_TYPE))
+		{
 			System.err.println("Unable to locate Analytica's configuration. Fallback to the dummy implementation");
-			return new KProcessCollector(appName, location, processConnector);
+			return new KProcessCollector(appName, location, new DummyConnector());
 		}
-
-		Assertion.checkNotNull(appName, "Analytica : " + ANALYTICA_APP_NAME + " is required");
-		Assertion.checkNotNull(location, "Analytica : " + ANALYTICA_LOCATION + " is required");
-		Assertion.checkNotNull(connectorType, "Analytica : " + ANALYTICA_CONNECTOR_TYPE + " is required");
-
-		try {
-			if ("file".equals(connectorType)) {
-				final String fileName = (String) context.lookup(ANALYTICA_CONNECTOR_FILE_FILE_NAME);
-				Assertion.checkNotNull(fileName, "Analytica : " + ANALYTICA_CONNECTOR_FILE_FILE_NAME + " is required for the file connector");
-				processConnector = new FileLogConnector(fileName);
-			} else if ("remote".equals(connectorType)) {
-				final String serverUrl = (String) context.lookup(ANALYTICA_CONNECTOR_REMOTE_SERVER_URL);
-				final Integer sendPaquetSize = (Integer) context.lookup(ANALYTICA_CONNECTOR_REMOTE_SEND_PAQUET_SIZE);
-				final Integer sendPaquetFrequencySeconds = (Integer) context.lookup(ANALYTICA_CONNECTOR_REMOTE_SEND_PAQUET_FREQUENCY_SECONDS);
-				Assertion.checkNotNull(serverUrl, "Analytica : " + ANALYTICA_CONNECTOR_REMOTE_SERVER_URL + " is required for the remote connector");
-				Assertion.checkNotNull(sendPaquetSize, "Analytica : " + ANALYTICA_CONNECTOR_REMOTE_SEND_PAQUET_SIZE + " is required for the remote connector");
-				Assertion.checkNotNull(sendPaquetFrequencySeconds, "Analytica : " + ANALYTICA_CONNECTOR_REMOTE_SEND_PAQUET_FREQUENCY_SECONDS + " is required for the remote connector");
-				processConnector = new RemoteConnector(serverUrl, sendPaquetSize, sendPaquetFrequencySeconds);
-			} else {
-				System.err.println("Unknown Connector : " + connectorType + " fallback to DummyCollector (use one of : file, remote)");
-				processConnector = new DummyConnector();
-			}
-		} catch (final NamingException e) {
-			throw new IllegalArgumentException("Analytica : unable to locate an argument for analytica", e);
+		if ("file".equals(connectorType)) {
+			final String fileName = (String) AnalyticaConfigurationStore.getInstace().getConfiguration(AnalyticaConfigurationType.ANALYTICA_CONNECTOR_FILE_FILE_NAME);
+			Assertion.checkArgument(!fileName.equalsIgnoreCase(AnalyticaConfigurationStore.DEFAULT_CONNECTOR_FILE_FILE_NAME), "Analytica : " + AnalyticaConfigurationType.ANALYTICA_CONNECTOR_FILE_FILE_NAME + " is required for the file connector");
+			return new KProcessCollector(appName, location, new FileLogConnector(fileName));
 		}
-		return new KProcessCollector(appName, location, processConnector);
+		
+		if ("remote".equals(connectorType)) {
+			final String serverUrl = (String) AnalyticaConfigurationStore.getInstace().getConfiguration(AnalyticaConfigurationType.ANALYTICA_CONNECTOR_REMOTE_SERVER_URL);
+			final Integer sendPaquetSize = (Integer) AnalyticaConfigurationStore.getInstace().getConfiguration(AnalyticaConfigurationType.ANALYTICA_CONNECTOR_REMOTE_SEND_PAQUET_SIZE);
+			final Integer sendPaquetFrequencySeconds = (Integer) AnalyticaConfigurationStore.getInstace().getConfiguration(AnalyticaConfigurationType.ANALYTICA_CONNECTOR_REMOTE_SEND_PAQUET_FREQUENCY_SECONDS);
+			Assertion.checkArgument(!serverUrl.equalsIgnoreCase(AnalyticaConfigurationStore.DEFAULT_CONNECTOR_FILE_FILE_NAME), "Analytica : " + AnalyticaConfigurationType.ANALYTICA_CONNECTOR_REMOTE_SERVER_URL + " is required for the remote connector");
+			Assertion.checkArgument(sendPaquetSize!=AnalyticaConfigurationStore.DEFAULT_CONNECTOR_REMOTE_SEND_PAQUET_SIZE, "Analytica : " + AnalyticaConfigurationType.ANALYTICA_CONNECTOR_REMOTE_SEND_PAQUET_SIZE + " is required for the remote connector");
+			Assertion.checkArgument(sendPaquetFrequencySeconds!=AnalyticaConfigurationStore.DEFAULT_CONNECTOR_REMOTE_SEND_PAQUET_FREQUENCY_SECONDS, "Analytica : " + AnalyticaConfigurationType.ANALYTICA_CONNECTOR_REMOTE_SEND_PAQUET_FREQUENCY_SECONDS + " is required for the remote connector");
+			return new KProcessCollector(appName, location,new RemoteConnector(serverUrl, sendPaquetSize, sendPaquetFrequencySeconds));
+		} 
+
+		System.err.println("Unknown connector. Fallback to the dummy implementation");
+		return new KProcessCollector(appName, location, new DummyConnector());
 	}
 }

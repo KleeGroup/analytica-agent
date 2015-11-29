@@ -18,6 +18,8 @@
 
 package io.analytica.spies.impl.httprequest;
 
+import io.analytica.agent.impl.AnalyticaConfigurationStore;
+import io.analytica.agent.impl.AnalyticaConfigurationType;
 import io.analytica.agent.impl.KProcessCollectorContainer;
 import io.analytica.api.KMeasureType;
 import io.analytica.api.KProcess;
@@ -135,7 +137,8 @@ public class HttpSessionsSpyListener implements ServletContextListener,
 			}
 			builder.incMeasure(KMeasureType.SESSION_ALL.toString(), 1);
 		}
-		builder.withLocation(KProcessCollectorContainer.getInstance().getLocation());
+		builder.withLocation(KProcessCollectorContainer.getInstance().getLocation())
+				.withCategory(KProcessType.SESSION.toString());
 		return builder.build();
 	}
 	
@@ -147,7 +150,7 @@ public class HttpSessionsSpyListener implements ServletContextListener,
 			if(!sessionContainer.isEmpty()){
 				KProcessCollectorContainer.getInstance().add(encodeSessionData());
 			}
-			delayedStarter.schedule(this, 1000);
+			delayedStarter.schedule(new SessionDataCollectorTask(), ((Long) AnalyticaConfigurationStore.getInstace().getConfiguration(AnalyticaConfigurationType.ANALYTICA_SPY_SESSION_FREQUENCY_SECONDS))*1000);
 		}
 	}
 
