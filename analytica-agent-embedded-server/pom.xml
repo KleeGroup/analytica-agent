@@ -38,11 +38,7 @@
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>-->
-		<dependency>
-			<groupId>io.analytica</groupId>
-			<artifactId>analytica-server-core</artifactId>
-			<version>${server.version}</version>
-		</dependency>
+
 	</dependencies>
 
 	<build>

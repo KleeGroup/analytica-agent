@@ -141,7 +141,7 @@ public final class FileLogConnector implements KProcessConnector {
 	}
 
 	/**
-	 * Effectue le flush de la queue des processes � envoyer.
+	 * Effectue le flush de la queue des processes é envoyer.
 	 */
 	void flushProcessQueue() {
 		final List<KProcess> processes = new ArrayList<KProcess>();

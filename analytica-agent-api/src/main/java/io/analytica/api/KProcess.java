@@ -42,7 +42,7 @@ import java.util.regex.Pattern;
 /**
  * Un processus est un evenement
  *   - declenche dans une application specifique
- *   - relatif a un type d'evenement (exemple : metrics des pages, des requetes sql, des mails envoy�s, des services ...)
+ *   - relatif a un type d'evenement (exemple : metrics des pages, des requetes sql, des mails envoyés, des services ...)
  *
  *	Un evenement est defini selon 3 axes
  *	 - when, quand a eu lieu l'evenement
@@ -75,7 +75,7 @@ public final class KProcess {
 	 */
 	public static final String SUB_DURATION = "sub_duration";
 	/**
-	 * REGEX d�crivant les r�gles sur les noms (type de process, mesures et metadata, . (exemples : sql, mail, services)
+	 * REGEX décrivant les régles sur les noms (type de process, mesures et metadata, . (exemples : sql, mail, services)
 	 */
 	public static final Pattern APP_NAME_REGEX = Pattern.compile("[a-zA-Z][a-zA-Z_-]+");
 	public static final Pattern PROCESS_TYPE_REGEX = Pattern.compile("[a-zA-Z][a-zA-Z_-]+");
@@ -104,7 +104,7 @@ public final class KProcess {
 	 * @param category  Category
 	 * @param startDate Date du processus
 	 * @param measures Mesures du processus
-	 * @param metaDatas Metadonn�es du processus
+	 * @param metaDatas Metadonnées du processus
 	 * @param subProcesses Liste des sous processus
 	 */
 	KProcess(final String appName, final String type,

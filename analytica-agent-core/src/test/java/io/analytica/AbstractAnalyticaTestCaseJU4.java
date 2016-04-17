@@ -2,7 +2,7 @@
  * Analytica - beta version - Systems Monitoring Tool
  *
  * Copyright (C) 2013, KleeGroup, direction.technique@kleegroup.com (http://www.kleegroup.com)
- * KleeGroup, Centre d'affaire la Boursidi�re - BP 159 - 92357 Le Plessis Robinson Cedex - France
+ * KleeGroup, Centre d'affaire la Boursidiére - BP 159 - 92357 Le Plessis Robinson Cedex - France
  *
  * This program is free software; you can redistribute it and/or modify it under the terms
  * of the GNU General Public License as published by the Free Software Foundation;
@@ -73,7 +73,7 @@ public abstract class AbstractAnalyticaTestCaseJU4 {
 
 	protected void flushAgentToServer() {
 		try {
-			Thread.sleep(2000);//on attend 2s que le process soit envoy� au serveur.
+			Thread.sleep(2000);//on attend 2s que le process soit envoyé au serveur.
 		} catch (final InterruptedException e) {
 			//rien on stop juste l'attente
 		}
@@ -102,32 +102,32 @@ public abstract class AbstractAnalyticaTestCaseJU4 {
 	}
 
 	/**
-	 * Initialisation du test pour impl� sp�cifique.
+	 * Initialisation du test pour implé spécifique.
 	 * @throws Exception Erreur
 	 */
 	protected void doSetUp() throws Exception {
-		// pour impl� sp�cifique
+		// pour implé spécifique
 	}
 
 	/**
-	 * Finalisation du test pour impl� sp�cifique.
+	 * Finalisation du test pour implé spécifique.
 	 * @throws Exception Erreur
 	 */
 	protected void doTearDown() throws Exception {
-		// pour impl� sp�cifique
+		// pour implé spécifique
 	}
 
 	/**
-	 * Finalisation du test pour impl� sp�cifique.
+	 * Finalisation du test pour implé spécifique.
 	 * @throws Exception Erreur
 	 */
 	protected void doAfterTearDown() throws Exception {
-		// pour impl� sp�cifique
+		// pour implé spécifique
 	}
 
 	protected void checkMetricCount(final String metricName, final long countExpected, final String type, final String... subTypes) {
 		final List<Double> measures = MockServerManager.getInstance().getMeasures(metricName, type, subTypes);
-		Assert.assertEquals("Le cube " + toString(type, subTypes) + " n'est pas peupl� correctement", countExpected, measures.size(), 0);
+		Assert.assertEquals("Le cube " + toString(type, subTypes) + " n'est pas peuplé correctement", countExpected, measures.size(), 0);
 		System.out.println("Cube OK :" + type + " metric " + metricName);
 	}
 
@@ -137,8 +137,8 @@ public abstract class AbstractAnalyticaTestCaseJU4 {
 		for (final Double value : measures) {
 			sum += value;
 		}
-		Assert.assertNotEquals("Le cube " + toString(type, subTypes) + " n'est pas peupl� correctement (0 mesures)", 0, measures.size());
-		Assert.assertEquals("Le cube " + toString(type, subTypes) + " n'est pas peupl� correctement", meanExpected, sum / measures.size(), 0.001);
+		Assert.assertNotEquals("Le cube " + toString(type, subTypes) + " n'est pas peuplé correctement (0 mesures)", 0, measures.size());
+		Assert.assertEquals("Le cube " + toString(type, subTypes) + " n'est pas peuplé correctement", meanExpected, sum / measures.size(), 0.001);
 	}
 
 	private String toString(final String type, final String[] subTypes) {

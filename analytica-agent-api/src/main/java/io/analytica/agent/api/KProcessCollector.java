@@ -88,8 +88,8 @@ public final class KProcessCollector {
 	}
 
 	/**
-	 * Retire le premier �l�ment de la pile.
-	 * @return Premier �l�ment de la pile
+	 * Retire le premier élément de la pile.
+	 * @return Premier élément de la pile
 	 */
 	private static KProcessBuilder pop() {
 		return getStack().pop();
@@ -98,7 +98,7 @@ public final class KProcessCollector {
 	private static Stack<KProcessBuilder> getStack() {
 		final Stack<KProcessBuilder> stack = THREAD_LOCAL_PROCESS.get();
 		if (stack == null) {
-			throw new IllegalArgumentException("Pile non initialis�e : startProcess()");
+			throw new IllegalArgumentException("Pile non initialisée : startProcess()");
 		}
 		return stack;
 	}
@@ -111,7 +111,7 @@ public final class KProcessCollector {
 		}
 		//---------------------------------------------------------------------
 		if (stack.size() >= 100) {
-			throw new IllegalStateException("La pile des KProcess atteind une profondeur de 100, il est probable qu'une fermeture de KProcess ait �t� oubli�e.\nStack:" + stack);
+			throw new IllegalStateException("La pile des KProcess atteind une profondeur de 100, il est probable qu'une fermeture de KProcess ait été oubliée.\nStack:" + stack);
 		}
 		//---------------------------------------------------------------------
 		stack.push(processBuilder);
@@ -139,7 +139,7 @@ public final class KProcessCollector {
 	}
 
 	/**
-	 * Incr�mentation d'une mesure du process courant (set si pas pr�sente).
+	 * Incrémentation d'une mesure du process courant (set si pas présente).
 	 * @param measureType Nom de la mesure
 	 * @param value Valeur
 	 */
@@ -171,7 +171,7 @@ public final class KProcessCollector {
 
 	/**
 	 * Termine le process courant.
-	 * Le processus courant devient alors le processus parent le cas �ch�ant.
+	 * Le processus courant devient alors le processus parent le cas échéant.
 	 */
 	public KProcessCollector stopProcess() {
 		final KProcess process = doStopProcess();

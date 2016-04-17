@@ -87,7 +87,7 @@ public final class FacadeSpyProxy implements InvocationHandler {
 		Assertion.checkNotNull(facadeType);
 		// ---------------------------------------------------------------------
 		final Class<?>[] interfaceArray = getAllInterfaces(object.getClass());
-		Assertion.checkState(interfaceArray.length > 0, "L''object {0} doit avoir au moins une interface � monitorer pour poser le spy.", object.getClass().getSimpleName());
+		Assertion.checkState(interfaceArray.length > 0, "L''object {0} doit avoir au moins une interface é monitorer pour poser le spy.", object.getClass().getSimpleName());
 		final String facadeName = interfaceArray.length == 1 ? interfaceArray[0].getClass().getSimpleName() : object.getClass().getSimpleName();
 		final InvocationHandler handler = new FacadeSpyProxy(object, facadeType, facadeName);
 		return (O) Proxy.newProxyInstance(object.getClass().getClassLoader(), interfaceArray, handler);

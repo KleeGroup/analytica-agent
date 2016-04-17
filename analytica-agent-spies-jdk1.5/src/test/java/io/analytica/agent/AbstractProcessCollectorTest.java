@@ -2,7 +2,7 @@
  * Analytica - beta version - Systems Monitoring Tool
  *
  * Copyright (C) 2013, KleeGroup, direction.technique@kleegroup.com (http://www.kleegroup.com)
- * KleeGroup, Centre d'affaire la Boursidi�re - BP 159 - 92357 Le Plessis Robinson Cedex - France
+ * KleeGroup, Centre d'affaire la Boursidiére - BP 159 - 92357 Le Plessis Robinson Cedex - France
  *
  * This program is free software; you can redistribute it and/or modify it under the terms
  * of the GNU General Public License as published by the Free Software Foundation;
@@ -51,7 +51,7 @@ import org.junit.Test;
  */
 public abstract class AbstractProcessCollectorTest extends AbstractAnalyticaTestCaseJU4 {
 
-	/** Base de donn�es g�rant les articles envoy�s dans une commande. */
+	/** Base de données gérant les articles envoyés dans une commande. */
 	private static final String PROCESS1_TYPE = "ARTICLE";
 	private static final String PROCESS2_TYPE = "COMMANDE";
 
@@ -84,7 +84,7 @@ public abstract class AbstractProcessCollectorTest extends AbstractAnalyticaTest
 	/**
 	 * Test simple avec un compteur.
 	 * Test sur l'envoi d'un process
-	 * Chaque article coute 10�.
+	 * Chaque article coute 10é.
 	 */
 	@Test
 	public void testOneProcess() {
@@ -99,7 +99,7 @@ public abstract class AbstractProcessCollectorTest extends AbstractAnalyticaTest
 	/**
 	 * Test simple avec deux compteurs.
 	 * Test sur l'envoi de 1000 articles d'un poids de 25 kg.
-	 * Chaque article coute 10�.
+	 * Chaque article coute 10é.
 	 */
 	@Test
 	public void test1000Articles() {
@@ -109,7 +109,7 @@ public abstract class AbstractProcessCollectorTest extends AbstractAnalyticaTest
 	}
 
 	/**
-	 * Test pour v�rifier que l'on peut se passer des processus si et seulement si le mode Analytics est d�sactiv�.
+	 * Test pour vérifier que l'on peut se passer des processus si et seulement si le mode Analytics est désactivé.
 	 */
 	@Test
 	public void testNoProcess() {
@@ -117,17 +117,17 @@ public abstract class AbstractProcessCollectorTest extends AbstractAnalyticaTest
 			processCollector.setMeasure("POIDS", 25);
 			Assert.fail();
 		} catch (final Exception e) {
-			// Ce cas de test est r�ussi s'il remonte une exception
+			// Ce cas de test est réussi s'il remonte une exception
 			// OK
 			Assert.assertTrue(true);
 		}
 	}
 
 	/**
-	 * Test de r�cursivit�.
+	 * Test de récursivité.
 	 * Test sur l'envoi de 500 commandes contenant chacune 500 articles d'un poids de 25 kg.
-	 * Chaque article coute 10�.
-	 * Les frais d'envoi sont de 5�.
+	 * Chaque article coute 10é.
+	 * Les frais d'envoi sont de 5é.
 	 */
 	@Test
 	public void test500Commandes() {
@@ -140,11 +140,11 @@ public abstract class AbstractProcessCollectorTest extends AbstractAnalyticaTest
 	}
 
 	/**
-	 * Test de parall�lisme.
+	 * Test de parallélisme.
 	 * Test sur l'envoi de 500 commandes contenant chacune 1000 articles d'un poids de 25 kg.
 	 * L'envoi est simuler avec 20 clients (thread).
-	 * Chaque article coute 10�.
-	 * Les frais d'envoi sont de 5�.
+	 * Chaque article coute 10é.
+	 * Les frais d'envoi sont de 5é.
 	 * @throws InterruptedException Interruption
 	 */
 	@Test
@@ -158,7 +158,7 @@ public abstract class AbstractProcessCollectorTest extends AbstractAnalyticaTest
 		workersPool.shutdown();
 		workersPool.awaitTermination(2 * 60, TimeUnit.SECONDS); //On laisse 2 minute pour vider la pile
 		if (!workersPool.isTerminated()) {
-			throw new IllegalStateException("Les threads ne sont pas tous stopp�s");
+			throw new IllegalStateException("Les threads ne sont pas tous stoppés");
 		}
 
 		log.trace("elapsed = " + (System.currentTimeMillis() - start));
@@ -220,7 +220,7 @@ public abstract class AbstractProcessCollectorTest extends AbstractAnalyticaTest
 
 		public void run() {
 			doOneCommande(numCommande, nbArticles);
-			System.out.println("Finish commande n�" + numCommande);
+			System.out.println("Finish commande né" + numCommande);
 			try {
 				Thread.sleep(100);
 			} catch (final InterruptedException e) {

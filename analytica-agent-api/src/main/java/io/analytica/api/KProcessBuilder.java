@@ -2,7 +2,7 @@
  * Analytica - beta version - Systems Monitoring Tool
  *
  * Copyright (C) 2013, KleeGroup, direction.technique@kleegroup.com (http://www.kleegroup.com)
- * KleeGroup, Centre d'affaire la Boursidi�re - BP 159 - 92357 Le Plessis Robinson Cedex - France
+ * KleeGroup, Centre d'affaire la Boursidiére - BP 159 - 92357 Le Plessis Robinson Cedex - France
  *
  * This program is free software; you can redistribute it and/or modify it under the terms
  * of the GNU General Public License as published by the Free Software Foundation;
@@ -158,7 +158,7 @@ public final class KProcessBuilder {
 	/**
 	 * Mise a jour d'une mesure.
 	 * @param mName Nom de la mesure
-	 * @param mValue  Valeur � incr�menter
+	 * @param mValue  Valeur é incrémenter
 	 * @return Builder
 	 */
 	public KProcessBuilder setMeasure(final String mName, final double mValue) {

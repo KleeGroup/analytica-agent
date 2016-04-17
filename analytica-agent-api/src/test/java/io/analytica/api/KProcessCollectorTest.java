@@ -44,7 +44,7 @@ public final class KProcessCollectorTest {
 				if (containsSubProcess) {
 					checkSubProcess(process);
 				}
-				//on v�rifie que l'encodage json fonctionne correctement
+				//on vérifie que l'encodage json fonctionne correctement
 				final String sprocess = KProcessUtil.toJson(process);
 				final KProcess process2 = KProcessUtil.fromJson(sprocess);
 				checkProcess(process2);
