@@ -27,11 +27,9 @@
  * but you are not obliged to do so.
  * If you do not wish to do so, delete this exception statement from your version.
  */
-packagio.analytica.agent.implet;
+package io.analytica.agent.impl;
 
-import io.analytica.agent.api.KProcessConnector;
-import io.analytica.api.KProcess;
-
+import java.awt.Point;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -43,11 +41,13 @@ import org.influxdb.InfluxDB;
 import org.influxdb.InfluxDB.ConsistencyLevel;
 import org.influxdb.InfluxDBFactory;
 import org.influxdb.dto.BatchPoints;
-import org.influxdb.dto.Point;
+
+import io.analytica.agent.api.KProcessConnector;
+import io.analytica.api.KProcess;
 
 public final class InfluxProcessConnector implements KProcessConnector {
 	private final String appName;
-	private final List<KProcess> processes = new ArrayList<KProcess>(); //buffer
+	private final List<KProcess> processes = new ArrayList<>(); //buffer
 	private final InfluxDB influxDB;
 
 	private static boolean ping(final String host) {
@@ -73,6 +73,7 @@ public final class InfluxProcessConnector implements KProcessConnector {
 		}
 	}
 
+	@Override
 	public synchronized void add(final KProcess process) {
 		if (influxDB != null) {
 			processes.add(process);

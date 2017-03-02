@@ -2,7 +2,7 @@
 k * Analytica - beta version - Systems Monitoring Tool
  *
  * Copyright (C) 2013, KleeGroup, direction.technique@kleegroup.com (http://www.kleegroup.com)
- * KleeGroup, Centre d'affaire la Boursidière - BP 159 - 92357 Le Plessis Robinson Cedex - France
+ * KleeGroup, Centre d'affaire la Boursidiï¿½re - BP 159 - 92357 Le Plessis Robinson Cedex - France
  *
  * This program is free software; you can redistribute it and/or modify it under the terms
  * of the GNU General Public License as published by the Free Software Foundation;
@@ -17,10 +17,6 @@ k * Analytica - beta version - Systems Monitoring Tool
  */
 package io.analytica.spies.impl.logs;
 
-import io.analytica.AbstractVertigoStartTestCaseJU4;
-import io.analytica.agent.AgentManager;
-import io.vertigo.core.resource.ResourceManager;
-
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -34,6 +30,10 @@ import javax.inject.Inject;
 import org.junit.Test;
 
 import com.google.gson.Gson;
+
+import io.analytica.AbstractVertigoStartTestCaseJU4;
+import io.analytica.agent.AgentManager;
+import io.vertigo.core.resource.ResourceManager;
 
 /**
  * Test LogSpyReader.
@@ -56,7 +56,7 @@ public final class AnalyticaLogSpyTest extends AbstractVertigoStartTestCaseJU4 {
 	/**
 	 * Test simple avec deux compteurs.
 	 * Test sur l'envoi de 1000 articles d'un poids de 25 kg.
-	 * Chaque article coute 10€.
+	 * Chaque article coute 10ï¿½.
 	 * @throws ParseException
 	 */
 	@Test
@@ -124,7 +124,7 @@ public final class AnalyticaLogSpyTest extends AbstractVertigoStartTestCaseJU4 {
 				"^INFO  ([0-9:\\.]+) .*\"nanos\":([0-9]+)[0-9]{6},.*\"timestamp\":\"([0-9T\\:\\.\\-]+)\\+[0-9\\:]+\".*$", //
 				"^INFO  ([0-9:\\.]+) .*(;jsessionid=.*)?\",\"nanos\":([0-9]+)[0-9]{6},.*\"timestamp\":\"([0-9T\\:\\.\\-]+)\\+[0-9\\:]+\".*$", //
 				"^INFO  ([0-9:\\.]+) .*\"request\"[.]+/pages/([.]+)(;jsessionid=.*)?\",\"nanos\":([0-9]+)[0-9]{6},.*\"timestamp\":\"([0-9T\\:\\.\\-]+)\\+[0-9\\:]+\".*$", //
-		"^INFO  ([0-9:\\.]+) .*spark\\.perf - .*\"request\"[\\u0000-\\uFFFF]+/pages/([\\u0000-\\uFFFF]+)(;jsessionid=.*)?\",\"nanos\":([0-9]+)[0-9]{6},.*\"timestamp\":\"([0-9T\\:\\.\\-]+)\\+[0-9\\:]+\".*$" };
+				"^INFO  ([0-9:\\.]+) .*spark\\.perf - .*\"request\"[\\u0000-\\uFFFF]+/pages/([\\u0000-\\uFFFF]+)(;jsessionid=.*)?\",\"nanos\":([0-9]+)[0-9]{6},.*\"timestamp\":\"([0-9T\\:\\.\\-]+)\\+[0-9\\:]+\".*$" };
 		doTestParsing(testedlogs, testedPatterns);
 	}
 
@@ -178,15 +178,15 @@ public final class AnalyticaLogSpyTest extends AbstractVertigoStartTestCaseJU4 {
 		final LogPattern[] PATTERNS = { //
 				new LogPattern("REQUETE", "^INFO  ([0-9:\\.]+) \\[([a-zA-Z0-9-_]+)\\] spark.ui.web.LogFilter - Sortie de la ([\\u0000-\\uFFFF]+) [\\u0000-\\uFFFF]+/pages/([\\u0000-\\uFFFF]+) in ([0-9]+)ms$", //
 						false, -1, 1, 2, -1, 4, 5, true, false), //
-						new LogPattern("REQUETE_RESOURCE", "^INFO  ([0-9:\\.]+) \\[([a-zA-Z0-9-_]+)\\] spark.ui.web.LogFilter - Sortie de la ([\\u0000-\\uFFFF]+) [\\u0000-\\uFFFF]+/javax\\.faces\\.resource/([\\u0000-\\uFFFF]+) in ([0-9]+)ms$", //
-								false, -1, 1, 2, -1, 4, 5, true, false), //
-								new LogPattern("PERF", "^INFO  ([0-9:\\.]+) \\[([a-zA-Z0-9-]+)\\] Performance - >> ([a-zA-Z0-9]+) : ([a-zA-Z0-9-_]+) : time = ([0-9]+)$", //
-										false, -1, 1, 2, 3, 4, 5, false, false),//
-										new LogPattern("RELOAD", "^([\\u0000-\\uFFFF]+) org.apache.catalina.startup.Catalina load$", //
-												false, -1, 1, -1, -1, -1, -1, false, true),//
+				new LogPattern("REQUETE_RESOURCE", "^INFO  ([0-9:\\.]+) \\[([a-zA-Z0-9-_]+)\\] spark.ui.web.LogFilter - Sortie de la ([\\u0000-\\uFFFF]+) [\\u0000-\\uFFFF]+/javax\\.faces\\.resource/([\\u0000-\\uFFFF]+) in ([0-9]+)ms$", //
+						false, -1, 1, 2, -1, 4, 5, true, false), //
+				new LogPattern("PERF", "^INFO  ([0-9:\\.]+) \\[([a-zA-Z0-9-]+)\\] Performance - >> ([a-zA-Z0-9]+) : ([a-zA-Z0-9-_]+) : time = ([0-9]+)$", //
+						false, -1, 1, 2, 3, 4, 5, false, false), //
+				new LogPattern("RELOAD", "^([\\u0000-\\uFFFF]+) org.apache.catalina.startup.Catalina load$", //
+						false, -1, 1, -1, -1, -1, -1, false, true),//
 		};
 
-		final LogSpyConf conf = new LogSpyConf("Test", "test", Arrays.asList(dateFormats), Arrays.asList(PATTERNS));
+		final LogSpyConf conf = new LogSpyConf("Test", new String[] { "test" }, Arrays.asList(dateFormats), Arrays.asList(PATTERNS));
 		System.out.println(new Gson().toJson(conf));
 
 	}
@@ -198,14 +198,14 @@ public final class AnalyticaLogSpyTest extends AbstractVertigoStartTestCaseJU4 {
 			//soit en relatif
 			return "/" + getRelativePath(relativeRootClass) + "/" + fileName;
 		}
-
+	
 		//soit en absolu
 		if (fileName.startsWith("/")) {
 			return fileName;
 		}
 		return "/" + fileName;
 	}
-
+	
 	private static final String getRelativePath(final Class<?> relativeRootClass) {
 		return relativeRootClass.getPackage().getName().replace('.', '/');
 	}*/

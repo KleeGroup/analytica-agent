@@ -46,7 +46,13 @@ public interface KProcessConnector {
 	 */
 	void add(KProcess process);
 
+	/**
+	 *
+	 */
 	void start();
 
+	/**
+	 *
+	 */
 	void stop();
 }

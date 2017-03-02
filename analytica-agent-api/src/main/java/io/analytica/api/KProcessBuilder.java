@@ -185,7 +185,7 @@ public final class KProcessBuilder {
 	/**
 	 * Mise a jour d'une metadonnee.
 	 * @param mdName Nom de la metadonnee
-	 * @param mdValue  Valeur de la metadonnee
+	 * @param mdValues Valeurs de la metadonnee
 	 * @return Builder
 	 */
 	public KProcessBuilder addMetaData(final String mdName, final Set<String> mdValues) {
@@ -227,22 +227,23 @@ public final class KProcessBuilder {
 
 	/**
 	 * Ajout d'un sous processus.
-	 * @param subPocess Sous-Processus a ajouter
+	 * @param subProcess Sous-Processus a ajouter
 	 * @return Builder
 	 */
 	public KProcessBuilder addSubProcess(final KProcess subProcess) {
-		return addSubProcess(subProcess,true);
+		return addSubProcess(subProcess, true);
 	}
 
-	public KProcessBuilder addSubProcess(final KProcess subProcess, final boolean addSubDuration){
+	private KProcessBuilder addSubProcess(final KProcess subProcess, final boolean addSubDuration) {
 		Assertion.checkNotNull(subProcess, "sub process is required ");
 		//---------------------------------------------------------------------
 		subProcesses.add(subProcess);
-		if (addSubDuration){
+		if (addSubDuration) {
 			incMeasure(KProcess.SUB_DURATION, subProcess.getDuration());
 		}
 		return this;
 	}
+
 	/**
 	 * Construction du Processus.
 	 * @return Process

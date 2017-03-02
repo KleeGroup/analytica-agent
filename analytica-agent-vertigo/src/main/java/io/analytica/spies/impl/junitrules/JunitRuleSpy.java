@@ -2,7 +2,7 @@
  * Analytica - beta version - Systems Monitoring Tool
  *
  * Copyright (C) 2013, KleeGroup, direction.technique@kleegroup.com (http://www.kleegroup.com)
- * KleeGroup, Centre d'affaire la Boursidière - BP 159 - 92357 Le Plessis Robinson Cedex - France
+ * KleeGroup, Centre d'affaire la Boursidiï¿½re - BP 159 - 92357 Le Plessis Robinson Cedex - France
  *
  * This program is free software; you can redistribute it and/or modify it under the terms
  * of the GNU General Public License as published by the Free Software Foundation;
@@ -17,12 +17,12 @@
  */
 package io.analytica.spies.impl.junitrules;
 
-import io.analytica.agent.AgentManager;
-import io.vertigo.core.Home;
-
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
+
+import io.analytica.agent.AgentManager;
+import io.vertigo.app.Home;
 
 /**
  * Intercepteur pour la gestion des jUnit Rule.
@@ -51,7 +51,7 @@ public class JunitRuleSpy implements TestRule {
 
 		@Override
 		public void evaluate() throws Throwable {
-			final AgentManager agentManager = Home.getComponentSpace().resolve(AgentManager.class);
+			final AgentManager agentManager = Home.getApp().getComponentSpace().resolve(AgentManager.class);
 			agentManager.startProcess(PT_JUNIT, description.getTestClass().getSimpleName(), description.getMethodName());
 			try {
 				base.evaluate();
@@ -60,7 +60,7 @@ public class JunitRuleSpy implements TestRule {
 				agentManager.addMetaData(ME_ERROR_HEADER, th.getMessage());
 				throw th;
 			} finally {
-				agentManager.stopProcess();//La mesure Duration est settée implicitement par le stop
+				agentManager.stopProcess();//La mesure Duration est settï¿½e implicitement par le stop
 			}
 		}
 	}

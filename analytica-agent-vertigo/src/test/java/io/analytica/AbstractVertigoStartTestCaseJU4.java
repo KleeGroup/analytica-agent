@@ -2,11 +2,11 @@
  * Analytica - beta version - Systems Monitoring Tool
  *
  * Copyright (C) 2013, KleeGroup, direction.technique@kleegroup.com (http://www.kleegroup.com)
- * KleeGroup, Centre d'affaire la Boursidière - BP 159 - 92357 Le Plessis Robinson Cedex - France
+ * KleeGroup, Centre d'affaire la Boursidiï¿½re - BP 159 - 92357 Le Plessis Robinson Cedex - France
  *
  * This program is free software; you can redistribute it and/or modify it under the terms
  * of the GNU General Public License as published by the Free Software Foundation;
- * either version 3 of the License, or (at your option) any later version.
+ * either version 3 of the License, or (at your Optional) any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
@@ -17,18 +17,18 @@
  */
 package io.analytica;
 
-import io.analytica.agent.Starter;
-import io.vertigo.core.Home;
-import io.vertigo.core.component.di.injector.Injector;
-import io.vertigo.lang.Container;
-import io.vertigo.lang.Option;
-
+import java.util.Optional;
 import java.util.Properties;
 
 import org.junit.Rule;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
+
+import io.analytica.agent.Starter;
+import io.vertigo.app.Home;
+import io.vertigo.core.component.di.injector.DIInjector;
+import io.vertigo.lang.Container;
 
 /**
  * Charge l'environnement de test par defaut.
@@ -47,14 +47,14 @@ public abstract class AbstractVertigoStartTestCaseJU4 extends AbstractAnalyticaT
 	}
 
 	/**
-	 * @return fichier properties de paramétrage des managers (par defaut Option.none())
+	 * @return fichier properties de paramï¿½trage des managers (par defaut Optional.none())
 	 */
-	protected Option<String> getPropertiesFileName() {
-		return Option.none(); //par défaut pas de properties
+	protected Optional<String> getPropertiesFileName() {
+		return Optional.empty(); //par dï¿½faut pas de properties
 	}
 
 	/**
-	 * JUnitRule représentant la resource de Container.
+	 * JUnitRule reprï¿½sentant la resource de Container.
 	 * @author npiedeloup
 	 * @version $Id: $
 	 */
@@ -99,11 +99,11 @@ public abstract class AbstractVertigoStartTestCaseJU4 extends AbstractAnalyticaT
 			/** {@inheritDoc} */
 			@Override
 			public void evaluate() throws Throwable {
-				starter = new Starter(testCaseInstance.getManagersXmlFileName(), testCaseInstance.getPropertiesFileName(), testCaseInstance.getClass(), Option.<Properties> none(), 0L);
+				starter = new Starter(testCaseInstance.getManagersXmlFileName(), testCaseInstance.getPropertiesFileName(), testCaseInstance.getClass(), Optional.<Properties> empty(), 0L);
 				starter.start();
 
 				//On injecte les managers sur la classe de test.
-				Injector.injectMembers(testCaseInstance, getContainer());
+				DIInjector.injectMembers(testCaseInstance, getContainer());
 				try {
 					base.evaluate();
 				} finally {
@@ -112,11 +112,11 @@ public abstract class AbstractVertigoStartTestCaseJU4 extends AbstractAnalyticaT
 			}
 
 			/**
-			 * Fournit le container utilisé pour l'injection.
+			 * Fournit le container utilisï¿½ pour l'injection.
 			 * @return Container de l'injection
 			 */
 			private Container getContainer() {
-				return Home.getComponentSpace();
+				return Home.getApp().getComponentSpace();
 			}
 		}
 	}

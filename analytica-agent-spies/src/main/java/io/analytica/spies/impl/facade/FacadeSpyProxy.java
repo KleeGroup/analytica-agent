@@ -17,16 +17,16 @@
  */
 package io.analytica.spies.impl.facade;
 
-import io.analytica.agent.impl.KProcessCollectorContainer;
-import io.analytica.api.Assertion;
-import io.analytica.api.KMeasureType;
-
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+
+import io.analytica.agent.impl.KProcessCollectorContainer;
+import io.analytica.api.Assertion;
+import io.analytica.api.KMeasureType;
 
 /**
  * Monitoring de facade par Proxy automatique sur les interfaces.
@@ -45,7 +45,6 @@ public final class FacadeSpyProxy implements InvocationHandler {
 	 * @param object Objet proxise
 	 * @param facadeType Type de la facade
 	 * @param facadeName Nom de la facade
-	 * @param KProcessCollectorContainer.getInstance() Agent de recolte de process
 	 */
 	FacadeSpyProxy(final Object object, final String facadeType, final String facadeName) {
 		Assertion.checkNotNull(object);
@@ -77,8 +76,7 @@ public final class FacadeSpyProxy implements InvocationHandler {
 	 *
 	 * @param <O> Type de l'objet sur lequel ajouter le proxy.
 	 * @param object Object sur lequel ajouter le Spy
-	 * @param facadeType Pseudo-type de la facade (Service, WS, Mail, ...)
-	 * @param KProcessCollectorContainer.getInstance() Agent de recolte de process
+	 * @param facadeType Pseudo-type de la facade (Service, WS, Mail, ...)s
 	 * @return Proxy de l'objet passe avec le spy place sur les methodes de ses interfaces.
 	 */
 
