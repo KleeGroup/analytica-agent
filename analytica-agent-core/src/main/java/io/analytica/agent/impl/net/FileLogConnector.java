@@ -30,7 +30,7 @@
 package io.analytica.agent.impl.net;
 
 import io.analytica.agent.api.KProcessConnector;
-import io.analytica.api.KProcess;
+import io.analytica.api.AProcess;
 import io.analytica.api.KProcessJsonCodec;
 
 import java.io.BufferedWriter;
@@ -57,7 +57,7 @@ public final class FileLogConnector implements KProcessConnector {
 	private final Logger logger = Logger.getLogger(FileLogConnector.class);
 	private final long spoolFrequencyMs = 250;
 	private Thread processSpoolerThread = null;
-	private final ConcurrentLinkedQueue<KProcess> processQueue = new ConcurrentLinkedQueue<KProcess>();
+	private final ConcurrentLinkedQueue<AProcess> processQueue = new ConcurrentLinkedQueue<AProcess>();
 	private final String fileName;
 
 	public FileLogConnector(final String fileName) {
@@ -69,7 +69,7 @@ public final class FileLogConnector implements KProcessConnector {
 	}
 
 	/** {@inheritDoc} */
-	public void add(final KProcess process) {
+	public void add(final AProcess process) {
 		processQueue.add(process);
 	}
 
@@ -144,8 +144,8 @@ public final class FileLogConnector implements KProcessConnector {
 	 * Effectue le flush de la queue des processes é envoyer.
 	 */
 	void flushProcessQueue() {
-		final List<KProcess> processes = new ArrayList<KProcess>();
-		KProcess head;
+		final List<AProcess> processes = new ArrayList<AProcess>();
+		AProcess head;
 		do {
 			head = processQueue.poll();
 			if (head != null) {

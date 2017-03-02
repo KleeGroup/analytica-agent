@@ -18,7 +18,7 @@
 package io.analytica.museum;
 
 import io.analytica.api.Assertion;
-import io.analytica.api.KProcess;
+import io.analytica.api.AProcess;
 import io.analytica.api.KProcessBuilder;
 
 import java.util.Calendar;
@@ -127,7 +127,7 @@ public final class Museum {
 	}
 
 	private void addVisitorScenario(final Date startVisit) {
-		final KProcess visiteur = new KProcessBuilder(APP_NAME, "session", startVisit, 0)//
+		final AProcess visiteur = new KProcessBuilder(APP_NAME, "session", startVisit, 0)//
 		.withCategory("mexico")
 		.withLocation("visitor")
 		.setMeasure("sessionHttp", 1) //1 session
@@ -196,7 +196,7 @@ public final class Museum {
 	}
 
 	private Date addPage(final PageBuilder pageBuilder, final Date startDate) {
-		final KProcess page = pageBuilder.createPage(startDate);
+		final AProcess page = pageBuilder.createPage(startDate);
 		//On notifie le listener
 		pageListener.onPage(page);
 		//	pages++;
@@ -218,7 +218,7 @@ public final class Museum {
 		final double perfs = Math.min(100, StatsUtil.random(100, 1.4 - nbVisitsHour / 50));
 		final double health = Math.min(100, StatsUtil.random(100, 1.5 - nbVisitsHour / 50));
 
-		final KProcess qosProcess = new KProcessBuilder(APP_NAME, QOS, dateHour, 0)
+		final AProcess qosProcess = new KProcessBuilder(APP_NAME, QOS, dateHour, 0)
 		.withCategory("qos")
 		.withLocation("mexico")
 		.setMeasure("activity", activity)
@@ -234,7 +234,7 @@ public final class Museum {
 	private void loadHealthInfos(final Date dateHour, final double nbVisitsHour) {
 		for (int min = 0; min < 60; min += 6) {
 			final Date dateMinute = new DateBuilder(dateHour).addMinutes(min).toDateTime();
-			final KProcess healthProcess = new KProcessBuilder(APP_NAME, HEALTH, dateMinute, 0)
+			final AProcess healthProcess = new KProcessBuilder(APP_NAME, HEALTH, dateMinute, 0)
 			.withLocation("mexico")
 			.withCategory("physical")
 			.setMeasure("cpu", Math.min(100, 5 + (nbVisitsHour > 0 ? StatsUtil.random(nbVisitsHour, 1) : 0)))

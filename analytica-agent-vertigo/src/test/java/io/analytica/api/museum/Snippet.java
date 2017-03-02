@@ -2,7 +2,7 @@ package io.analytica.api.museum;
 
 import io.analytica.agent.api.KProcessConnector;
 import io.analytica.agent.impl.InfluxProcessConnector;
-import io.analytica.api.KProcess;
+import io.analytica.api.AProcess;
 import io.analytica.museum.Museum;
 import io.analytica.museum.PageListener;
 
@@ -15,7 +15,7 @@ public class Snippet {
 
 		final Museum museum = new Museum(new PageListener() {
 
-			public void onPage(final KProcess process) {
+			public void onPage(final AProcess process) {
 				processConnector.add(process);
 			}
 		});

@@ -39,14 +39,14 @@ public final class KProcessCollectorTest {
 	private static KProcessCollector createProcessCollector(final boolean containsSubProcess) {
 		final String location = "mexico";
 		return new KProcessCollector("my-pretty-app", location, new KProcessConnector() {
-			public void add(final KProcess process) {
+			public void add(final AProcess process) {
 				checkProcess(process);
 				if (containsSubProcess) {
 					checkSubProcess(process);
 				}
 				//on vérifie que l'encodage json fonctionne correctement
 				final String sprocess = KProcessUtil.toJson(process);
-				final KProcess process2 = KProcessUtil.fromJson(sprocess);
+				final AProcess process2 = KProcessUtil.fromJson(sprocess);
 				checkProcess(process2);
 				if (containsSubProcess) {
 					checkSubProcess(process2);
@@ -92,14 +92,14 @@ public final class KProcessCollectorTest {
 				.stopProcess();
 	}
 
-	private static void checkSubProcess(final KProcess process) {
-		final KProcess subProcess = process.getSubProcesses().get(0);
+	private static void checkSubProcess(final AProcess process) {
+		final AProcess subProcess = process.getSubProcesses().get(0);
 		Assert.assertEquals("my-pretty-app", subProcess.getAppName());
 		Assert.assertEquals("services", subProcess.getType());
 		Assert.assertEquals(Double.valueOf(55d), subProcess.getMeasures().get("rows"));
 	}
 
-	private static void checkProcess(final KProcess process) {
+	private static void checkProcess(final AProcess process) {
 		Assert.assertEquals("my-pretty-app", process.getAppName());
 		Assert.assertEquals("pages", process.getType());
 		Assert.assertEquals("search/items", process.getCategory());

@@ -2,7 +2,7 @@
  * Analytica - beta version - Systems Monitoring Tool
  *
  * Copyright (C) 2013, KleeGroup, direction.technique@kleegroup.com (http://www.kleegroup.com)
- * KleeGroup, Centre d'affaire la Boursidière - BP 159 - 92357 Le Plessis Robinson Cedex - France
+ * KleeGroup, Centre d'affaire la Boursidiï¿½re - BP 159 - 92357 Le Plessis Robinson Cedex - France
  *
  * This program is free software; you can redistribute it and/or modify it under the terms
  * of the GNU General Public License as published by the Free Software Foundation;
@@ -20,15 +20,15 @@ package io.analytica.agent.impl;
 import io.analytica.agent.AgentManager;
 import io.analytica.agent.api.KProcessCollector;
 import io.analytica.agent.plugins.net.NetPlugin;
-import io.analytica.api.KProcess;
+import io.analytica.api.AProcess;
 import io.vertigo.lang.Assertion;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
 /**
- * Agent de collecte des données.
- * Collecte automatique des Process (les infos sont portées par le thread courant).
+ * Agent de collecte des donnï¿½es.
+ * Collecte automatique des Process (les infos sont portï¿½es par le thread courant).
  *
  * @author pchretien, npiedeloup
  * @version $Id: AgentManagerImpl.java,v 1.7 2012/03/29 08:48:19 npiedeloup Exp $
@@ -82,7 +82,7 @@ public final class AgentManagerImpl implements AgentManager {
 
 	/** {@inheritDoc} */
 	@Override
-	public void add(final KProcess process) {
+	public void add(final AProcess process) {
 		processCollector.add(process);
 	}
 }

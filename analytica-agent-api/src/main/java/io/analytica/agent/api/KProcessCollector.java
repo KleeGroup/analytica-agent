@@ -30,7 +30,7 @@
 package io.analytica.agent.api;
 
 import io.analytica.api.Assertion;
-import io.analytica.api.KProcess;
+import io.analytica.api.AProcess;
 import io.analytica.api.KProcessBuilder;
 
 import java.util.Stack;
@@ -174,7 +174,7 @@ public final class KProcessCollector {
 	 * Le processus courant devient alors le processus parent le cas échéant.
 	 */
 	public KProcessCollector stopProcess() {
-		final KProcess process = doStopProcess();
+		final AProcess process = doStopProcess();
 		if (process != null) {
 			processConnector.add(process);
 		}
@@ -186,8 +186,8 @@ public final class KProcessCollector {
 	 * Le processus courant devient alors le processus parent le cas echeant.
 	 * @return Processus uniquement dans le cas ou c'est le processus parent.
 	 */
-	private static KProcess doStopProcess() {
-		final KProcess process = pop().build();
+	private static AProcess doStopProcess() {
+		final AProcess process = pop().build();
 		if (getStack().isEmpty()) {
 			//On est au processus racine on le collecte
 			THREAD_LOCAL_PROCESS.remove(); //Et on le retire du ThreadLocal
@@ -203,7 +203,7 @@ public final class KProcessCollector {
 	 * Cet ajout peut-etre multi-thread.
 	 * @param process Process a ajouter
 	 */
-	public void add(final KProcess process) {
+	public void add(final AProcess process) {
 		if (THREAD_LOCAL_PROCESS.get() != null) {
 			throw new IllegalStateException("A process is already have started. You can't add a new full process tree at this time.");
 		}

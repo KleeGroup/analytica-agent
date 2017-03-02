@@ -2,7 +2,7 @@
  * Analytica - beta version - Systems Monitoring Tool
  *
  * Copyright (C) 2013, KleeGroup, direction.technique@kleegroup.com (http://www.kleegroup.com)
- * KleeGroup, Centre d'affaire la Boursidière - BP 159 - 92357 Le Plessis Robinson Cedex - France
+ * KleeGroup, Centre d'affaire la Boursidiï¿½re - BP 159 - 92357 Le Plessis Robinson Cedex - France
  *
  * This program is free software; you can redistribute it and/or modify it under the terms
  * of the GNU General Public License as published by the Free Software Foundation;
@@ -17,27 +17,27 @@
  */
 package io.analytica.agent;
 
-import io.analytica.api.KProcess;
+import io.analytica.api.AProcess;
 import io.vertigo.lang.Component;
 
 /**
- * Agent de collecte des données.
- * Collecte automatique des Process (les infos sont portées par le thread courant).
+ * Agent de collecte des donnï¿½es.
+ * Collecte automatique des Process (les infos sont portï¿½es par le thread courant).
  *
  * @author pchretien, npiedeloup
  * @version $Id: AgentManager.java,v 1.2 2012/03/19 09:03:31 npiedeloup Exp $
  */
 public interface AgentManager extends Component {
 	/**
-	 * Enregistre dans le thread courant le démarrage d'un process.
-	 * Doit respecter les règles sur le nom d'un process.
+	 * Enregistre dans le thread courant le dï¿½marrage d'un process.
+	 * Doit respecter les rï¿½gles sur le nom d'un process.
 	 * @param type Type de process
 	 * @param names Nom du process
 	 */
 	void startProcess(final String type, final String... names);
 
 	/**
-	 * Incrémentation d'une mesure du process courant (set si pas présente).
+	 * Incrï¿½mentation d'une mesure du process courant (set si pas prï¿½sente).
 	 * @param measureType Nom de la mesure
 	 * @param value Valeur
 	 */
@@ -51,23 +51,23 @@ public interface AgentManager extends Component {
 	void setMeasure(final String measureType, final double value);
 
 	/**
-	 * Ajoute une méta-donnée du process courant (set si pas présente).
-	 * TODO V0+ : voir si mutlivaluée intéressante.
-	 * @param metaDataName Nom de la méta donnée
+	 * Ajoute une mï¿½ta-donnï¿½e du process courant (set si pas prï¿½sente).
+	 * TODO V0+ : voir si mutlivaluï¿½e intï¿½ressante.
+	 * @param metaDataName Nom de la mï¿½ta donnï¿½e
 	 * @param value Valeur
 	 */
 	void addMetaData(final String metaDataName, final String value);
 
 	/**
 	 * Termine le process courant.
-	 * Le processus courant devient alors le processus parent le cas échéant.
+	 * Le processus courant devient alors le processus parent le cas ï¿½chï¿½ant.
 	 */
 	void stopProcess();
 
 	/**
-	 * Ajout d'un process déjà assemblé par une sonde.
-	 * Cet ajout peut-être multi-threadé.
-	 * @param process Process à ajouter
+	 * Ajout d'un process dï¿½jï¿½ assemblï¿½ par une sonde.
+	 * Cet ajout peut-ï¿½tre multi-threadï¿½.
+	 * @param process Process ï¿½ ajouter
 	 */
-	void add(KProcess process);
+	void add(AProcess process);
 }

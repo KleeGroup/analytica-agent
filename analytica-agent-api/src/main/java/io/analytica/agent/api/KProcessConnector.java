@@ -29,7 +29,7 @@
  */
 package io.analytica.agent.api;
 
-import io.analytica.api.KProcess;
+import io.analytica.api.AProcess;
 
 /**
  * Connecteur des process.
@@ -44,7 +44,7 @@ public interface KProcessConnector {
 	 * Cet ajout peut-etre multi-thread.
 	 * @param process Process a ajouter
 	 */
-	void add(KProcess process);
+	void add(AProcess process);
 
 	/**
 	 *

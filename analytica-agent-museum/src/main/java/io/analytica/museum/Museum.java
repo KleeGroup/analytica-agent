@@ -2,7 +2,7 @@
  * Analytica - beta version - Systems Monitoring Tool
  *
  * Copyright (C) 2013, KleeGroup, direction.technique@kleegroup.com (http://www.kleegroup.com)
- * KleeGroup, Centre d'affaire la Boursidière - BP 159 - 92357 Le Plessis Robinson Cedex - France
+ * KleeGroup, Centre d'affaire la Boursidiï¿½re - BP 159 - 92357 Le Plessis Robinson Cedex - France
  *
  * This program is free software; you can redistribute it and/or modify it under the terms
  * of the GNU General Public License as published by the Free Software Foundation;
@@ -18,7 +18,7 @@
 package io.analytica.museum;
 
 import io.analytica.api.Assertion;
-import io.analytica.api.KProcess;
+import io.analytica.api.AProcess;
 import io.analytica.api.KProcessBuilder;
 
 import java.util.Calendar;
@@ -133,8 +133,8 @@ public final class Museum {
 	
 	private void addVisitorScenario(final Date startVisit) {
 		//System.out.println("scenario [" + startVisit.getDay() + ", " + startVisit.getHours() + "] >>" + startVisit);
-		//On ne CODE pas un scenario, on le déclare.
-		final KProcess visiteur = new KProcessBuilder(APP_NAME, "session", startVisit, 0)
+		//On ne CODE pas un scenario, on le dï¿½clare.
+		final AProcess visiteur = new KProcessBuilder(APP_NAME, "session", startVisit, 0)
 				.withLocation(Museum.APP_LOCATION).withCategory("health")
 				.setMeasure("sessionHttp", 1) //1 sessio
 				.build();
@@ -202,7 +202,7 @@ public final class Museum {
 	}
 
 	private Date addPage(final PageBuilder pageBuilder, final Date startDate) {
-		final KProcess page = pageBuilder.createPage(startDate);
+		final AProcess page = pageBuilder.createPage(startDate);
 		//On notifie le listener
 		pageListener.onPage(page);
 		pages++;
@@ -224,7 +224,7 @@ public final class Museum {
 		final double perfs = Math.min(100, StatsUtil.random(100, 1.4 - nbVisitsHour / 50));
 		final double health = Math.min(100, StatsUtil.random(100, 1.5 - nbVisitsHour / 50));
 
-		final KProcess qosProcess = new KProcessBuilder(APP_NAME, QOS, dateHour, 0)
+		final AProcess qosProcess = new KProcessBuilder(APP_NAME, QOS, dateHour, 0)
 		.withLocation(Museum.APP_LOCATION).withCategory(QOS)
 				.setMeasure("activity", activity)
 				.setMeasure("activityMax", 100)
@@ -239,7 +239,7 @@ public final class Museum {
 	private void loadHealthInfos(final Date dateHour, final double nbVisitsHour) {
 		for (int min = 0; min < 60; min ++) {
 			final Date dateMinute = new DateBuilder(dateHour).addMinutes(min).toDateTime();
-			final KProcess healthProcess = new KProcessBuilder(APP_NAME, HEALTH, dateMinute, 0)
+			final AProcess healthProcess = new KProcessBuilder(APP_NAME, HEALTH, dateMinute, 0)
 					.withLocation(Museum.APP_LOCATION).withCategory("physical")
 			.setMeasure("cpu", Math.min(100, 5 + (nbVisitsHour > 0 ? StatsUtil.random(nbVisitsHour, 1) : 0)))
 			.setMeasure("ram", Math.min(3096, 250 + (nbVisitsHour > 0 ? StatsUtil.random(nbVisitsHour, 10) : 0)))

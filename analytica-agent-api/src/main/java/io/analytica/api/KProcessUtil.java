@@ -38,11 +38,11 @@ import com.google.gson.GsonBuilder;
 public final class KProcessUtil {
 	private static final Gson gson = new GsonBuilder().create();
 
-	public static KProcess fromJson(final String json) {
-		return gson.fromJson(json, KProcess.class);
+	public static AProcess fromJson(final String json) {
+		return gson.fromJson(json, AProcess.class);
 	}
 
-	public static String toJson(final KProcess process) {
+	public static String toJson(final AProcess process) {
 		return gson.toJson(process);
 	}
 }

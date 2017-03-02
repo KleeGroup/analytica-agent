@@ -62,7 +62,7 @@ public final class KProcessBuilder {
 
 	private final long start;
 	private Double durationMs = null;
-	private final List<KProcess> subProcesses;
+	private final List<AProcess> subProcesses;
 	private final KProcessBuilder parent;
 
 	/**
@@ -94,7 +94,7 @@ public final class KProcessBuilder {
 
 		measures = new HashMap<String, Double>();
 		metaDatas = new HashMap<String, String>();
-		subProcesses = new ArrayList<KProcess>();
+		subProcesses = new ArrayList<AProcess>();
 		this.startDate = startDate;
 		start = startDate.getTime();
 		this.parent = parent;
@@ -112,7 +112,7 @@ public final class KProcessBuilder {
 		final StringBuilder locationBuilder = new StringBuilder();
 		for (final String _location : locations) {
 			if (counter != 0) {
-				locationBuilder.append(KProcess.CATEGORY_SEPARATOR);
+				locationBuilder.append(AProcess.CATEGORY_SEPARATOR);
 			}
 			locationBuilder.append(_location);
 			counter++;
@@ -131,7 +131,7 @@ public final class KProcessBuilder {
 		final StringBuilder categoryBuilder = new StringBuilder();
 		for (final String _category : categories) {
 			if (counter != 0) {
-				categoryBuilder.append(KProcess.CATEGORY_SEPARATOR);
+				categoryBuilder.append(AProcess.CATEGORY_SEPARATOR);
 			}
 			categoryBuilder.append(_category);
 			counter++;
@@ -230,16 +230,16 @@ public final class KProcessBuilder {
 	 * @param subProcess Sous-Processus a ajouter
 	 * @return Builder
 	 */
-	public KProcessBuilder addSubProcess(final KProcess subProcess) {
+	public KProcessBuilder addSubProcess(final AProcess subProcess) {
 		return addSubProcess(subProcess, true);
 	}
 
-	private KProcessBuilder addSubProcess(final KProcess subProcess, final boolean addSubDuration) {
+	private KProcessBuilder addSubProcess(final AProcess subProcess, final boolean addSubDuration) {
 		Assertion.checkNotNull(subProcess, "sub process is required ");
 		//---------------------------------------------------------------------
 		subProcesses.add(subProcess);
 		if (addSubDuration) {
-			incMeasure(KProcess.SUB_DURATION, subProcess.getDuration());
+			incMeasure(AProcess.SUB_DURATION, subProcess.getDuration());
 		}
 		return this;
 	}
@@ -248,14 +248,14 @@ public final class KProcessBuilder {
 	 * Construction du Processus.
 	 * @return Process
 	 */
-	public KProcess build() {
+	public AProcess build() {
 		//Si on est dans le mode de construction en runtime, on ajoute la duree.
 		if (durationMs == null) {
 			durationMs = Long.valueOf(System.currentTimeMillis() - start).doubleValue();
 		}
 		//On ajoute la mesure obligatoire : duree
-		setMeasure(KProcess.DURATION, durationMs);
-		return new KProcess(
+		setMeasure(AProcess.DURATION, durationMs);
+		return new AProcess(
 				appName,
 				myType,
 				myCategory,

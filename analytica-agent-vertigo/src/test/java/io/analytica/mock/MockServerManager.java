@@ -29,7 +29,7 @@
  */
 package io.analytica.mock;
 
-import io.analytica.api.KProcess;
+import io.analytica.api.AProcess;
 import io.analytica.api.KProcessJsonCodec;
 
 import java.lang.ref.WeakReference;
@@ -47,7 +47,7 @@ import org.apache.log4j.Logger;
  */
 public final class MockServerManager {
 	private static final Logger LOG = Logger.getLogger(MockServerManager.class);
-	private final Map<String, List<KProcess>> processesMap = new HashMap<String, List<KProcess>>();
+	private final Map<String, List<AProcess>> processesMap = new HashMap<String, List<AProcess>>();
 	private static WeakReference<MockServerManager> INSTANCE = new WeakReference<MockServerManager>(null);
 
 	/**
@@ -72,26 +72,26 @@ public final class MockServerManager {
 	 * @param json json du process recu
 	 */
 	public synchronized void push(final String json) {
-		final List<KProcess> processes = KProcessJsonCodec.fromJson(json);
+		final List<AProcess> processes = KProcessJsonCodec.fromJson(json);
 		LOG.info("PUSH " + processes.size() + " processes.");
 		//LOG.info("-> " + json);
-		for (final KProcess process : processes) {
+		for (final AProcess process : processes) {
 			pushProcess(process);
 		}
 
 	}
 
-	private void pushProcess(final KProcess process) {
+	private void pushProcess(final AProcess process) {
 		obtainProcesses(process.getType()).add(process);
-		for (final KProcess subProcess : process.getSubProcesses()) {
+		for (final AProcess subProcess : process.getSubProcesses()) {
 			pushProcess(subProcess);
 		}
 	}
 
-	private List<KProcess> obtainProcesses(final String type) {
-		List<KProcess> processes = processesMap.get(type);
+	private List<AProcess> obtainProcesses(final String type) {
+		List<AProcess> processes = processesMap.get(type);
 		if (processes == null) {
-			processes = new ArrayList<KProcess>();
+			processes = new ArrayList<AProcess>();
 			processesMap.put(type, processes);
 		}
 		return processes;
@@ -101,7 +101,7 @@ public final class MockServerManager {
 	 * @param type Type
 	 * @return Liste des processes de ce type
 	 */
-	public synchronized List<KProcess> readProcesses(final String type) {
+	public synchronized List<AProcess> readProcesses(final String type) {
 		return obtainProcesses(type);
 	}
 
@@ -112,9 +112,9 @@ public final class MockServerManager {
 	 * @return Liste des measures
 	 */
 	public synchronized List<Double> getMeasures(final String metricName, final String type, final String... subTypes) {
-		final List<KProcess> processByType = obtainProcesses(type);
+		final List<AProcess> processByType = obtainProcesses(type);
 		final List<Double> measures = new ArrayList<Double>();
-		for (final KProcess process : processByType) {
+		for (final AProcess process : processByType) {
 			if (process.getCategory().startsWith(toTree(subTypes))) {
 				final Double measure = process.getMeasures().get(metricName);
 				if (measure != null) {

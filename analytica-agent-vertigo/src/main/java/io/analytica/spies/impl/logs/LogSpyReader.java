@@ -47,7 +47,7 @@ import org.apache.log4j.Logger;
 
 import io.analytica.agent.AgentManager;
 import io.analytica.api.Assertion;
-import io.analytica.api.KProcess;
+import io.analytica.api.AProcess;
 import io.analytica.api.KProcessBuilder;
 import io.analytica.api.KProcessJsonCodec;
 import io.analytica.spies.impl.JsonConfReader;
@@ -154,7 +154,7 @@ public final class LogSpyReader implements Activeable {
 		logInfos.add(logInfo);
 	}
 
-	private KProcess extractProcess(final String threadName) {
+	private AProcess extractProcess(final String threadName) {
 		final List<LogInfo> logInfos = getLogInfos(threadName);
 		//1 - on tri par date de d�but
 		//logger.info("extract >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
@@ -188,7 +188,7 @@ public final class LogSpyReader implements Activeable {
 			}
 		}
 		//3 - A la fin on depile tout
-		KProcess process;
+		AProcess process;
 		do {
 			final KProcessBuilder processBuilderPrevious = stackProcessBuilder.pop();
 			stackLogInfo.pop();
@@ -210,14 +210,14 @@ public final class LogSpyReader implements Activeable {
 		return process;
 	}
 
-	private StringBuilder fullToString(final KProcess process, final StringBuilder sb, final String linePrefix) {
+	private StringBuilder fullToString(final AProcess process, final StringBuilder sb, final String linePrefix) {
 		final SimpleDateFormat sdfHour = new SimpleDateFormat("HH:mm:ss.SSS ");
 
 		sb.append(linePrefix);
 		sb.append("{").append("").append(process.getType()).append(":").append(Arrays.asList(process.getCategoryAsArray())).append("; startDate:").append(sdfHour.format(process.getStartDate())).append("; endDate:").append(sdfHour.format(new Date(process.getStartDate().getTime() + (long) process.getDuration()))).append("; duration:").append(process.getDuration());
 		if (!process.getSubProcesses().isEmpty()) {
 			sb.append("\n").append(linePrefix).append("subprocess:{");
-			for (final KProcess subProcess : process.getSubProcesses()) {
+			for (final AProcess subProcess : process.getSubProcesses()) {
 				sb.append("\n");
 				fullToString(subProcess, sb, linePrefix + "  ");
 				sb.append(";");
@@ -321,8 +321,8 @@ public final class LogSpyReader implements Activeable {
 				parsedLineCount++;
 				patternHit(logInfo.getLogPattern());
 				if (logInfo.getLogPattern().isProcessesJson()) {
-					final List<KProcess> processes = KProcessJsonCodec.fromJson(logInfo.getJson());
-					for (final KProcess process : processes) {
+					final List<AProcess> processes = KProcessJsonCodec.fromJson(logInfo.getJson());
+					for (final AProcess process : processes) {
 						agentManager.add(process);
 					}
 				} else {

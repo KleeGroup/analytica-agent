@@ -30,7 +30,7 @@
 package io.analytica.agent.impl.net;
 
 import io.analytica.agent.api.KProcessConnector;
-import io.analytica.api.KProcess;
+import io.analytica.api.AProcess;
 import io.analytica.api.KProcessJsonCodec;
 
 import java.util.ArrayList;
@@ -68,7 +68,7 @@ public final class RemoteConnector implements KProcessConnector {
 	private final Logger logger = Logger.getLogger(RemoteConnector.class);
 
 	private Thread processSenderThread = null;
-	private final ConcurrentLinkedQueue<KProcess> processQueue = new ConcurrentLinkedQueue<KProcess>();
+	private final ConcurrentLinkedQueue<AProcess> processQueue = new ConcurrentLinkedQueue<AProcess>();
 	private CacheManager manager;
 	private final String serverUrl;
 	private final int sendPaquetSize;
@@ -91,7 +91,7 @@ public final class RemoteConnector implements KProcessConnector {
 	}
 
 	/** {@inheritDoc} */
-	public void add(final KProcess process) {
+	public void add(final AProcess process) {
 		processQueue.add(process);
 	}
 
@@ -201,8 +201,8 @@ public final class RemoteConnector implements KProcessConnector {
 	 */
 	private void flushProcessQueue(final long maxPaquetSize) {
 		long sendPaquet = 0;
-		final List<KProcess> processes = new ArrayList<KProcess>();
-		KProcess head;
+		final List<AProcess> processes = new ArrayList<AProcess>();
+		AProcess head;
 		do {
 			head = processQueue.poll();
 			if (head != null) {
@@ -217,7 +217,7 @@ public final class RemoteConnector implements KProcessConnector {
 		doSendProcesses(processes);
 	}
 
-	private void doSendProcesses(final List<KProcess> processes) {
+	private void doSendProcesses(final List<AProcess> processes) {
 		if (!processes.isEmpty()) {
 			final String json = KProcessJsonCodec.toJson(processes);
 			try {

@@ -2,7 +2,7 @@
  * Analytica - beta version - Systems Monitoring Tool
  *
  * Copyright (C) 2013, KleeGroup, direction.technique@kleegroup.com (http://www.kleegroup.com)
- * KleeGroup, Centre d'affaire la Boursidière - BP 159 - 92357 Le Plessis Robinson Cedex - France
+ * KleeGroup, Centre d'affaire la Boursidiï¿½re - BP 159 - 92357 Le Plessis Robinson Cedex - France
  *
  * This program is free software; you can redistribute it and/or modify it under the terms
  * of the GNU General Public License as published by the Free Software Foundation;
@@ -19,7 +19,7 @@ package io.analytica.agent.plugins.net.remote;
 
 import io.analytica.agent.impl.net.RemoteConnector;
 import io.analytica.agent.plugins.net.NetPlugin;
-import io.analytica.api.KProcess;
+import io.analytica.api.AProcess;
 import io.vertigo.lang.Activeable;
 
 import javax.inject.Inject;
@@ -34,7 +34,7 @@ public final class RemoteNetPlugin implements NetPlugin, Activeable {
 
 	/**
 	 * @param serverUrl Url du serveur Analytica
-	 * @param sendPaquetSize Taille des paquets déclenchant l'envoi anticipé
+	 * @param sendPaquetSize Taille des paquets dï¿½clenchant l'envoi anticipï¿½
 	 * @param sendPaquetFrequencySeconds Frequence normal d'envoi des paquets (en seconde)
 	 */
 	@Inject
@@ -44,7 +44,7 @@ public final class RemoteNetPlugin implements NetPlugin, Activeable {
 
 	/** {@inheritDoc} */
 	@Override
-	public void add(final KProcess process) {
+	public void add(final AProcess process) {
 		remoteConnector.add(process);
 	}
 

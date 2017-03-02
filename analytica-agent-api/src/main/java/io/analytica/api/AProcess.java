@@ -65,7 +65,7 @@ import java.util.regex.Pattern;
  * @author pchretien, npiedeloup
  * @version $Id: KProcess.java,v 1.8 2012/10/16 17:18:26 pchretien Exp $
  */
-public final class KProcess {
+public final class AProcess {
 	/**
 	 * Mesure de type duree.
 	 */
@@ -96,7 +96,7 @@ public final class KProcess {
 
 	private final Map<String, Double> measures;
 	private final Map<String, String> metaDatas;
-	private final List<KProcess> subProcesses;
+	private final List<AProcess> subProcesses;
 
 	/**
 	 * @param appName Nom de l'application
@@ -107,13 +107,13 @@ public final class KProcess {
 	 * @param metaDatas Metadonnées du processus
 	 * @param subProcesses Liste des sous processus
 	 */
-	KProcess(final String appName, final String type,
+	AProcess(final String appName, final String type,
 			final String category,
 			final String location,
 			final Date startDate,
 			final Map<String, Double> measures,
 			final Map<String, String> metaDatas,
-			final List<KProcess> subProcesses) {
+			final List<AProcess> subProcesses) {
 		checkNotNull(appName, "appName is required");
 		checkNotNull(type, "type of process is required");
 		checkNotNull(category, "category of process is required");
@@ -220,7 +220,7 @@ public final class KProcess {
 	/**
 	 * @return Liste des sous-processus
 	 */
-	public List<KProcess> getSubProcesses() {
+	public List<AProcess> getSubProcesses() {
 		return subProcesses;
 	}
 

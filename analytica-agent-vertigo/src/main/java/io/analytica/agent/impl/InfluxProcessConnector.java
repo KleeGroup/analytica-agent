@@ -43,11 +43,11 @@ import org.influxdb.InfluxDBFactory;
 import org.influxdb.dto.BatchPoints;
 
 import io.analytica.agent.api.KProcessConnector;
-import io.analytica.api.KProcess;
+import io.analytica.api.AProcess;
 
 public final class InfluxProcessConnector implements KProcessConnector {
 	private final String appName;
-	private final List<KProcess> processes = new ArrayList<>(); //buffer
+	private final List<AProcess> processes = new ArrayList<>(); //buffer
 	private final InfluxDB influxDB;
 
 	private static boolean ping(final String host) {
@@ -74,7 +74,7 @@ public final class InfluxProcessConnector implements KProcessConnector {
 	}
 
 	@Override
-	public synchronized void add(final KProcess process) {
+	public synchronized void add(final AProcess process) {
 		if (influxDB != null) {
 			processes.add(process);
 			if (processes.size() > 5000) {
@@ -89,9 +89,9 @@ public final class InfluxProcessConnector implements KProcessConnector {
 				.retentionPolicy("default")
 				.consistency(ConsistencyLevel.ALL)
 				.build();
-		for (final KProcess process : processes) {
+		for (final AProcess process : processes) {
 			batchPoints.point(processToPoint(process));
-			for (final KProcess subProcess : process.getSubProcesses()) {
+			for (final AProcess subProcess : process.getSubProcesses()) {
 				batchPoints.point(processToPoint(subProcess));
 			}
 		}
@@ -99,7 +99,7 @@ public final class InfluxProcessConnector implements KProcessConnector {
 		processes.clear();
 	}
 
-	private static Point processToPoint(final KProcess process) {
+	private static Point processToPoint(final AProcess process) {
 		final Map measures = process.getMeasures();
 		return Point.measurement(process.getType())
 				.time(process.getStartDate().getTime(), TimeUnit.MILLISECONDS)

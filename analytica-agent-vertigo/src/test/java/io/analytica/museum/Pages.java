@@ -17,7 +17,7 @@
  */
 package io.analytica.museum;
 
-import io.analytica.api.KProcess;
+import io.analytica.api.AProcess;
 import io.analytica.api.KProcessBuilder;
 
 import java.util.Calendar;
@@ -41,7 +41,7 @@ final class Pages {
 	private static final String SEARCH_PROCESS = "search";
 
 	private static class HomePage implements PageBuilder {
-		public KProcess createPage(final Date dateVisite) {
+		public AProcess createPage(final Date dateVisite) {
 			final int[] randomDurations = StatsUtil.randoms(getCoef(dateVisite), 100, 5, 40, 5, 40, 5, 40, 5, 40);
 			//@formatter:off
 			return new KProcessBuilder(Museum.APP_NAME, PAGE_PROCESS, dateVisite, StatsUtil.sum(randomDurations, 0, 1, 2, 3, 4, 5, 6, 7, 8)).withCategory("home" )
@@ -67,7 +67,7 @@ final class Pages {
 	}
 
 	private static class SearchArtistPage implements PageBuilder {
-		public KProcess createPage(final Date dateVisite) {
+		public AProcess createPage(final Date dateVisite) {
 			final int[] randomDurations = StatsUtil.randoms(getCoef(dateVisite), 100, 50, 150, 5, 10, 5, 10, 5, 10, 5, 10, 5, 10, 5, 10, 5, 10, 5, 10, 5, 10);
 			//@formatter:off
 			return new KProcessBuilder(Museum.APP_NAME, "search", dateVisite, StatsUtil.sum(randomDurations, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20)).withCategory("artists")//
@@ -109,7 +109,7 @@ final class Pages {
 	}
 
 	private static class SearchOeuvrePage implements PageBuilder {
-		public KProcess createPage(final Date dateVisite) {
+		public AProcess createPage(final Date dateVisite) {
 			final int[] randomDurations = StatsUtil.randoms(getCoef(dateVisite), 100, 50, 250, 5, 10, 5, 10, 5, 10, 5, 10, 5, 10, 5, 10, 5, 10, 5, 10, 5, 10);
 
 			return new KProcessBuilder(Museum.APP_NAME, "search", dateVisite, StatsUtil.sum(randomDurations, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20)).withCategory("oeuvres")
@@ -150,7 +150,7 @@ final class Pages {
 	}
 
 	private static class ImageOeuvrePage implements PageBuilder {
-		public KProcess createPage(final Date dateVisite) {
+		public AProcess createPage(final Date dateVisite) {
 			final int[] randomDurations = StatsUtil.randoms(getCoef(dateVisite), 5, 15);
 
 			return new KProcessBuilder(Museum.APP_NAME, PAGE_PROCESS, dateVisite, StatsUtil.sum(randomDurations, 0, 1)).withCategory("images/oeuvres" + String.valueOf(StatsUtil.random(200, 1)))
@@ -162,7 +162,7 @@ final class Pages {
 	}
 
 	private static class ImageArtistPage implements PageBuilder {
-		public KProcess createPage(final Date dateVisite) {
+		public AProcess createPage(final Date dateVisite) {
 			final int[] randomDurations = StatsUtil.randoms(getCoef(dateVisite), 5, 10);
 
 			return new KProcessBuilder(Museum.APP_NAME, PAGE_PROCESS, dateVisite, StatsUtil.sum(randomDurations, 0, 1)).withCategory("images/artists" + String.valueOf(StatsUtil.random(100, 1)))
@@ -178,7 +178,7 @@ final class Pages {
 		private static final String[] artistsA = "vinci;monet;picasso;renoir;rubens".split(";");
 		private static final String[] artistsB = "bazille;bonnard;munch;signac;hopper;c�zanne;bacon;johnes;rothko;warhol".split(";");
 
-		public KProcess createPage(final Date dateVisite) {
+		public AProcess createPage(final Date dateVisite) {
 			final int[] randomDurations = StatsUtil.randoms(getCoef(dateVisite), 100, 5, 20, 5, 20);
 			final String artist = getArtist();
 			return new KProcessBuilder(Museum.APP_NAME, PAGE_PROCESS, dateVisite, StatsUtil.sum(randomDurations, 0, 1, 2, 3, 4)).withCategory("artists/" + artist)
@@ -206,7 +206,7 @@ final class Pages {
 		private static final String[] oeuvresC = "Achille Emperaire;Nature morte � la bouilloire;La Pendule noire;Pastorale ou l'Idylle;La Maison du pendu;Autoportrait;Madame C�zanne dans un fauteuil rouge;Pont de Maincy;Cour de ferme � Auvers;Pommes et biscuits;Plateau de la montagne Sainte Victoire;L'Estaque, vue du golfe de Marseille;Vase de fleurs et pommes;Les Collines de Meyreuil;Gardanne le soir, Vue de la colline des fr�res;Gardanne, Vue de Saint Andr�;Les rideaux;Payannet et la Sainte-Victoire. Environs de Gardanne;L'aqueduc;Marronniers et ferme du Jas de Bouffon;Pont sur la Marne � Cr�teil;La table de cuisine (Nature morte au panier);Mardi-gras;Madame C�zanne sur une chaise jaune;Les Joueurs de cartes;Les baigneurs;Baigneurs;Femme � la cafeti�re;Le Gar�on au gilet rouge;Les Grandes Baigneuses;Oignons et bouteille;Joachim Gasquet;Paysan � la blouse bleue;Pommes et oranges;Nature morte aux oignons;Fumeur accoud�;Oignons et bouteille;Le fumeur;Le rocher rouge;Le ch�teau noir;Montagne Sainte Victoire;Rocher de Bibemus;Vieille Femme au rosaire;La Montagne Sainte-Victoire et le Ch�teau Noir"
 				.split(";");
 
-		public KProcess createPage(final Date dateVisite) {
+		public AProcess createPage(final Date dateVisite) {
 			final int[] randomDurations = StatsUtil.randoms(getCoef(dateVisite), 100, 5, 50, 5, 20);
 			final String oeuvre = getOeuvre();
 			return new KProcessBuilder(Museum.APP_NAME, PAGE_PROCESS, dateVisite, StatsUtil.sum(randomDurations, 0, 1, 2, 3, 4)).withCategory("oeuvres/" + oeuvre)
@@ -231,7 +231,7 @@ final class Pages {
 		private static final String[] museums = "Mus�e du Louvre,Paris;Mus�e d'Orsay,Paris;The Metropolitan Museum of Art,New York;Pushkin Museum,Moscow;Courtauld Institute Galleries,London".split(";");
 		private static final String[] annees = "1954;1966;1970;1982;1991;2002;2005;2007;2008;2009;2010;2011;2011;2012;2012;2012;2013;2013;2013;2013".split(";");
 
-		public KProcess createPage(final Date dateVisite) {
+		public AProcess createPage(final Date dateVisite) {
 			final int[] randomDurations = StatsUtil.randoms(getCoef(dateVisite), 100, 5, 20, 5, 50, 5, 40);
 			final String[] expositionInfos = getExposition().split(",");// [Mus�e,Ville,Ann�e]
 

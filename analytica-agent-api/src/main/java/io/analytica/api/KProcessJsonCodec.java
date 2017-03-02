@@ -60,7 +60,7 @@ public final class KProcessJsonCodec {
 	 * @param processes Process list
 	 * @return Json String
 	 */
-	public static String toJson(final List<KProcess> processes) {
+	public static String toJson(final List<AProcess> processes) {
 		return new Gson().toJson(processes);
 	}
 
@@ -69,8 +69,8 @@ public final class KProcessJsonCodec {
 	 * @param json Json string
 	 * @return Process list
 	 */
-	public static List<KProcess> fromJson(final String json) {
-		final Gson gson = new GsonBuilder().registerTypeAdapter(KProcess.class, PROCESS_DESERIALIZER).create();
+	public static List<AProcess> fromJson(final String json) {
+		final Gson gson = new GsonBuilder().registerTypeAdapter(AProcess.class, PROCESS_DESERIALIZER).create();
 		return gson.fromJson(json, KProcessDeserializer.LIST_PROCESS_TYPE);
 	}
 
@@ -78,12 +78,12 @@ public final class KProcessJsonCodec {
 	 * Gson deserializer for KProcess Object.
 	 * @author npiedeloup
 	 */
-	static final class KProcessDeserializer implements JsonDeserializer<KProcess> {
+	static final class KProcessDeserializer implements JsonDeserializer<AProcess> {
 
 		/**
 		 * Type List<KProcess>.
 		 */
-		public static final Type LIST_PROCESS_TYPE = new TypeToken<List<KProcess>>() { //empty
+		public static final Type LIST_PROCESS_TYPE = new TypeToken<List<AProcess>>() { //empty
 		}.getType();
 		private static final Type MAP_STRING_DOUBLE_TYPE = new TypeToken<Map<String, Double>>() { //empty
 		}.getType();
@@ -92,7 +92,7 @@ public final class KProcessJsonCodec {
 		private static final String[] EMPTY_STRING_ARRAY = new String[0];
 
 		/** {@inheritDoc} */
-		public KProcess deserialize(final JsonElement json, final Type typeOfT, final JsonDeserializationContext context) throws JsonParseException {
+		public AProcess deserialize(final JsonElement json, final Type typeOfT, final JsonDeserializationContext context) throws JsonParseException {
 			//{"type":"COMMANDE","subTypes":["5 Commandes"],"startDate":"Mar 12, 2014 2:37:48 PM",
 			// "measures":{"sub_duration":3.0,"HMDURATION":4.0},"metaDatas":{},"subProcesses":[]}
 			final JsonObject jsonObject = json.getAsJsonObject();
@@ -113,17 +113,17 @@ public final class KProcessJsonCodec {
 			final JsonObject jsonMeasures = jsonObject.getAsJsonObject("measures");
 			final Map<String, Double> measures = deserialize(context, jsonMeasures, MAP_STRING_DOUBLE_TYPE, Collections.<String, Double> emptyMap());
 
-			final double durationMs = measures.get(KProcess.DURATION);
+			final double durationMs = measures.get(AProcess.DURATION);
 
 			final JsonObject jsonMetaDatas = jsonObject.getAsJsonObject("metaDatas");
 			final Map<String, Set<String>> metaDatas = deserialize(context, jsonMetaDatas, MAP_STRING_SET_STRING_TYPE, Collections.<String, Set<String>> emptyMap());
 
 			final JsonArray jsonSubProcesses = jsonObject.getAsJsonArray("subProcesses");
-			final List<KProcess> processes = deserialize(context, jsonSubProcesses, LIST_PROCESS_TYPE, Collections.<KProcess> emptyList());
+			final List<AProcess> processes = deserialize(context, jsonSubProcesses, LIST_PROCESS_TYPE, Collections.<AProcess> emptyList());
 
 			final KProcessBuilder builder = new KProcessBuilder(appName, type, startDate, durationMs);
 
-			for (final KProcess kProcess : processes) {
+			for (final AProcess kProcess : processes) {
 				builder.addSubProcess(kProcess);
 			}
 

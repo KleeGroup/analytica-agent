@@ -22,7 +22,7 @@ import io.analytica.agent.impl.AnalyticaConfigurationStore;
 import io.analytica.agent.impl.AnalyticaConfigurationType;
 import io.analytica.agent.impl.KProcessCollectorContainer;
 import io.analytica.api.KMeasureType;
-import io.analytica.api.KProcess;
+import io.analytica.api.AProcess;
 import io.analytica.api.KProcessBuilder;
 import io.analytica.api.KProcessType;
 
@@ -124,7 +124,7 @@ public class HttpSessionsSpyListener implements ServletContextListener,
 	public final void sessionCreated(HttpSessionEvent se) {
 		//No implementation
 	}
-	protected final KProcess encodeSessionData(){
+	protected final AProcess encodeSessionData(){
 		if(sessionContainer.isEmpty()){
 			return null;
 		}

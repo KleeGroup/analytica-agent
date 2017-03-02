@@ -2,7 +2,7 @@
  * Analytica - beta version - Systems Monitoring Tool
  *
  * Copyright (C) 2013, KleeGroup, direction.technique@kleegroup.com (http://www.kleegroup.com)
- * KleeGroup, Centre d'affaire la Boursidière - BP 159 - 92357 Le Plessis Robinson Cedex - France
+ * KleeGroup, Centre d'affaire la Boursidiï¿½re - BP 159 - 92357 Le Plessis Robinson Cedex - France
  *
  * This program is free software; you can redistribute it and/or modify it under the terms
  * of the GNU General Public License as published by the Free Software Foundation;
@@ -19,7 +19,7 @@ package io.analytica;
 
 import io.analytica.agent.impl.net.RemoteConnector;
 import io.analytica.api.Assertion;
-import io.analytica.api.KProcess;
+import io.analytica.api.AProcess;
 import io.analytica.museum.Museum;
 import io.analytica.museum.PageListener;
 
@@ -65,7 +65,7 @@ public final class MuseumStarter {
 		final int visitsByDay = Integer.parseInt(properties.getProperty("visitsByDay"));
 		Museum museum= new Museum(new PageListener() {
 			@Override
-			public void onPage(final KProcess process) {
+			public void onPage(final AProcess process) {
 				remoteConnector.add(process);
 			}
 		});

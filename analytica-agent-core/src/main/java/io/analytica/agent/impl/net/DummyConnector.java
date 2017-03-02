@@ -30,7 +30,7 @@
 package io.analytica.agent.impl.net;
 
 import io.analytica.agent.api.KProcessConnector;
-import io.analytica.api.KProcess;
+import io.analytica.api.AProcess;
 
 /**
  * @author npiedeloup
@@ -38,7 +38,7 @@ import io.analytica.api.KProcess;
  */
 public final class DummyConnector implements KProcessConnector {
 	/** {@inheritDoc} */
-	public void add(final KProcess process) {
+	public void add(final AProcess process) {
 		//Nothing
 	}
 
