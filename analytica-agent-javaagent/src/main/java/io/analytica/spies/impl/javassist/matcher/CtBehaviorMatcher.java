@@ -2,7 +2,7 @@
  * Analytica - beta version - Systems Monitoring Tool
  *
  * Copyright (C) 2013, KleeGroup, direction.technique@kleegroup.com (http://www.kleegroup.com)
- * KleeGroup, Centre d'affaire la Boursidière - BP 159 - 92357 Le Plessis Robinson Cedex - France
+ * KleeGroup, Centre d'affaire la Boursidiï¿½re - BP 159 - 92357 Le Plessis Robinson Cedex - France
  *
  * This program is free software; you can redistribute it and/or modify it under the terms
  * of the GNU General Public License as published by the Free Software Foundation;
@@ -27,48 +27,45 @@
  * but you are not obliged to do so.
  * If you do not wish to do so, delete this exception statement from your version.
  */
-package io.analytica.spies.imp.javassist.agentloader;
+package io.analytica.spies.impl.javassist.matcher;
 
-import java.lang.management.ManagementFactory;
-
-import org.apache.log4j.Logger;
+import javassist.CtBehavior;
 
 /**
- * Class utilitaire de chargement d'un agent de la VM, après son démarrage.
+ * Class matches simple regular expressions of the form:
+ * <li>this*
+ * <li>* is so *
+ * <li>input_file_*.dat
+ * <li>com.ml.gdfs.common.util.text.*
+ * <li>?he q???k br?wn fox
+ * <li>java 1.4.?
+ *
  * @author npiedeloup
- * @version $Id: VirtualMachineAgentLoader.java,v 1.1 2011/05/12 10:16:12 prahmoune Exp $
+ * @version $Id: GlobMatcher.java,v 1.1 2011/05/12 10:16:12 prahmoune Exp $
  */
-public final class VirtualMachineAgentLoader {
+public final class CtBehaviorMatcher implements Matcher<CtBehavior> {
 
-	private static final Logger LOG = Logger.getLogger(VirtualMachineAgentLoader.class);
-	private static final String VIRTUAL_MACHINE_CLASS_NAME = "com.sun.tools.attach.VirtualMachine";
-
-	private VirtualMachineAgentLoader() {
-		//rien
-	}
+	private final RegExpMatcher methodNameMatcher;
 
 	/**
-	 * Charge un agent à chaud.
-	 * @param agentPath Chemin vers le jar de l'agent
-	 * @param option option de l'agent
+	 * @param pattenString initializes the matcher with the glob patterm.
 	 */
-	public static void loadAgent(final String agentPath, final String option) {
-		LOG.info("dynamically loading javaagent: " + agentPath + "=" + option);
-		final String nameOfRunningVM = ManagementFactory.getRuntimeMXBean().getName();
-		final int p = nameOfRunningVM.indexOf('@');
-		final String pid = nameOfRunningVM.substring(0, p);
-		try {
-			//on check, pour indiquer où trouver ce jar
-			VirtualMachineAgentLoader.class.getClassLoader().loadClass(VIRTUAL_MACHINE_CLASS_NAME);
-		} catch (final ClassNotFoundException e) {
-			throw new RuntimeException("La class " + VIRTUAL_MACHINE_CLASS_NAME + " est utilisée pour ajout l'agent à la VM. Ajouter le tools.jar du jdk 1.6+ dans le classpath", e);
-		}
-		try {
-			final com.sun.tools.attach.VirtualMachine vm = com.sun.tools.attach.VirtualMachine.attach(pid);
-			vm.loadAgent(agentPath, option);
-			vm.detach();
-		} catch (final Exception e) {
-			throw new RuntimeException(e);
-		}
+	public CtBehaviorMatcher(final String pattenString) {
+		//Assertion.notEmpty(pattenString);
+		//---------------------------------------------------------------------
+		methodNameMatcher = new RegExpMatcher(pattenString);
+	}
+
+	/** {@inheritDoc}*/
+	@Override
+	public boolean isMatch(final CtBehavior input) {
+		//Assertion.notNull(input);
+		return methodNameMatcher.isMatch(input.getName());
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public String toString() {
+		return "<method>" + methodNameMatcher + "</method>";
 	}
 }

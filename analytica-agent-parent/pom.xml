@@ -40,7 +40,7 @@
 
 
 	<properties>
-		<vertigo.version>0.9.4-SNAPSHOT</vertigo.version>
+		<vertigo.version>0.9.4</vertigo.version>
 		<maven.compiler.source>1.7</maven.compiler.source>
 		<maven.compiler.target>1.7</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

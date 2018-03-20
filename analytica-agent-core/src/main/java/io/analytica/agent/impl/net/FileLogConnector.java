@@ -29,10 +29,6 @@
  */
 package io.analytica.agent.impl.net;
 
-import io.analytica.agent.api.KProcessConnector;
-import io.analytica.api.AProcess;
-import io.analytica.api.KProcessJsonCodec;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -44,7 +40,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+
+import io.analytica.agent.api.KProcessConnector;
+import io.analytica.api.AProcess;
+import io.analytica.api.KProcessJsonCodec;
 
 /**
  * TODO voir http://ghads.wordpress.com/2008/09/24/calling-a-rest-webservice-from-java-without-libs/
@@ -54,7 +55,7 @@ import org.apache.log4j.Logger;
 public final class FileLogConnector implements KProcessConnector {
 	private static final String DATE_FORMAT = "yyyyMMdd HH:mm:ss";
 
-	private final Logger logger = Logger.getLogger(FileLogConnector.class);
+	private final Logger logger = LogManager.getLogger(FileLogConnector.class);
 	private final long spoolFrequencyMs = 250;
 	private Thread processSpoolerThread = null;
 	private final ConcurrentLinkedQueue<AProcess> processQueue = new ConcurrentLinkedQueue<AProcess>();

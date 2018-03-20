@@ -29,10 +29,6 @@
  */
 package io.analytica.agent.impl.net;
 
-import io.analytica.agent.api.KProcessConnector;
-import io.analytica.api.AProcess;
-import io.analytica.api.KProcessJsonCodec;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -41,16 +37,20 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status.Family;
 
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.CacheManager;
-import net.sf.ehcache.Element;
-
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.ClientResponse.Status;
 import com.sun.jersey.api.client.WebResource;
+
+import io.analytica.agent.api.KProcessConnector;
+import io.analytica.api.AProcess;
+import io.analytica.api.KProcessJsonCodec;
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Element;
 
 /**
  * TODO look into http://ghads.wordpress.com/2008/09/24/calling-a-rest-webservice-from-java-without-libs/
@@ -65,7 +65,7 @@ public final class RemoteConnector implements KProcessConnector {
 	private static final String VERSION = VERSION_MAJOR + "." + VERSION_MINOR + "." + VERSION_PATCH;
 	private static final int EIGHT_HOURS = 8 * 60 * 60;
 	private static long MAX_TIME_WAITING_TILL_FORCE_KILL = 10000L;
-	private final Logger logger = Logger.getLogger(RemoteConnector.class);
+	private final Logger logger = LogManager.getLogger(RemoteConnector.class);
 
 	private Thread processSenderThread = null;
 	private final ConcurrentLinkedQueue<AProcess> processQueue = new ConcurrentLinkedQueue<AProcess>();

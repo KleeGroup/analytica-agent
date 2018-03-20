@@ -1,12 +1,15 @@
 {
 //"collectorName" : "FileLog",
 //"collectorParams" : {"fileName" : "d:/logs/analyticaFileLog.log"},
-"collectorName" : "RemoteHTTP",
+/* "collectorName" : "RemoteHTTP",
 "collectorParams" : { 
  "serverUrl" : "http:\/\/localhost:9998/process",
  "sendPaquetSize" : "50",
  "sendPaquetFrequencySeconds" : "1" },
-
+ */
+ 
+"collectorName" : "Stack",
+ 
 "systemName" : "testJavassist",
 "systemLocation" : ["test", "$hostName"],
 

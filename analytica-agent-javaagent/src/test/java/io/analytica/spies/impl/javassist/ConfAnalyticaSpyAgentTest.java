@@ -2,7 +2,7 @@
  * Analytica - beta version - Systems Monitoring Tool
  *
  * Copyright (C) 2013, KleeGroup, direction.technique@kleegroup.com (http://www.kleegroup.com)
- * KleeGroup, Centre d'affaire la Boursidière - BP 159 - 92357 Le Plessis Robinson Cedex - France
+ * KleeGroup, Centre d'affaire la Boursidiï¿½re - BP 159 - 92357 Le Plessis Robinson Cedex - France
  *
  * This program is free software; you can redistribute it and/or modify it under the terms
  * of the GNU General Public License as published by the Free Software Foundation;
@@ -37,14 +37,14 @@ import org.junit.Test;
 
 /**
  * Implementation d'un agent de jvm.
- * Celui ci doit etre inclus dans un jar et passé en parametre à la jvm :
+ * Celui ci doit etre inclus dans un jar et passï¿½ en parametre ï¿½ la jvm :
  * <code>-javaagent:"monjar.jar"=option</code>
  * Ce jar doit avoir un manifest qui contient la ligne suivante :
- * <code>Premain-Class: io.analytica.spies.imp.javassist.AnalyticaSpyAgent</code>
+ * <code>Premain-Class: io.analytica.spies.impl.javassist.AnalyticaSpyAgent</code>
  *
- * Cet agent ajoute un ClassFileTransformer spécifique qui a pour but d'instrumenter
- * les méthodes selon un paramétrage externe.
- * L'option de l'agent dans la ligne de commande représente le nom du fichier de paramétrage.
+ * Cet agent ajoute un ClassFileTransformer spï¿½cifique qui a pour but d'instrumenter
+ * les mï¿½thodes selon un paramï¿½trage externe.
+ * L'option de l'agent dans la ligne de commande reprï¿½sente le nom du fichier de paramï¿½trage.
  *
  * @author npiedeloup
  * @version $Id: MemoryLeakAgent.java,v 1.2 2012/09/28 09:30:03 pchretien Exp $
@@ -54,12 +54,12 @@ public final class ConfAnalyticaSpyAgentTest {
 	/**
 	 * Test simple avec deux compteurs.
 	 * Test sur l'envoi de 1000 articles d'un poids de 25 kg.
-	 * Chaque article coute 10€.
+	 * Chaque article coute 10ï¿½.
 	 */
 	@Test
 	public void testEscapeComments() {
 		final String[] testedTexts = { //
-				"/* First comment \n first comment—line two*/\n/* Second comment */", //
+				"/* First comment \n first commentï¿½line two*/\n/* Second comment */", //
 				"start_code();\n/* First comment */\nmore_code(); \n/* Second comment */\nend_code();", //
 				"/*\n * Common multi-line comment style.\n */\n/* Second comment */", //
 				"start_code();\n/****\n * Common multi-line comment style.\n ****/\nmore_code(); \n/*\n * Another common multi-line comment style.\n */\nend_code();", //

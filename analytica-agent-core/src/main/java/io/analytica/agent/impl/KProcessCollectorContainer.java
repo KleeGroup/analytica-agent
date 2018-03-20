@@ -30,22 +30,17 @@
 package io.analytica.agent.impl;
 
 import io.analytica.agent.api.KProcessCollector;
-import io.analytica.agent.api.KProcessConnector;
+import io.analytica.agent.impl.jmx.JmxStackProcessConnector;
 import io.analytica.agent.impl.net.DummyConnector;
 import io.analytica.agent.impl.net.FileLogConnector;
 import io.analytica.agent.impl.net.RemoteConnector;
 import io.analytica.api.Assertion;
-
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 
 /**
  * @author dslobozian
  * @version $Id: KProcessCollectorContainer.java,v 1.0 2015/10/27 13:49:17 dslobozian Exp $
  */
 public final class KProcessCollectorContainer {
-
 
 	private static KProcessCollector INSTANCE = createProcessCollector();
 
@@ -54,32 +49,35 @@ public final class KProcessCollectorContainer {
 	}
 
 	private static KProcessCollector createProcessCollector() {
-		String appName = (String) AnalyticaConfigurationStore.getInstace().getConfiguration(AnalyticaConfigurationType.ANALYTICA_APP_NAME);
-		String location =(String) AnalyticaConfigurationStore.getInstace().getConfiguration(AnalyticaConfigurationType.ANALYTICA_LOCATION);
-		String connectorType = (String) AnalyticaConfigurationStore.getInstace().getConfiguration(AnalyticaConfigurationType.ANALYTICA_CONNECTOR_TYPE);
-		
-		if(		appName.equalsIgnoreCase(AnalyticaConfigurationStore.DEFAULT_APP_NAME)||
-				location.equalsIgnoreCase(AnalyticaConfigurationStore.DEFAULT_LOCATION)||
-				connectorType.equalsIgnoreCase(AnalyticaConfigurationStore.DEFAULT_CONNECTOR_TYPE))
-		{
+		final String appName = (String) AnalyticaConfigurationStore.getInstance().getConfiguration(AnalyticaConfigurationType.ANALYTICA_APP_NAME);
+		final String location = (String) AnalyticaConfigurationStore.getInstance().getConfiguration(AnalyticaConfigurationType.ANALYTICA_LOCATION);
+		final String connectorType = (String) AnalyticaConfigurationStore.getInstance().getConfiguration(AnalyticaConfigurationType.ANALYTICA_CONNECTOR_TYPE);
+
+		if (appName.equalsIgnoreCase(AnalyticaConfigurationStore.DEFAULT_APP_NAME) ||
+				location.equalsIgnoreCase(AnalyticaConfigurationStore.DEFAULT_LOCATION) ||
+				connectorType.equalsIgnoreCase(AnalyticaConfigurationStore.DEFAULT_CONNECTOR_TYPE)) {
 			System.err.println("Unable to locate Analytica's configuration. Fallback to the dummy implementation");
 			return new KProcessCollector(appName, location, new DummyConnector());
 		}
 		if ("file".equals(connectorType)) {
-			final String fileName = (String) AnalyticaConfigurationStore.getInstace().getConfiguration(AnalyticaConfigurationType.ANALYTICA_CONNECTOR_FILE_FILE_NAME);
+			final String fileName = (String) AnalyticaConfigurationStore.getInstance().getConfiguration(AnalyticaConfigurationType.ANALYTICA_CONNECTOR_FILE_FILE_NAME);
 			Assertion.checkArgument(!fileName.equalsIgnoreCase(AnalyticaConfigurationStore.DEFAULT_CONNECTOR_FILE_FILE_NAME), "Analytica : " + AnalyticaConfigurationType.ANALYTICA_CONNECTOR_FILE_FILE_NAME + " is required for the file connector");
 			return new KProcessCollector(appName, location, new FileLogConnector(fileName));
 		}
-		
+
 		if ("remote".equals(connectorType)) {
-			final String serverUrl = (String) AnalyticaConfigurationStore.getInstace().getConfiguration(AnalyticaConfigurationType.ANALYTICA_CONNECTOR_REMOTE_SERVER_URL);
-			final Integer sendPaquetSize = (Integer) AnalyticaConfigurationStore.getInstace().getConfiguration(AnalyticaConfigurationType.ANALYTICA_CONNECTOR_REMOTE_SEND_PAQUET_SIZE);
-			final Integer sendPaquetFrequencySeconds = (Integer) AnalyticaConfigurationStore.getInstace().getConfiguration(AnalyticaConfigurationType.ANALYTICA_CONNECTOR_REMOTE_SEND_PAQUET_FREQUENCY_SECONDS);
+			final String serverUrl = (String) AnalyticaConfigurationStore.getInstance().getConfiguration(AnalyticaConfigurationType.ANALYTICA_CONNECTOR_REMOTE_SERVER_URL);
+			final Integer sendPaquetSize = (Integer) AnalyticaConfigurationStore.getInstance().getConfiguration(AnalyticaConfigurationType.ANALYTICA_CONNECTOR_REMOTE_SEND_PAQUET_SIZE);
+			final Integer sendPaquetFrequencySeconds = (Integer) AnalyticaConfigurationStore.getInstance().getConfiguration(AnalyticaConfigurationType.ANALYTICA_CONNECTOR_REMOTE_SEND_PAQUET_FREQUENCY_SECONDS);
 			Assertion.checkArgument(!serverUrl.equalsIgnoreCase(AnalyticaConfigurationStore.DEFAULT_CONNECTOR_FILE_FILE_NAME), "Analytica : " + AnalyticaConfigurationType.ANALYTICA_CONNECTOR_REMOTE_SERVER_URL + " is required for the remote connector");
-			Assertion.checkArgument(sendPaquetSize!=AnalyticaConfigurationStore.DEFAULT_CONNECTOR_REMOTE_SEND_PAQUET_SIZE, "Analytica : " + AnalyticaConfigurationType.ANALYTICA_CONNECTOR_REMOTE_SEND_PAQUET_SIZE + " is required for the remote connector");
-			Assertion.checkArgument(sendPaquetFrequencySeconds!=AnalyticaConfigurationStore.DEFAULT_CONNECTOR_REMOTE_SEND_PAQUET_FREQUENCY_SECONDS, "Analytica : " + AnalyticaConfigurationType.ANALYTICA_CONNECTOR_REMOTE_SEND_PAQUET_FREQUENCY_SECONDS + " is required for the remote connector");
-			return new KProcessCollector(appName, location,new RemoteConnector(serverUrl, sendPaquetSize, sendPaquetFrequencySeconds));
-		} 
+			Assertion.checkArgument(sendPaquetSize != AnalyticaConfigurationStore.DEFAULT_CONNECTOR_REMOTE_SEND_PAQUET_SIZE, "Analytica : " + AnalyticaConfigurationType.ANALYTICA_CONNECTOR_REMOTE_SEND_PAQUET_SIZE + " is required for the remote connector");
+			Assertion.checkArgument(sendPaquetFrequencySeconds != AnalyticaConfigurationStore.DEFAULT_CONNECTOR_REMOTE_SEND_PAQUET_FREQUENCY_SECONDS, "Analytica : " + AnalyticaConfigurationType.ANALYTICA_CONNECTOR_REMOTE_SEND_PAQUET_FREQUENCY_SECONDS + " is required for the remote connector");
+			return new KProcessCollector(appName, location, new RemoteConnector(serverUrl, sendPaquetSize, sendPaquetFrequencySeconds));
+		}
+
+		if ("stack".equals(connectorType)) {
+			return new KProcessCollector(appName, location, new JmxStackProcessConnector());
+		}
 
 		System.err.println("Unknown connector. Fallback to the dummy implementation");
 		return new KProcessCollector(appName, location, new DummyConnector());

@@ -124,7 +124,7 @@ public class AnalyticaConfigurationStore {
 		}
 	}
 	
-	public static AnalyticaConfigurationStore getInstace(){
+	public static AnalyticaConfigurationStore getInstance(){
 		return INSTANCE;
 	}
 	

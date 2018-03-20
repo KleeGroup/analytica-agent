@@ -29,16 +29,17 @@
  */
 package io.analytica.mock;
 
-import io.analytica.api.AProcess;
-import io.analytica.api.KProcessJsonCodec;
-
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+
+import io.analytica.api.AProcess;
+import io.analytica.api.KProcessJsonCodec;
 
 /**
  * ServerManager de test.
@@ -46,7 +47,7 @@ import org.apache.log4j.Logger;
  * @version $Id: RestNetApiPlugin.java,v 1.3 2012/10/16 12:39:27 npiedeloup Exp $
  */
 public final class MockServerManager {
-	private static final Logger LOG = Logger.getLogger(MockServerManager.class);
+	private static final Logger LOG = LogManager.getLogger(MockServerManager.class);
 	private final Map<String, List<AProcess>> processesMap = new HashMap<String, List<AProcess>>();
 	private static WeakReference<MockServerManager> INSTANCE = new WeakReference<MockServerManager>(null);
 

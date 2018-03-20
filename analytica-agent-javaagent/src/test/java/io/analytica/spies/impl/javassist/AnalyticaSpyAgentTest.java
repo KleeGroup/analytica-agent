@@ -2,7 +2,7 @@
  * Analytica - beta version - Systems Monitoring Tool
  *
  * Copyright (C) 2013, KleeGroup, direction.technique@kleegroup.com (http://www.kleegroup.com)
- * KleeGroup, Centre d'affaire la Boursidière - BP 159 - 92357 Le Plessis Robinson Cedex - France
+ * KleeGroup, Centre d'affaire la Boursidiï¿½re - BP 159 - 92357 Le Plessis Robinson Cedex - France
  *
  * This program is free software; you can redistribute it and/or modify it under the terms
  * of the GNU General Public License as published by the Free Software Foundation;
@@ -30,8 +30,8 @@
 package io.analytica.spies.impl.javassist;
 
 import io.analytica.AbstractAnalyticaTestCaseJU4;
-import io.analytica.spies.imp.javassist.AnalyticaSpyAgent;
-import io.analytica.spies.imp.javassist.agentloader.VirtualMachineAgentLoader;
+import io.analytica.spies.impl.javassist.AnalyticaSpyAgent;
+import io.analytica.spies.impl.javassist.agentloader.VirtualMachineAgentLoader;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -42,14 +42,14 @@ import org.junit.Test;
 
 /**
  * Implementation d'un agent de jvm.
- * Celui ci doit etre inclus dans un jar et passé en parametre à la jvm :
+ * Celui ci doit etre inclus dans un jar et passï¿½ en parametre ï¿½ la jvm :
  * <code>-javaagent:"monjar.jar"=option</code>
  * Ce jar doit avoir un manifest qui contient la ligne suivante :
- * <code>Premain-Class: io.analytica.spies.imp.javassist.AnalyticaSpyAgent</code>
+ * <code>Premain-Class: io.analytica.spies.impl.javassist.AnalyticaSpyAgent</code>
  *
- * Cet agent ajoute un ClassFileTransformer spécifique qui a pour but d'instrumenter
- * les méthodes selon un paramétrage externe.
- * L'option de l'agent dans la ligne de commande représente le nom du fichier de paramétrage.
+ * Cet agent ajoute un ClassFileTransformer spï¿½cifique qui a pour but d'instrumenter
+ * les mï¿½thodes selon un paramï¿½trage externe.
+ * L'option de l'agent dans la ligne de commande reprï¿½sente le nom du fichier de paramï¿½trage.
  *
  * @author npiedeloup
  * @version $Id: MemoryLeakAgent.java,v 1.2 2012/09/28 09:30:03 pchretien Exp $
@@ -63,7 +63,7 @@ public final class AnalyticaSpyAgentTest extends AbstractAnalyticaTestCaseJU4 {
 	//private static final String TEST3_PARENT_CLASS_NAME = "io.analytica.spies.impl.javassist.ParentTestAnalyse";
 
 	/**
-	 * Demarre l'agent de supervision des création d'instances.
+	 * Demarre l'agent de supervision des crï¿½ation d'instances.
 	 */
 	public static void startAgent() {
 		final File agentJar = getFile("analyticaAgent-1.4.1.jar", AnalyticaSpyAgentTest.class);
@@ -82,7 +82,7 @@ public final class AnalyticaSpyAgentTest extends AbstractAnalyticaTestCaseJU4 {
 	}
 
 	/**
-	 * Récupération d'une classe non typée à partir de son nom.
+	 * Rï¿½cupï¿½ration d'une classe non typï¿½e ï¿½ partir de son nom.
 	 * 
 	 * @param javaClassName Nom de la classe
 	 * @return Classe java
@@ -104,14 +104,14 @@ public final class AnalyticaSpyAgentTest extends AbstractAnalyticaTestCaseJU4 {
 	@Override
 	protected void flushAgentToServer() {
 		try {
-			Thread.sleep(5000);//on attend 2s que le process soit envoyé au serveur.
+			Thread.sleep(5000);//on attend 2s que le process soit envoyï¿½ au serveur.
 		} catch (final InterruptedException e) {
 			//rien on stop juste l'attente
 		}
 	}
 
 	/**
-	 * Récupère un File (pointeur de fichier) vers un fichier relativement à une class.
+	 * Rï¿½cupï¿½re un File (pointeur de fichier) vers un fichier relativement ï¿½ une class.
 	 * @param fileName Nom/path du fichier
 	 * @param baseClass Class de base pour le chemin relatif  
 	 * @return File
@@ -128,7 +128,7 @@ public final class AnalyticaSpyAgentTest extends AbstractAnalyticaTestCaseJU4 {
 	/**
 	 * Test simple avec deux compteurs. 
 	 * Test sur l'envoi de 1000 articles d'un poids de 25 kg. 
-	 * Chaque article coute 10€.
+	 * Chaque article coute 10ï¿½.
 	 */
 	@Test
 	public void testJavassistWork1s() {
@@ -139,15 +139,15 @@ public final class AnalyticaSpyAgentTest extends AbstractAnalyticaTestCaseJU4 {
 
 	/**
 	 * Test d'un traitement qui fait une erreur.
-	 * Le process doit-être capturé malgré tout
+	 * Le process doit-ï¿½tre capturï¿½ malgrï¿½ tout
 	 */
 	@Test
 	public void testJavassistWorkError() {
 		try {
 			new TestAnalyse().workError();
-			Assert.fail("workError n'a pas lancée d'exception");
+			Assert.fail("workError n'a pas lancï¿½e d'exception");
 		} catch (final Exception e) {
-			//on veut vérifier que le process est renseigné après l'exception
+			//on veut vï¿½rifier que le process est renseignï¿½ aprï¿½s l'exception
 		}
 		flushAgentToServer();
 		checkMetricCount("HMDURATION", 1, "JAVASSIST", TEST1_CLASS_NAME, "workError");
@@ -194,7 +194,7 @@ public final class AnalyticaSpyAgentTest extends AbstractAnalyticaTestCaseJU4 {
 	/**
 	 * Test simple avec deux compteurs. 
 	 * Test sur l'envoi de 1000 articles d'un poids de 25 kg. 
-	 * Chaque article coute 10€.
+	 * Chaque article coute 10ï¿½.
 	 */
 	@Test
 	public void testJavassistWorkStatic() {
@@ -206,7 +206,7 @@ public final class AnalyticaSpyAgentTest extends AbstractAnalyticaTestCaseJU4 {
 	/**
 	 * Test simple avec deux compteurs. 
 	 * Test sur l'envoi de 1000 articles d'un poids de 25 kg. 
-	 * Chaque article coute 10€.
+	 * Chaque article coute 10ï¿½.
 	 */
 	@Test
 	public void testInstrumentPerf() {
@@ -237,7 +237,7 @@ public final class AnalyticaSpyAgentTest extends AbstractAnalyticaTestCaseJU4 {
 	/**
 	 * Test simple avec deux compteurs. 
 	 * Test sur l'envoi de 1000 articles d'un poids de 25 kg. 
-	 * Chaque article coute 10€.
+	 * Chaque article coute 10ï¿½.
 	 */
 	@Test
 	public void testActivateDesactivate() {
@@ -259,7 +259,7 @@ public final class AnalyticaSpyAgentTest extends AbstractAnalyticaTestCaseJU4 {
 	/**
 	 * Test simple avec deux compteurs. 
 	 * Test sur l'envoi de 1000 articles d'un poids de 25 kg. 
-	 * Chaque article coute 10€.
+	 * Chaque article coute 10ï¿½.
 	 */
 	@Test
 	public void testActivateDesactivateSameInstance() {

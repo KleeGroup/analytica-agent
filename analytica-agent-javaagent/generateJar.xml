@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="create_run_jar" name="Create Runnable Jar for Project analytica-agent-javaagent">
+    <!--this file was created by Eclipse Runnable JAR Export Wizard-->
+    <!--ANT 1.7 is required                                        -->
+    <!--define folder properties-->
+    <property name="dir.buildfile" value="."/>
+    <property name="dir.workspace" value="C:/utils/eclipse/workspace"/>
+    <property name="dir.jarfile" value="${dir.buildfile}/install"/>
+    <target name="create_run_jar">
+        <jar destfile="${dir.jarfile}/analyticaClient-1.4.3.jar" filesetmanifest="mergewithoutmain">
+            <manifest file="d:\@GitHub\analytica-agent\analytica-agent-javaagent\src\main\resources\META-INF\MANIFEST.MF">
+                <attribute name="Premain-Class" value="io.analytica.spies.impl.javassist.AnalyticaSpyAgent"/>
+                <attribute name="Agent-Class" value="io.analytica.spies.impl.javassist.AnalyticaSpyAgent"/>
+            </manifest>
+            <fileset dir="D:/@GitHub/analytica-agent/analytica-agent-api/target/classes"/>
+            <fileset dir="D:/@GitHub/analytica-agent/analytica-agent-core/target/classes"/>
+            <fileset dir="D:/@GitHub/analytica-agent/analytica-agent-javaagent/target/classes"/>
+            <zipfileset excludes="META-INF/*.SF" src="D:/@MavenRepo/log4j/log4j/1.2.16/log4j-1.2.16.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="D:/@MavenRepo/com/google/code/gson/gson/2.2.2/gson-2.2.2.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="D:/@MavenRepo/org/javassist/javassist/3.19.0-GA/javassist-3.19.0-GA.jar"/>
+        </jar>
+    </target>
+</project>

@@ -39,7 +39,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;import org.apache.logging.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -56,7 +56,7 @@ public abstract class AbstractProcessCollectorTest extends AbstractAnalyticaTest
 	private static final String PROCESS2_TYPE = "COMMANDE";
 
 	/** Logger. */
-	private final Logger log = Logger.getLogger(getClass());
+	private final Logger log = LogManager.getLogger(getClass());
 
 	private KProcessCollector processCollector;
 	private RemoteConnector remoteConnector;
