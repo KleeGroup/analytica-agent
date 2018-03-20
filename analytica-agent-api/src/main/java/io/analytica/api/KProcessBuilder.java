@@ -234,7 +234,7 @@ public final class KProcessBuilder {
 		return addSubProcess(subProcess, true);
 	}
 
-	private KProcessBuilder addSubProcess(final AProcess subProcess, final boolean addSubDuration) {
+	public KProcessBuilder addSubProcess(final AProcess subProcess, final boolean addSubDuration) {
 		Assertion.checkNotNull(subProcess, "sub process is required ");
 		//---------------------------------------------------------------------
 		subProcesses.add(subProcess);
